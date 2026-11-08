@@ -14,9 +14,80 @@ class LiveLabPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (c.liveFeedActive || c.liveFeedStarting) return _LiveFeedView(c);
+    final seededP = c.effectivePerceptionPayload;
     return ListView(padding: const EdgeInsets.fromLTRB(12, 4, 12, 24), children: [
       _Landing(c),
-      const SizedBox(height: 16),
+      const SizedBox(height: 12),
+      LiveSessionStateBar(c),
+      if (seededP != null) ...[
+        const SizedBox(height: 12),
+        Panel(
+          title: 'Camera & Specialist Bubble Tag Preview (Seeded Event)',
+          icon: Icons.center_focus_strong,
+          trailing: Text('${seededP['active_step_id'] ?? ''} · ${seededP['active_channel_id'] ?? ''}',
+              style: const TextStyle(fontFamily: LM.mono, fontSize: 11, color: LM.teal)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            // Layout rule (`docs/API_V2.md`): Scene summary ABOVE camera, never overlaid as text block on video
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(color: LM.surfaceHi, borderRadius: BorderRadius.circular(8), border: Border.all(color: LM.line)),
+              child: Row(children: [
+                const Icon(Icons.visibility_outlined, size: 15, color: LM.teal),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text('${seededP['scene_summary'] ?? 'Microfluidic channel in view'}',
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                ),
+                if ((seededP['specialist'] as Map?)?['count'] != null)
+                  StatusPill(
+                    label: '${(seededP['specialist'] as Map)['count']} bubble(s)',
+                    on: true,
+                    onColor: LM.warn,
+                  ),
+              ]),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF091318), Color(0xFF12232B), Color(0xFF0B161B)],
+                    ),
+                    border: Border.all(color: LM.line),
+                  ),
+                  child: Stack(fit: StackFit.expand, children: [
+                    Center(
+                      child: Container(
+                        height: 64,
+                        margin: const EdgeInsets.symmetric(horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: const Color(0x222DD4BF),
+                          border: Border.symmetric(horizontal: BorderSide(color: LM.teal.withValues(alpha: 0.35), width: 1.5)),
+                        ),
+                      ),
+                    ),
+                    CameraBoundingBoxOverlay(perception: seededP),
+                  ]),
+                ),
+              ),
+            ),
+            if ((seededP['specialist'] as Map?)?['sceptic_critique'] != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('Specialist Sceptic: ${(seededP['specialist'] as Map)['sceptic_critique']}',
+                    style: const TextStyle(fontFamily: LM.mono, fontSize: 11, color: LM.muted)),
+              ),
+          ]),
+        ),
+      ],
+      const SizedBox(height: 12),
+      PendingReviewsPanel(c),
+      const SizedBox(height: 12),
       ProtocolPanel(c, dense: true),
       const SizedBox(height: 12),
       Theme(
@@ -220,59 +291,76 @@ class _LiveFeedViewState extends State<_LiveFeedView> {
   @override
   Widget build(BuildContext context) {
     final c = widget.c;
-    final p = c.latestPerception;
+    final p = c.effectivePerceptionPayload;
     final actions = (p?['actions'] as List?) ?? const [];
     final objects = (p?['objects'] as List?) ?? const [];
+    final spec = (p?['specialist'] as Map?)?.cast<String, dynamic>();
     return ListView(padding: const EdgeInsets.fromLTRB(12, 4, 12, 24), children: [
-      // ---- camera with perception overlay ----
+      // ---- Layout rule (`docs/API_V2.md`): Scene summary & status ABOVE the camera window ----
+      Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: LM.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: LM.line)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            if (c.recordingActive) const StatusPill(label: 'REC', on: true, onColor: LM.rec, pulse: true),
+            const SizedBox(width: 6),
+            StatusPill(
+              label: c.geminiConnected ? 'Voice' : 'Voice off',
+              on: c.geminiConnected && c.microphoneEnabled,
+              icon: c.microphoneEnabled ? Icons.mic : Icons.mic_off,
+            ),
+            const SizedBox(width: 6),
+            StatusPill(
+              label: 'Perception ${c.perceptionSaved}/${c.perceptionWindows}',
+              on: c.perceptionWindows > 0,
+              icon: Icons.visibility,
+            ),
+            const Spacer(),
+            PersistenceBadge(c.latestPerceptionSaved ? Persistence.saved : Persistence.notSaved),
+          ]),
+          if (p != null) ...[
+            const SizedBox(height: 8),
+            Text('${p['scene_summary'] ?? 'Microfluidic channel in view'}',
+                style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+            if (spec != null && spec['description'] != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Text('Specialist Council: ${spec['description']}',
+                    style: const TextStyle(fontSize: 11.5, color: LM.warn, fontWeight: FontWeight.w600)),
+              ),
+            const SizedBox(height: 6),
+            Wrap(spacing: 6, runSpacing: 6, children: [
+              for (final a in actions)
+                _chip('${a['action']}${a['object'] != null ? ' · ${a['object']}' : ''}  ×${a['count']}', LM.warn, '${a['certainty']}'),
+              for (final o in objects.take(6))
+                _chip('${o['label']}${o['count'] != null ? ' ×${o['count']}' : ''}', LM.teal, '${o['certainty']}'),
+            ]),
+          ],
+        ]),
+      ),
+      // ---- Camera window with ONLY small object tags & specialist bubble boxes (`docs/API_V2.md`) ----
       ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: AspectRatio(
           aspectRatio: 3 / 4,
           child: Stack(fit: StackFit.expand, children: [
             if (c.cameraOpen) const HtmlElementView(viewType: cameraViewType) else Container(color: Colors.black),
+            CameraBoundingBoxOverlay(perception: p),
             if (c.liveFeedStarting)
               const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 CircularProgressIndicator(),
                 SizedBox(height: 10),
                 Text('Starting camera, recording and Gemini…'),
               ])),
-            Positioned(
-              left: 10,
-              top: 10,
-              child: Wrap(spacing: 6, children: [
-                if (c.recordingActive) const StatusPill(label: 'REC', on: true, onColor: LM.rec, pulse: true),
-                StatusPill(label: c.geminiConnected ? 'Voice' : 'Voice off', on: c.geminiConnected && c.microphoneEnabled,
-                    icon: c.microphoneEnabled ? Icons.mic : Icons.mic_off),
-                StatusPill(label: 'Perception ${c.perceptionSaved}/${c.perceptionWindows}', on: c.perceptionWindows > 0, icon: Icons.visibility),
-              ]),
-            ),
-            if (p != null)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 12),
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xE6000000)])),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                    Row(children: [
-                      Expanded(child: Text('${p['scene_summary']}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
-                      PersistenceBadge(c.latestPerceptionSaved ? Persistence.saved : Persistence.notSaved),
-                    ]),
-                    const SizedBox(height: 6),
-                    Wrap(spacing: 6, runSpacing: 6, children: [
-                      for (final a in actions)
-                        _chip('${a['action']}${a['object'] != null ? ' · ${a['object']}' : ''}  ×${a['count']}', LM.warn, '${a['certainty']}'),
-                      for (final o in objects.take(6))
-                        _chip('${o['label']}${o['count'] != null ? ' ×${o['count']}' : ''}', LM.teal, '${o['certainty']}'),
-                    ]),
-                  ]),
-                ),
-              ),
           ]),
         ),
+      ),
+      const SizedBox(height: 6),
+      const Text(
+        'Session video frames are retained only for in-session reanalysis and purged automatically when the session stops.',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 11, color: LM.muted),
       ),
       const SizedBox(height: 10),
       SizedBox(
@@ -284,6 +372,10 @@ class _LiveFeedViewState extends State<_LiveFeedView> {
           label: const Text('Stop live feed'),
         ),
       ),
+      const SizedBox(height: 12),
+      LiveSessionStateBar(c),
+      const SizedBox(height: 12),
+      PendingReviewsPanel(c),
       const SizedBox(height: 12),
       ProtocolPanel(c),
       const SizedBox(height: 12),

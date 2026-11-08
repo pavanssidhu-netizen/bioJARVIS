@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Literal, Optional
+from typing import Any, Awaitable, Callable, Literal, Optional, Union
 
 from ..config import get_settings
 from ..contracts import MODEL_UI_ACTIONS, EventIn
@@ -34,7 +34,7 @@ class SkillContext:
     caller: str = "gemini_live"
 
 
-Handler = Callable[[SkillContext, dict[str, Any]], Awaitable[dict[str, Any]] | dict[str, Any]]
+Handler = Callable[[SkillContext, dict[str, Any]], Union[Awaitable[dict[str, Any]], dict[str, Any]]]
 
 
 @dataclass
