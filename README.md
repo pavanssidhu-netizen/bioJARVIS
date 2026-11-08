@@ -45,7 +45,7 @@ every step ─► content-free telemetry spans (model, prompt version, tokens, l
 | Voice → correct tool + correct arguments, 15 spoken commands, real Live sessions | — | **15/15** (95% CI ≈ 80–100%) | `docs/BENCHMARK_VOICE.md` |
 | Log-agent answers (synthetic log, 5 questions incl. relative time + rejected duplicate) | — | 5/5, 0 invented citations | `scripts/eval.py --qa` |
 
-## What's real vs simulated (read before judging)
+## What's real vs simulated
 - **Real:** Gemini Live voice + tool calling; Gemini Flash perception; the specialist model and engine running live
   (Modal / Vercel); persistence, review, telemetry; every benchmark number above is a real run.
 - **Synthetic / limited:** vision images are generated microfluidic test cases with known ground truth (Person 3), the
