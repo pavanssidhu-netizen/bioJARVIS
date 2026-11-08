@@ -8,3 +8,4 @@ pillow
 matplotlib>=3.7.0
 python-multipart>=0.0.6
 # optional: ultralytics (YOLO-seg); without it the council uses its OpenCV watershed path (what was benchmarked)
+imageio-ffmpeg==0.8.1

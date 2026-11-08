@@ -48,3 +48,7 @@ eval/clips/
 models/
 evals/vision_test/images/
 evals/vision_test/overlays/
+
+# Team-recorded clips (large); labels.csv is kept
+eval/real_clips/*
+!eval/real_clips/labels.csv
