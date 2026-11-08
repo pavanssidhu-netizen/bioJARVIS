@@ -125,8 +125,8 @@ def offline_checks(page) -> None:
 
     print("\n== Offline: UI <-> backend ==")
     page.get_by_role("tab", name="Diagnostics").click()
-    wait_text(page, "STATE (EACH FLAG INDEPENDENT)")
-    wait_text(page, "CAPABILITIES")
+    wait_text(page, "Connections")
+    wait_text(page, "Capture activity")
     check("diagnostics page shows state + backend", True)
     page.get_by_role("tab", name="Live Lab").click()
 

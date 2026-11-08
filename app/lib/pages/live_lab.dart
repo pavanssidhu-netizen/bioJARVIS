@@ -56,7 +56,7 @@ class LiveLabPage extends StatelessWidget {
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0xFF091318), Color(0xFF12232B), Color(0xFF0B161B)],
+                      colors: [Color(0xFFE9F5F1), Color(0xFFF4F7F6), Color(0xFFE4EAE8)],
                     ),
                     border: Border.all(color: LM.line),
                   ),
@@ -66,7 +66,7 @@ class LiveLabPage extends StatelessWidget {
                         height: 64,
                         margin: const EdgeInsets.symmetric(horizontal: 24),
                         decoration: BoxDecoration(
-                          color: const Color(0x222DD4BF),
+                          color: LM.teal.withValues(alpha: 0.10),
                           border: Border.symmetric(horizontal: BorderSide(color: LM.teal.withValues(alpha: 0.35), width: 1.5)),
                         ),
                       ),
@@ -176,7 +176,7 @@ class _StepTile extends StatelessWidget {
               decoration: BoxDecoration(
                   color: selected ? LM.teal : LM.bg, borderRadius: BorderRadius.circular(4), border: Border.all(color: LM.line)),
               child: Text('${s['id']}',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: selected ? Colors.black : LM.text)),
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: selected ? Colors.white : LM.text)),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -224,7 +224,7 @@ class TagPainter extends CustomPainter {
       ..color = color.withValues(alpha: dashed ? 0.7 : 0.95);
     canvas.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(4)), stroke);
     final tp = TextPainter(
-      text: TextSpan(text: label, style: const TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w700)),
+      text: TextSpan(text: label, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
       textDirection: TextDirection.ltr,
       maxLines: 1,
       ellipsis: '…',
@@ -286,7 +286,7 @@ class _Landing extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: LM.line),
         gradient: const LinearGradient(
-            begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF0F2529), LM.surface]),
+            begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [LM.softTeal, LM.surface]),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const Text('Hands-free lab notebook', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
@@ -764,7 +764,7 @@ class _CameraPanel extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(color: LM.warn, borderRadius: BorderRadius.circular(4)),
                       child: Text('GEMINI WATCHING · ${c.framesSent} frames',
-                          style: const TextStyle(color: Colors.black, fontSize: 10.5, fontWeight: FontWeight.w800)),
+                          style: const TextStyle(color: Colors.white, fontSize: 10.5, fontWeight: FontWeight.w800)),
                     ),
                   ),
               ]),

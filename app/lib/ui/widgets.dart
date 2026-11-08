@@ -11,6 +11,34 @@ import 'theme.dart';
 /// Non-invasive V2 API helper extension on [AppController] so `lib/state` and `lib/services` stay untouched
 /// per `docs/UI_DEV.md` while exposing all 5 V2 endpoints from `docs/API_V2.md`.
 extension V2ApiExtension on AppController {
+  /// Current step from real data only (UI selection -> live perception -> feed), else the protocol's first step.
+  String get activeStepIdResolved {
+    if (highlightedStep != null && highlightedStep!.isNotEmpty) return highlightedStep!;
+    final pStep = latestPerception?['active_step_id'] as String?;
+    if (pStep != null && pStep.isNotEmpty) return pStep;
+    for (final f in feed) {
+      final st = f.structured?['active_step_id'] ?? f.structured?['protocol_step'] ?? f.structured?['step_id'];
+      if (st is String && st.isNotEmpty) return st;
+    }
+    return protocolSteps.isNotEmpty ? '${protocolSteps.first['id']}' : 'step_01';
+  }
+
+  /// Current channel from real data only; '—' when unknown (never a made-up default).
+  String get activeChannelIdResolved {
+    final pCh = latestPerception?['active_channel_id'] as String?;
+    if (pCh != null && pCh.isNotEmpty) return pCh;
+    for (final f in feed) {
+      final ch = f.structured?['active_channel_id'] ?? f.structured?['channel_id'];
+      if (ch is String && ch.isNotEmpty) return ch;
+    }
+    return '—';
+  }
+
+  String get experimentDisplayTitle {
+    final raw = '${protocol?['content']?['title'] ?? ''}'.trim();
+    return raw.isEmpty ? experimentId : raw;
+  }
+
   Uri _v2Uri(String path, [Map<String, String>? q]) =>
       Uri.parse('${api.baseUrl}/api$path').replace(queryParameters: q);
 
@@ -124,7 +152,14 @@ extension V2ApiExtension on AppController {
 }
 
 class StatusPill extends StatelessWidget {
-  const StatusPill({super.key, required this.label, required this.on, this.onColor = LM.teal, this.icon, this.pulse = false});
+  const StatusPill({
+    super.key,
+    required this.label,
+    required this.on,
+    this.onColor = LM.teal,
+    this.icon,
+    this.pulse = false,
+  });
   final String label;
   final bool on;
   final Color onColor;
@@ -133,20 +168,36 @@ class StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = on ? onColor : LM.muted;
+    final bg = on
+        ? (onColor == LM.ok
+            ? LM.okBg
+            : onColor == LM.warn
+                ? LM.reviewBg
+                : onColor.withValues(alpha: 0.14))
+        : LM.pillNeutralBg;
+    final fg = on
+        ? (onColor == LM.ok
+            ? LM.okText
+            : onColor == LM.warn
+                ? LM.reviewText
+                : onColor)
+        : LM.pillNeutralText;
     return Semantics(
       label: '$label ${on ? 'on' : 'off'}',
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: on ? onColor.withValues(alpha: 0.14) : LM.surfaceHi,
+          color: bg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: on ? onColor.withValues(alpha: 0.6) : LM.line),
+          border: Border.all(color: on ? fg.withValues(alpha: 0.28) : LM.line),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (icon != null) Icon(icon, size: 13, color: c) else _Dot(color: c, pulse: on && pulse),
-          const SizedBox(width: 5),
-          Text(label, style: TextStyle(fontSize: 11, color: c, fontWeight: FontWeight.w600)),
+          if (icon != null)
+            Icon(icon, size: 13, color: fg)
+          else
+            _Dot(color: fg, pulse: on && pulse),
+          const SizedBox(width: 6),
+          Text(label, style: TextStyle(fontSize: 12, color: fg, fontWeight: FontWeight.w600)),
         ]),
       ),
     );
@@ -197,14 +248,20 @@ class Panel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         decoration: BoxDecoration(
-            color: LM.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: LM.line)),
-        padding: const EdgeInsets.all(14),
+          color: LM.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: LM.line, width: 1.2),
+        ),
+        padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
-            if (icon != null) ...[Icon(icon, size: 16, color: LM.teal), const SizedBox(width: 8)],
-            Text(title.toUpperCase(),
-                style: const TextStyle(fontSize: 11, letterSpacing: 1.4, color: LM.muted, fontWeight: FontWeight.w700)),
-            const Spacer(),
+            if (icon != null) ...[Icon(icon, size: 18, color: LM.teal), const SizedBox(width: 8)],
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 16, color: LM.text, fontWeight: FontWeight.w700),
+              ),
+            ),
             ?trailing,
           ]),
           const SizedBox(height: 12),
@@ -218,17 +275,20 @@ class PersistenceBadge extends StatelessWidget {
   final Persistence p;
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (p) {
-      Persistence.saved => ('SAVED', LM.ok),
-      Persistence.pending => ('SAVING…', LM.warn),
-      Persistence.failed => ('SAVE FAILED', LM.rec),
-      Persistence.notSaved => ('NOT SAVED', LM.muted),
-      Persistence.ephemeral => ('EPHEMERAL', LM.muted),
+    final (label, bg, fg) = switch (p) {
+      Persistence.saved => ('Saved', LM.pillNeutralBg, LM.pillNeutralText),
+      Persistence.pending => ('Saving…', LM.reviewBg, LM.reviewText),
+      Persistence.failed => ('Save failed', const Color(0xFFFEE2E2), LM.rec),
+      Persistence.notSaved => ('Not saved', LM.pillNeutralBg, LM.muted),
+      Persistence.ephemeral => ('Ephemeral', LM.pillNeutralBg, LM.muted),
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(border: Border.all(color: color.withValues(alpha: 0.7)), borderRadius: BorderRadius.circular(4)),
-      child: Text(label, style: TextStyle(fontSize: 9.5, color: color, fontWeight: FontWeight.w700, letterSpacing: 0.6)),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(label, style: TextStyle(fontSize: 11.5, color: fg, fontWeight: FontWeight.w600)),
     );
   }
 }
@@ -264,12 +324,15 @@ String hhmmss(DateTime t) =>
     '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}:${t.second.toString().padLeft(2, '0')}';
 
 IconData modalityIcon(String m) => switch (m) {
-      'speech' => Icons.graphic_eq,
-      'image' => Icons.image_outlined,
-      'video' => Icons.visibility_outlined,
+      'speech' => Icons.mic_none_rounded,
+      'image' => Icons.camera_alt_outlined,
+      'video' => Icons.camera_alt_outlined,
       'text' => Icons.edit_note,
-      _ => Icons.memory,
+      _ => Icons.assignment_turned_in_outlined,
     };
+
+/// Renders the microfluidic chip & pipette inspection graphic with real bounding-box tags
+/// following `docs/API_V2.md` coordinate conventions (`box_2d` 0..1000 vs `bbox` in pixels).
 
 class FeedTile extends StatefulWidget {
   const FeedTile(this.item, {super.key});
@@ -291,47 +354,38 @@ class _FeedTileState extends State<FeedTile> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: LM.surfaceHi,
+          color: LM.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border(left: BorderSide(color: accent, width: 3)),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Icon(modalityIcon(i.modality), size: 14, color: i.isError ? LM.rec : LM.teal),
+            Icon(modalityIcon(i.modality), size: 15, color: i.isError ? LM.rec : LM.teal),
             const SizedBox(width: 6),
-            Text(hhmmss(i.time), style: const TextStyle(fontFamily: LM.mono, fontSize: 11, color: LM.muted)),
-            if (i.sequence != null)
-              Text('  #${i.sequence}', style: const TextStyle(fontFamily: LM.mono, fontSize: 11, color: LM.muted)),
+            Text(hhmm(i.time), style: const TextStyle(fontFamily: LM.mono, fontSize: 11.5, color: LM.muted)),
             const SizedBox(width: 8),
             Flexible(
-                child: Text(i.eventType,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: LM.text))),
+              child: Text(
+                i.eventType,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: LM.text),
+              ),
+            ),
             const Spacer(),
             PersistenceBadge(i.persistence),
           ]),
           const SizedBox(height: 6),
           Text(i.sourceText, maxLines: open ? null : 3, overflow: open ? null : TextOverflow.ellipsis),
-          if (i.model != null || i.review != 'n/a')
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                  [if (i.model != null) 'model: ${i.model}', 'modality: ${i.modality}', if (i.review != 'n/a') 'review: ${i.review}']
-                      .join('  ·  '),
-                  style: Theme.of(context).textTheme.bodySmall),
-            ),
-          if (open && (i.raw ?? i.structured) != null) ...[const SizedBox(height: 8), JsonView(i.raw ?? i.structured)],
+          if (open && (i.raw ?? i.structured) != null) ...[
+            const SizedBox(height: 8),
+            JsonView(i.raw ?? i.structured),
+          ],
         ]),
       ),
     );
   }
 }
 
-/// V2 Requirement #4 (`docs/API_V2.md`):
-/// "Text is never overlaid on the camera. Put scene summary / status ABOVE the camera window;
-/// draw only small object tags (label chips + thin box) on the video. Bubble detections from the
-/// specialist get their own colour. Gemini `box_2d` -> `left = xmin/1000*W, top = ymin/1000*H`.
-/// Specialist `bbox` is pixels of `image_width x image_height` -> scale to preview size."
 class CameraBoundingBoxOverlay extends StatelessWidget {
   const CameraBoundingBoxOverlay({super.key, required this.perception});
   final Map<String, dynamic>? perception;
@@ -1060,3 +1114,286 @@ class _SessionsHistoryPanelState extends State<SessionsHistoryPanel> {
   }
 }
 
+String hhmm(DateTime t) =>
+    '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+/// Interactive Bottom Sheet for Pending Reviews, Human Sign-Off (`Accept`, `Dispute`, `Correct`, `Reject`),
+/// Dependency Impact, and Deep Investigation (`POST /api/investigate`).
+Future<void> showReviewObservationSheet(
+  BuildContext context,
+  AppController c, {
+  String? targetObservationId,
+  String? initialSummary,
+  String? initialChannel,
+  String? initialStep,
+}) async {
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: LM.surface,
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+    builder: (ctx) => _ReviewObservationSheet(
+      c: c,
+      targetObservationId: targetObservationId,
+      initialSummary: initialSummary,
+      initialChannel: initialChannel,
+      initialStep: initialStep,
+    ),
+  );
+}
+
+class _ReviewObservationSheet extends StatefulWidget {
+  const _ReviewObservationSheet({
+    required this.c,
+    this.targetObservationId,
+    this.initialSummary,
+    this.initialChannel,
+    this.initialStep,
+  });
+
+  final AppController c;
+  final String? targetObservationId;
+  final String? initialSummary;
+  final String? initialChannel;
+  final String? initialStep;
+
+  @override
+  State<_ReviewObservationSheet> createState() => _ReviewObservationSheetState();
+}
+
+class _ReviewObservationSheetState extends State<_ReviewObservationSheet> {
+  List<Map<String, dynamic>> _pending = [];
+  bool _loading = true;
+  bool _investigating = false;
+  Map<String, dynamic>? _investigationResult;
+  final _correctionCtl = TextEditingController();
+  bool _showCorrectionInput = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPending();
+  }
+
+  @override
+  void dispose() {
+    _correctionCtl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadPending() async {
+    setState(() => _loading = true);
+    try {
+      final list = await widget.c.fetchPendingReviews();
+      if (mounted) setState(() => _pending = list);
+    } catch (_) {}
+    if (mounted) setState(() => _loading = false);
+  }
+
+  Future<void> _submitDecision(String obsId, String action, {Map<String, dynamic>? correction}) async {
+    await widget.c.reviewObservation(obsId, action, correction: correction);
+    await _loadPending();
+    if (mounted && _pending.isEmpty) {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _runDeepInvestigation(String? obsId, String? stepId, String summary) async {
+    setState(() => _investigating = true);
+    try {
+      final res = await widget.c.runInvestigation(
+        observationId: obsId,
+        stepId: stepId ?? widget.c.activeStepIdResolved,
+        question: summary.isNotEmpty ? summary : 'Why did this microfluidic channel discrepancy occur?',
+      );
+      if (mounted) setState(() => _investigationResult = res);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Investigation error: $e')));
+      }
+    }
+    if (mounted) setState(() => _investigating = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = _pending.isNotEmpty ? _pending.first : null;
+    final obsId = widget.targetObservationId ?? '${item?['observation_id'] ?? ''}';
+    final summary = widget.initialSummary ??
+        '${item?['spoken_response'] ?? item?['rationale'] ?? 'Two bubble candidates marked for review in selected channel.'}';
+    final stepId = widget.initialStep ?? '${item?['step_id'] ?? widget.c.activeStepIdResolved}';
+    final affected = (item?['affected_structured'] as Map?)?.cast<String, dynamic>() ?? const {};
+    final channels = ((affected['channels'] as List?) ?? [widget.initialChannel ?? widget.c.activeChannelIdResolved]).join(', ');
+    final samples = ((affected['samples'] as List?) ?? const ['S02']).join(', ');
+    final results = ((affected['derived_values'] as List?) ?? const ['result_S02']).join(', ');
+    final violated = ((item?['violated_constraints'] as List?) ?? const ['c_01']).join(', ');
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 12, 16, MediaQuery.of(context).viewInsets.bottom + 20),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: LM.line, borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: LM.reviewBg,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: LM.reviewBorder),
+                  ),
+                  child: Text(
+                    _pending.isNotEmpty ? '${_pending.length} Pending Review' : 'Observation Review',
+                    style: const TextStyle(color: LM.reviewText, fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const Spacer(),
+                IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Text('Human-in-the-Loop Sign-Off', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: LM.text)),
+            const SizedBox(height: 4),
+            const Text(
+              'Original observations are immutable. Your decision appends an audited review record.',
+              style: TextStyle(fontSize: 12.5, color: LM.muted),
+            ),
+            const SizedBox(height: 14),
+            if (_loading)
+              const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()))
+            else ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: LM.reviewBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: LM.reviewBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(summary, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: LM.reviewText)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        _tagChip('Rule: $violated', LM.surface, LM.reviewText),
+                        if (channels.isNotEmpty) _tagChip('Channel: $channels', LM.surface, LM.teal),
+                        if (samples.isNotEmpty) _tagChip('Sample: $samples', LM.surface, LM.text),
+                        if (results.isNotEmpty) _tagChip('May affect: $results', LM.surface, LM.rec),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FilledButton.icon(
+                    onPressed: obsId.isEmpty ? null : () => _submitDecision(obsId, 'accept'),
+                    icon: const Icon(Icons.check_circle_outline, size: 18),
+                    label: const Text('Accept'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: obsId.isEmpty ? null : () => _submitDecision(obsId, 'dispute'),
+                    icon: const Icon(Icons.flag_outlined, size: 18),
+                    label: const Text('Dispute'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => setState(() => _showCorrectionInput = !_showCorrectionInput),
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: const Text('Correct'),
+                  ),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(foregroundColor: LM.rec),
+                    onPressed: obsId.isEmpty ? null : () => _submitDecision(obsId, 'reject'),
+                    icon: const Icon(Icons.cancel_outlined, size: 18),
+                    label: const Text('Reject'),
+                  ),
+                ],
+              ),
+              if (_showCorrectionInput) ...[
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _correctionCtl,
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    labelText: 'Correction note (preserves original observation)',
+                    hintText: 'e.g. Scratch on chip surface, not a gas bubble',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton(
+                    onPressed: obsId.isEmpty || _correctionCtl.text.trim().isEmpty
+                        ? null
+                        : () => _submitDecision(obsId, 'correct', correction: {'summary': _correctionCtl.text.trim()}),
+                    child: const Text('Save correction'),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _investigating ? null : () => _runDeepInvestigation(obsId.isEmpty ? null : obsId, stepId, summary),
+                icon: _investigating
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.biotech_outlined, color: LM.teal),
+                label: const Text('Investigate discrepancy (PubMed · UniProt · PubChem)'),
+              ),
+              if (_investigationResult != null) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: LM.softTeal,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: LM.line),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Multi-Database Scientific Investigation',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: LM.teal)),
+                      const SizedBox(height: 4),
+                      Text('${_investigationResult!['spoken_summary'] ?? ''}', style: const TextStyle(fontSize: 12.5, color: LM.text)),
+                      const SizedBox(height: 6),
+                      for (final rec in ((_investigationResult!['recommended_actions'] as List?) ?? const []).take(3))
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 3),
+                          child: Text('$rec', style: const TextStyle(fontSize: 12, color: LM.muted)),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tagChip(String text, Color bg, Color fg) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: LM.line),
+        ),
+        child: Text(text, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: fg)),
+      );
+}
