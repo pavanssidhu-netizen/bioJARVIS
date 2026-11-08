@@ -500,7 +500,7 @@ def get_live_cockpit() -> str:
 
       document.getElementById('scepticText').textContent = data.sceptic_critique || '';
       document.getElementById('interpText').textContent = data.scientific_interpretation || '';
-      const bo = data.bayesian_predictive_assessment || {};
+      const bo = data.bayesian_predictive_assessment || {{}};
       document.getElementById('bayesianText').textContent = bo.scientific_rationale || '—';
       document.getElementById('reviewPrompt').textContent = data.human_review_prompt || '';
 
