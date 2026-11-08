@@ -60,8 +60,208 @@ from backend.vision.patch_classifier import score_bubble_patch_pytorch
 from backend.vision.predictive_models import GaussianProcessBayesianOptimizer
 
 
+CANONICAL_EXPERIMENT_PROFILES: Dict[str, Dict[str, Any]] = {
+    "exp_001": {
+        "experiment_id": "exp_001",
+        "protocol_id": "crp_elisa_dy1707",
+        "protocol_name": "R&D Systems Human CRP DuoSet ELISA (DY1707)",
+        "assay_domain": "colorimetric_plate_elisa",
+        "default_step_id": "step_08",
+        "max_allowed_bubbles": 0,
+        "critical_obstruction_ratio": 0.45,
+        "optical_or_physical_hazard": (
+            "scatters the 450 nm colorimetric absorbance beam (even with 540/570 nm wavelength subtraction) "
+            "and inflates duplicate well CV above the < 15% acceptance threshold"
+        ),
+        "citations": "ref_01, ref_04 (R&D Systems DY1707 Manual), ref_05 (Abcam ELISA Troubleshooting)",
+        "remedy_high": "centrifuge the 96-well plate briefly or pop meniscus bubbles with a sterile dry pipette tip before the 450 nm read",
+        "remedy_minor": "pop meniscus microbubbles with a sterile dry pipette tip or spin plate briefly prior to the 450 nm / 540 nm plate read to keep duplicate CV < 15%",
+        "clear_note": "Optical path is clear of gas bubble artifacts [satisfies ref_04 & ref_05 pre-read constraint for 450 nm CRP ELISA].",
+        "default_wait_time_min": 3.0,
+        "default_temp_c": 21.5,
+    },
+    "exp_002": {
+        "experiment_id": "exp_002",
+        "protocol_id": "rt_qpcr_taqman",
+        "protocol_name": "TaqMan Multiplex RT-qPCR Master Mix & Thermal Cycling",
+        "assay_domain": "nucleic_acid_amplification_qpcr",
+        "default_step_id": "step_04_plate_seal_and_load",
+        "max_allowed_bubbles": 0,
+        "critical_obstruction_ratio": 0.35,
+        "optical_or_physical_hazard": (
+            "undergoes Boyle/Charles thermal expansion during 95 °C denaturation cycles, scattering FAM/ROX epifluorescence "
+            "excitation/emission paths (shifting Cq > 0.5 cycles) and denaturing Taq polymerase at the gas-liquid interface"
+        ),
+        "citations": "ref_qpcr_01 (MIQE Guidelines, Bustin et al.), ref_qpcr_02 (Applied Biosystems qPCR Optical Calibration Manual)",
+        "remedy_high": "centrifuge the 96/384-well optical PCR plate at 1,000 × g for 60 s to expel trapped air before thermal cycling and apply GP-recommended primer/extension compensation",
+        "remedy_minor": "spin down reaction wells briefly (500–1,000 × g) before loading into the real-time cycler block to prevent Cq threshold drift",
+        "clear_note": "Reaction lumen is free of microbubbles [satisfies MIQE ref_qpcr_01 optical fluorescence baseline integrity].",
+        "default_wait_time_min": 4.5,
+        "default_temp_c": 22.0,
+    },
+    "exp_003": {
+        "experiment_id": "exp_003",
+        "protocol_id": "organ_on_chip_perfusion",
+        "protocol_name": "Microfluidic Organ-on-a-Chip Endothelial Vascular Perfusion",
+        "assay_domain": "microfluidic_cell_perfusion",
+        "default_step_id": "step_03_lumen_perfusion",
+        "max_allowed_bubbles": 0,
+        "critical_obstruction_ratio": 0.30,
+        "optical_or_physical_hazard": (
+            "induces two-phase Taylor/Bretherton slug flow with interfacial wall shear stress > 15 dyn/cm², "
+            "stripping endothelial VE-cadherin tight junctions and causing downstream cellular hypoxia"
+        ),
+        "citations": "ref_ooc_01 (Ingber 2022 Nat. Rev. Genet. Organ-on-a-Chip), ref_ooc_02 (Bretherton 1961 Two-Phase Capillary Mechanics)",
+        "remedy_high": "immediately reduce syringe-pump perfusion flow rate via GP Bayesian controller, actuate the inline PTFE membrane degasser, and divert the gas slug to the bypass waste port",
+        "remedy_minor": "pulse the upstream inline bubble trap and reduce perfusion velocity by 15–30% until the meniscus clears the endothelial monolayer",
+        "clear_note": "Microfluidic vascular lumen exhibits single-phase laminar flow with zero gas-slug shear hazard [satisfies ref_ooc_01].",
+        "default_wait_time_min": 2.5,
+        "default_temp_c": 37.0,
+    },
+    "exp_004": {
+        "experiment_id": "exp_004",
+        "protocol_id": "crispr_lnp_microfluidics",
+        "protocol_name": "CRISPR-Cas9 mRNA Lipid Nanoparticle (LNP) Herringbone Microfluidic Synthesis",
+        "assay_domain": "nanoparticle_microfluidic_mixing",
+        "default_step_id": "step_02_chaotic_advection_mix",
+        "max_allowed_bubbles": 0,
+        "critical_obstruction_ratio": 0.25,
+        "optical_or_physical_hazard": (
+            "compresses under syringe pressure and disrupts the 3:1 aqueous-mRNA to ethanol-lipid flow ratio and Peclet number, "
+            "causing LNP hydrodynamic size > 130 nm and polydispersity index (PDI) > 0.20"
+        ),
+        "citations": "ref_lnp_01 (Belliveau et al. Nano Lett. Microfluidic LNP Synthesis), ref_lnp_02 (USP <788> Phase Homogeneity)",
+        "remedy_high": "halt lipid/mRNA co-injection, purge the staggered herringbone cartridge with degassed 50 mM citrate buffer (pH 4.0), and apply GP flow-rate stabilization",
+        "remedy_minor": "apply inline back-pressure regulation and degas the ethanol lipid feed line before collecting the LNP fraction",
+        "clear_note": "Herringbone mixing channel is free of compressible gas pockets, preserving laminar 3:1 aqueous:ethanol mixing [satisfies ref_lnp_01].",
+        "default_wait_time_min": 2.0,
+        "default_temp_c": 20.5,
+    },
+    "exp_005": {
+        "experiment_id": "exp_005",
+        "protocol_id": "fplc_protein_purification",
+        "protocol_name": "ÄKTA FPLC Affinity & Size-Exclusion Protein Chromatography",
+        "assay_domain": "bioprocess_chromatography_fplc",
+        "default_step_id": "step_05_column_elution",
+        "max_allowed_bubbles": 0,
+        "critical_obstruction_ratio": 0.35,
+        "optical_or_physical_hazard": (
+            "enters the packed agarose resin bed causing mobile-phase channeling, severe HETP plate-number loss, "
+            "and false UV 280 nm absorbance spikes in the elution chromatogram"
+        ),
+        "citations": "ref_fplc_01 (Cytiva ÄKTA Pure Air-Sensor & Column Packing Guide), ref_fplc_02 (Ph. Eur. 2.2.46 Chromatography)",
+        "remedy_high": "switch the injection valve to column-bypass mode immediately, vacuum-degas the imidazole elution buffer, and ramp down linear flow velocity",
+        "remedy_minor": "divert the microbubble train through the pre-column air trap before resuming UV 280 nm fraction collection",
+        "clear_note": "Chromatography flow path is bubble-free prior to column frit and UV 280 nm flow cell [satisfies ref_fplc_01].",
+        "default_wait_time_min": 3.5,
+        "default_temp_c": 4.0,
+    },
+}
+
+
+def resolve_experiment_profile(
+    experiment_id: str = "exp_001",
+    protocol_step_id: str = "step_08",
+    experiment_context: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Universal multi-experiment resolver so the 5-Agent Council works dynamically for ANY experiment or protocol."""
+    ctx = experiment_context or {}
+    exp_key = str(ctx.get("experiment_id") or experiment_id or "exp_001").strip()
+    proto_id = str(ctx.get("protocol_id") or "").strip().lower()
+    proto_name = str(ctx.get("protocol_name") or ctx.get("title") or "").strip()
+
+    # 1. Check direct ID match or protocol_id alias against canonical templates
+    matched: Optional[Dict[str, Any]] = None
+    if exp_key in CANONICAL_EXPERIMENT_PROFILES:
+        matched = dict(CANONICAL_EXPERIMENT_PROFILES[exp_key])
+    else:
+        search_blob = f"{exp_key} {proto_id} {proto_name}".lower()
+        if any(k in search_blob for k in ("qpcr", "pcr", "taqman", "amplif", "cycling", "mastermix")):
+            matched = dict(CANONICAL_EXPERIMENT_PROFILES["exp_002"])
+        elif any(k in search_blob for k in ("organ", "chip", "perfusion", "endothel", "vascular", "cell", "bioreactor")):
+            matched = dict(CANONICAL_EXPERIMENT_PROFILES["exp_003"])
+        elif any(k in search_blob for k in ("lnp", "lipid", "nanoparticle", "crispr", "mrna", "herringbone")):
+            matched = dict(CANONICAL_EXPERIMENT_PROFILES["exp_004"])
+        elif any(k in search_blob for k in ("fplc", "akta", "chromatog", "column", "purif", "elution")):
+            matched = dict(CANONICAL_EXPERIMENT_PROFILES["exp_005"])
+        elif any(k in search_blob for k in ("elisa", "dy1707", "crp", "450", "absorbance", "plate")):
+            matched = dict(CANONICAL_EXPERIMENT_PROFILES["exp_001"])
+
+    if matched is None:
+        # Construct a general dynamic profile for ANY custom user experiment
+        custom_name = proto_name or proto_id or f"Custom Wet-Lab Protocol ({exp_key})"
+        matched = {
+            "experiment_id": exp_key,
+            "protocol_id": proto_id or exp_key.lower(),
+            "protocol_name": custom_name,
+            "assay_domain": str(ctx.get("assay_domain") or "general_wetlab_and_microfluidics"),
+            "default_step_id": protocol_step_id or "step_01",
+            "max_allowed_bubbles": 0,
+            "critical_obstruction_ratio": 0.40,
+            "optical_or_physical_hazard": (
+                f"perturbs volumetric mass transfer, laminar fluidic metering, and optical readout fidelity in {custom_name}"
+            ),
+            "citations": str(ctx.get("citations") or "Protocol QC Standard & Two-Phase Microfluidic Metrology Guidelines"),
+            "remedy_high": (
+                f"degas or centrifuge the active vessel/channel in {custom_name}, aspirate trapped gas pockets, "
+                "and apply the GP Bayesian compensatory protocol adjustment before proceeding"
+            ),
+            "remedy_minor": (
+                f"clear meniscus microbubbles and verify optical/fluidic baseline stability in {custom_name} before advancing past {protocol_step_id}"
+            ),
+            "clear_note": f"Optical and fluidic path is verified clear of gas bubble artifacts for {custom_name} ({protocol_step_id}).",
+            "default_wait_time_min": 3.0,
+            "default_temp_c": 21.5,
+        }
+
+    # Override with any explicit fields provided in `experiment_context`
+    matched["experiment_id"] = exp_key
+    matched["active_step_id"] = protocol_step_id or matched.get("default_step_id", "step_01")
+    if proto_name:
+        matched["protocol_name"] = proto_name
+    if proto_id:
+        matched["protocol_id"] = proto_id
+
+    # Inspect step description if `steps` list is present in `experiment_context`
+    steps = ctx.get("steps", [])
+    if isinstance(steps, list):
+        for s in steps:
+            if isinstance(s, dict) and s.get("step_id") == matched["active_step_id"]:
+                matched["active_step_name"] = s.get("name") or s.get("title") or s.get("description") or matched["active_step_id"]
+                break
+
+    # Inspect dynamic constraints if `constraints` list is present in `experiment_context`
+    constraints = ctx.get("constraints", [])
+    if isinstance(constraints, list) and constraints:
+        for c in constraints:
+            if isinstance(c, dict):
+                m_type = str(c.get("measurement_type") or c.get("metric") or "").lower()
+                if "bubble" in m_type and c.get("max_allowed") is not None:
+                    matched["max_allowed_bubbles"] = int(c["max_allowed"])
+                elif "obstruction" in m_type and c.get("max_allowed") is not None:
+                    matched["critical_obstruction_ratio"] = float(c["max_allowed"])
+
+    # Inspect dynamic references if provided
+    refs = ctx.get("references") or ctx.get("protocol_refs")
+    if isinstance(refs, list) and refs:
+        ref_labels = [
+            str(r.get("ref_id") or r.get("id") or r.get("title") or r)
+            if isinstance(r, dict)
+            else str(r)
+            for r in refs[:4]
+        ]
+        matched["citations"] = ", ".join(ref_labels)
+    elif isinstance(refs, str) and refs.strip():
+        matched["citations"] = refs.strip()
+
+    matched["volume_variance_ul"] = float(ctx.get("volume_variance_ul", 0.0))
+    matched["wait_time_min"] = float(ctx.get("wait_time_min", matched.get("default_wait_time_min", 3.0)))
+    matched["ambient_temp_c"] = float(ctx.get("ambient_temp_c", matched.get("default_temp_c", 21.5)))
+    return matched
+
+
 class PerceptionInvestigationSession:
-    """Stateful session context for one multi-step image inspection."""
+    """Stateful session context for one multi-step image inspection across ANY experiment."""
 
     def __init__(
         self,
@@ -69,10 +269,17 @@ class PerceptionInvestigationSession:
         experiment_id: str = "exp_001",
         protocol_step_id: str = "step_003",
         overlay_dir: Optional[str] = None,
+        experiment_context: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.image_path = str(image_path)
         self.experiment_id = experiment_id
         self.protocol_step_id = protocol_step_id
+        self.experiment_context = experiment_context or {}
+        self.experiment_profile = resolve_experiment_profile(
+            experiment_id=experiment_id,
+            protocol_step_id=protocol_step_id,
+            experiment_context=experiment_context,
+        )
         self.media_id = Path(image_path).stem
         self.observation_id = f"obs_{uuid.uuid4().hex[:8]}"
 
@@ -543,7 +750,12 @@ class BayesianProtocolStrategistAgent:
     role = "bayesian_strategist_agent"
 
     def forecast_and_optimize(self, session: PerceptionInvestigationSession) -> Dict[str, Any]:
-        return session.run_bayesian_yield_and_protocol_optimizer()
+        prof = session.experiment_profile
+        return session.run_bayesian_yield_and_protocol_optimizer(
+            volume_variance_ul=float(prof.get("volume_variance_ul", 0.0)),
+            wait_time_min=float(prof.get("wait_time_min", 3.0)),
+            ambient_temp_c=float(prof.get("ambient_temp_c", 21.5)),
+        )
 
 
 class ChiefScientificChairAgent:
@@ -551,7 +763,7 @@ class ChiefScientificChairAgent:
 
     Coordinates Agents 1-4, reconciles disagreements between `SpatialPerceptionAgent` proposals
     and `AdversarialScepticAgent` rejections into calibrated tolerance bands, synthesizes grounded
-    scientific provenance (citing R&D Systems DY1707 ref_01..ref_05), and enforces mandatory
+    scientific provenance across ANY wet-lab or microfluidic experiment, and enforces mandatory
     scientist sign-off (`status="pending_review"`).
     """
 
@@ -580,6 +792,10 @@ class ChiefScientificChairAgent:
 
         consensus = {
             "architecture": "LABMATE 5-Agent Hierarchical Scientific Council",
+            "experiment_id": session.experiment_id,
+            "protocol_id": session.experiment_profile.get("protocol_id"),
+            "protocol_name": session.experiment_profile.get("protocol_name"),
+            "assay_domain": session.experiment_profile.get("assay_domain"),
             "agents_participated": [
                 self.triage_agent.role,
                 self.spatial_agent.role,
@@ -600,11 +816,13 @@ class ChiefScientificChairAgent:
             agent_role="chief_chair_orchestrator",
             action_or_tool="convene_multi_agent_council_consensus",
             input_summary=(
+                f"protocol={session.experiment_profile.get('protocol_id')}, "
                 f"proposals={spatial_out['raw_proposals']}, "
                 f"sceptic_rejected={audit_out['filtered_artifacts_count']}"
             ),
             finding_summary=(
-                f"Council consensus: {audit_out['verified_count']} verified bubble(s) "
+                f"Council consensus ({session.experiment_profile.get('protocol_name')}): "
+                f"{audit_out['verified_count']} verified bubble(s) "
                 f"(tolerance {audit_out['tolerance_band']}); Bayesian recovery yield "
                 f"{bayesian_out['posterior_recovered_yield_pct']}%"
             ),
@@ -623,9 +841,11 @@ def run_autonomous_perception_agent(
     protocol_step_id: str = "step_003",
     use_gemini_orchestrator: bool = True,
     overlay_dir: Optional[str] = None,
+    experiment_context: Optional[Dict[str, Any]] = None,
 ) -> VisionAnalyseResponse:
     """
-    Executes the complete 5-Agent Hierarchical Scientific Perception Council on `image_path`:
+    Executes the complete 5-Agent Hierarchical Scientific Perception Council on `image_path`
+    for ANY experiment (`experiment_id` + optional `experiment_context`):
       1. `OpticalTriageAgent` (Frame quality & adaptive CLAHE/glare inpainting gate)
       2. `SpatialPerceptionAgent` (Hybrid PyTorch YOLO-seg + Watershed + 2x ROI super-sampled cluster zoom)
       3. `AdversarialScepticAgent` (PyTorch `BubblePatchCNN` + 3D Prolate/Oblate spheroid & border audit)
@@ -638,7 +858,9 @@ def run_autonomous_perception_agent(
         experiment_id=experiment_id,
         protocol_step_id=protocol_step_id,
         overlay_dir=overlay_dir,
+        experiment_context=experiment_context,
     )
+    prof = session.experiment_profile
 
     chair = ChiefScientificChairAgent()
     decision, qc, bayesian_assessment, council_consensus = chair.convene_council(
@@ -688,11 +910,12 @@ def run_autonomous_perception_agent(
             filtered_artifacts_count=0,
             sceptic_critique=f"ABSTAINED: Frame failed optical quality verification ({', '.join(qc['reasons'])}).",
             scientific_interpretation=(
-                "Optical frame quality is insufficient for reliable microfluidic quantification "
-                f"(mean intensity={qc['mean_intensity']}, glare fraction={qc['glare_fraction']}). "
+                f"[{prof['protocol_name']} · {prof['active_step_id']}] Optical frame quality is insufficient "
+                f"for reliable quantification (mean intensity={qc['mean_intensity']}, glare fraction={qc['glare_fraction']}). "
                 "Please adjust lighting/focus and capture a new frame."
             ),
             council_consensus=council_consensus,
+            experiment_profile=prof,
             human_review_prompt="Frame rejected due to low optical quality. Re-capture snapshot or override manually?",
             annotated_overlay_path=overlay_out,
             agent_trace=session.agent_trace,
@@ -718,36 +941,37 @@ def run_autonomous_perception_agent(
         channel_bounds_y=qc.get("channel_bounds_y"),
     )
 
-    # Step 5: Scientific Interpretation (Live Gemini Investigator if API key present, else deterministic grounded synthesis)
+    # Step 5: Dynamic Protocol-Aware Scientific Interpretation (works for ANY experiment!)
     ens = session.ensemble_metrics
     v_int = ens["total_gas_volume_px3_interval"]
     s_int = ens["total_interfacial_area_px2_interval"]
     verified_n = int(ens["count"])
     max_obs = float(ens["max_channel_obstruction_ratio"])
     d32 = float(ens["sauter_mean_diameter_px"])
+    crit_obs = float(prof.get("critical_obstruction_ratio", 0.45))
+    max_allowed = int(prof.get("max_allowed_bubbles", 0))
 
     interpretation = (
+        f"[{prof['protocol_name']} · {prof['active_step_id']}] "
         f"Detected {verified_n} verified bubble(s) (tolerance band {ens['tolerance_band']}) "
         f"with Sauter mean diameter d32={d32:.1f} px, 3D volume interval [{v_int[0]:.0f}, {v_int[1]:.0f}] px^3 "
-        f"(prolate-to-oblate bounds), and max optical path/channel obstruction ratio {max_obs*100:.1f}%."
+        f"(prolate-to-oblate bounds), and max optical/fluidic path obstruction {max_obs*100:.1f}%."
     )
-    if max_obs >= 0.45:
+    if max_obs >= crit_obs:
         interpretation += (
-            " WARNING [ref_01, ref_04, ref_05 — R&D Systems DY1707 CRP ELISA & Abcam Troubleshooting]: "
-            "Bubble obstruction >= 45% scatters the 450 nm colorimetric reading (even with 540/570 nm wavelength correction) "
-            "and risks inflating duplicate replicate CV above the < 15% acceptance target. "
-            "Remedy before reading: centrifuge plate briefly or pop bubbles with a sterile dry pipette tip."
+            f" WARNING [{prof['citations']}]: "
+            f"Bubble obstruction ({max_obs*100:.1f}% >= {crit_obs*100:.0f}% critical threshold) "
+            f"{prof['optical_or_physical_hazard']}. "
+            f"Remedy before proceeding: {prof['remedy_high']}."
         )
-    elif verified_n > 0:
+    elif verified_n > max_allowed:
         interpretation += (
-            " Minor microbubbles detected (<45% optical path obstruction). Per R&D Systems DY1707 (ref_01, ref_04) "
-            "and Abcam (ref_05), pop meniscus bubbles with a dry pipette tip or centrifuge before the 450 nm / 540 nm plate read "
-            "to keep duplicate CV < 15%."
+            f" Minor microbubbles detected ({verified_n} > max_allowed={max_allowed}, <{crit_obs*100:.0f}% critical obstruction). "
+            f"Per {prof['citations']}, trapped gas {prof['optical_or_physical_hazard']}; "
+            f"{prof['remedy_minor']}."
         )
     else:
-        interpretation += (
-            " Optical path is clear of gas bubble artifacts [satisfies ref_04 & ref_05 pre-read constraint for 450 nm CRP ELISA]."
-        )
+        interpretation += f" {prof['clear_note']}"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if use_gemini_orchestrator and api_key and api_key != "your_gemini_api_key_here":
@@ -758,14 +982,14 @@ def run_autonomous_perception_agent(
 
             client = genai.Client(api_key=api_key)
             prompt = (
-                "You are the LABMATE Scientific Perception Investigator for R&D Systems Human CRP DuoSet ELISA (DY1707) "
-                f"step {protocol_step_id} in experiment {experiment_id}. "
-                "Using ONLY the computed biophysical numbers below (never invent numbers) and citing ref_01, ref_04 "
-                "(R&D Systems ELISA Troubleshooting: centrifuge plate before 450 nm read), and ref_05 (Abcam: pop bubbles "
-                "with dry pipette tip to keep duplicate CV < 15%), write a concise 2-sentence scientific assessment "
-                "explaining the bubble count, 3D volume range, 450 nm optical scattering risk, and Sceptic filtering.\n"
-                f"Computed telemetry: verified_count={verified_n}, tolerance_band={ens['tolerance_band']}, "
-                f"d32_px={d32}, volume_interval_px3={v_int}, max_channel_obstruction_ratio={max_obs}, "
+                f"You are the LABMATE Scientific Perception Investigator for protocol '{prof['protocol_name']}' "
+                f"(domain: {prof['assay_domain']}, step: {prof['active_step_id']}, experiment: {experiment_id}). "
+                f"Using ONLY the computed biophysical numbers below (never invent numbers) and citing {prof['citations']}, "
+                f"write a concise 2-sentence scientific assessment explaining the bubble count, 3D volume range, "
+                f"how the bubbles impact this protocol ({prof['optical_or_physical_hazard']}), and the recommended remedy ({prof['remedy_high']}).\n"
+                f"Computed telemetry: verified_count={verified_n}, max_allowed_bubbles={max_allowed}, "
+                f"tolerance_band={ens['tolerance_band']}, d32_px={d32}, volume_interval_px3={v_int}, "
+                f"max_channel_obstruction_ratio={max_obs} (critical={crit_obs}), "
                 f"sceptic_critique='{audit['sceptic_critique']}'."
             )
             if hasattr(client, "interactions"):
@@ -786,16 +1010,17 @@ def run_autonomous_perception_agent(
                 session.log_step(
                     agent_role="chief_chair_orchestrator",
                     action_or_tool="gemini_scientific_synthesis",
-                    input_summary=f"model=gemini-3.8-flash, verified_count={verified_n}",
+                    input_summary=f"model=gemini-3.8-flash, protocol={prof['protocol_id']}, verified_count={verified_n}",
                     finding_summary=interpretation[:140] + ("..." if len(interpretation) > 140 else ""),
-                    decision_rationale="Synthesized grounded explanation strictly from computed biophysical telemetry.",
+                    decision_rationale="Synthesized grounded explanation strictly from computed biophysical telemetry and active experiment context.",
                     duration_ms=(time.perf_counter() - t_gem) * 1000.0,
                 )
         except Exception as exc:
             session.qc_flags.append(f"gemini_synthesis_fallback:{type(exc).__name__}")
 
     human_prompt = (
-        f"Perception Agent logged {verified_n} bubble(s) (max channel obstruction {max_obs*100:.0f}%). "
+        f"[{prof['protocol_name']} · {prof['active_step_id']}] Perception Council logged {verified_n} bubble(s) "
+        f"(max obstruction {max_obs*100:.0f}%, protocol limit <= {max_allowed}). "
         "Do you confirm this observation against protocol acceptance criteria, or request re-capture?"
     )
 
@@ -832,6 +1057,7 @@ def run_autonomous_perception_agent(
         scientific_interpretation=interpretation,
         bayesian_predictive_assessment=bayesian_assessment,
         council_consensus=council_consensus,
+        experiment_profile=prof,
         human_review_prompt=human_prompt,
         annotated_overlay_path=overlay_out,
         agent_trace=session.agent_trace,

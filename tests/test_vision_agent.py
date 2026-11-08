@@ -100,3 +100,47 @@ def test_pytorch_yield_predictor_and_gp_bayesian_optimizer() -> None:
     assert bo["bayesian_intervention_required"] is True
     assert bo["posterior_recovered_yield_pct"] > bo["uncompensated_Predicted_yield_pct"]
     assert bo["requires_human_confirmation"] is True
+
+
+def test_multi_experiment_universal_generalization(tmp_path: Path) -> None:
+    """Verify the 5-Agent Council dynamically adapts across all canonical and custom unseen experiments."""
+    cases = build_held_out_vision_test_set(tmp_path)
+    case_09 = next(c for c in cases if c["case_id"] == "case_09_channel_obstruction_slug")
+
+    # 1. RT-qPCR experiment (exp_002)
+    res_qpcr = analyse_image(
+        case_09["image_path"],
+        experiment_id="exp_002",
+        protocol_step_id="step_04_plate_seal_and_load",
+        use_gemini_orchestrator=False,
+    )
+    assert res_qpcr["experiment_profile"]["protocol_id"] == "rt_qpcr_taqman"
+    assert "RT-qPCR" in res_qpcr["scientific_interpretation"]
+
+    # 2. Organ-on-a-Chip perfusion (exp_003)
+    res_ooc = analyse_image(
+        case_09["image_path"],
+        experiment_id="exp_003",
+        protocol_step_id="step_03_lumen_perfusion",
+        use_gemini_orchestrator=False,
+    )
+    assert res_ooc["experiment_profile"]["protocol_id"] == "organ_on_chip_perfusion"
+    assert "Organ-on-a-Chip" in res_ooc["scientific_interpretation"]
+
+    # 3. Completely unseen custom user experiment with custom constraints & references
+    res_custom = analyse_image(
+        case_09["image_path"],
+        experiment_id="exp_999_custom",
+        protocol_step_id="step_02_electrotransfer",
+        use_gemini_orchestrator=False,
+        experiment_context={
+            "protocol_name": "Western Blot PVDF Membrane Electrotransfer",
+            "assay_domain": "proteomics_electrotransfer",
+            "constraints": [{"measurement_type": "bubble_count", "max_allowed": 0}],
+            "references": ["Bio-Rad Mini-PROTEAN Trans-Blot Manual (ref_wb_01)"],
+            "ambient_temp_c": 4.0,
+        },
+    )
+    assert res_custom["experiment_profile"]["protocol_name"] == "Western Blot PVDF Membrane Electrotransfer"
+    assert "Western Blot PVDF Membrane Electrotransfer" in res_custom["scientific_interpretation"]
+    assert "ref_wb_01" in res_custom["scientific_interpretation"]

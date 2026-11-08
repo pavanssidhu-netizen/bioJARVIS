@@ -34,6 +34,7 @@ import pydantic
 
 from backend.contracts import SharedExperimentContext, VisionAnalyseResponse
 from backend.vision.adapter import analyse_image
+from backend.vision.agent import CANONICAL_EXPERIMENT_PROFILES, resolve_experiment_profile
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 EVALS_DIR = ROOT_DIR / "evals"
@@ -43,33 +44,86 @@ OVERLAYS_DIR.mkdir(parents=True, exist_ok=True)
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(
-    title="LABMATE (bioJARVIS) — Scientific Perception & State Engine",
-    version="1.0.0",
-    description="Real multi-step scientific perception & Sceptic agent for microfluidic/bioreactor quality control.",
+    title="LABMATE (bioJARVIS) — Universal Scientific Perception & State Engine",
+    version="1.1.0",
+    description="Universal multi-experiment 5-Agent Scientific Perception Council, 3D Biophysical Spheroid Solver, PyTorch Yield MLP & GP Bayesian Optimizer.",
 )
 
 app.mount("/overlays", StaticFiles(directory=str(OVERLAYS_DIR)), name="overlays")
 app.mount("/test-images", StaticFiles(directory=str(IMAGES_DIR)), name="test_images")
 
-# Load Person 2 (Ryan) canonical experiment_seed.json (R&D Systems Human CRP DuoSet ELISA DY1707)
+
+def _build_default_experiment_entry(exp_id: str, prof: Dict[str, Any]) -> Dict[str, Any]:
+    """Constructs a complete SharedExperimentContext-compatible dictionary for any canonical or custom experiment."""
+    return {
+        "experiment_id": exp_id,
+        "protocol_id": prof.get("protocol_id", exp_id.lower()),
+        "protocol_name": prof.get("protocol_name", f"Wet-Lab Protocol ({exp_id})"),
+        "assay_domain": prof.get("assay_domain", "general_wetlab_and_microfluidics"),
+        "protocol_version": 1,
+        "active_step_id": prof.get("default_step_id", "step_01"),
+        "steps": [
+            {"step_id": prof.get("default_step_id", "step_01"), "name": prof.get("protocol_name", exp_id), "status": "in_progress"}
+        ],
+        "samples": ["STD01", "STD02", "S01", "S02", "CH_INLET", "CH_LUMEN"],
+        "plate_map": {
+            "A1": "STD01",
+            "A2": "STD01",
+            "B1": "S01",
+            "B2": "S02",
+            "CH1": "CH_INLET",
+            "CH2": "CH_LUMEN",
+        },
+        "constraints": [
+            {
+                "constraint_id": "c_01",
+                "measurement_type": "bubble_count",
+                "max_allowed": int(prof.get("max_allowed_bubbles", 0)),
+                "description": f"Maximum allowed verified gas bubbles (<= {prof.get('max_allowed_bubbles', 0)}) at {prof.get('default_step_id', 'step_01')}",
+            },
+            {
+                "constraint_id": "c_02",
+                "measurement_type": "channel_obstruction_ratio",
+                "max_allowed": float(prof.get("critical_obstruction_ratio", 0.40)),
+                "description": f"Critical optical/fluidic lumen obstruction threshold (< {float(prof.get('critical_obstruction_ratio', 0.40))*100:.0f}%)",
+            },
+        ],
+        "dependencies": [
+            {"id": "d_001", "from": "STD01", "to": "calibration_curve", "relation": "calibrates"},
+            {"id": "d_002", "from": "calibration_curve", "to": "assay_readout_validity", "relation": "governs"},
+            {"id": "d_003", "from": "S01", "to": "sample_quantification_S01", "relation": "quantifies"},
+            {"id": "d_004", "from": "CH_INLET", "to": "downstream_lumen_integrity", "relation": "feeds"},
+            {"id": "d_005", "from": "downstream_lumen_integrity", "to": "assay_readout_validity", "relation": "governs"},
+        ],
+        "references": prof.get("citations", ""),
+        "related_evidence": [],
+    }
+
+
+# Load Person 2 (Ryan) canonical experiment_seed.json if present on disk, and register all multi-domain experiments
 SEED_JSON_PATH = Path(__file__).resolve().parent / "experiment_seed.json"
+EXPERIMENTS_DB: Dict[str, Dict[str, Any]] = {}
+for _eid, _prof in CANONICAL_EXPERIMENT_PROFILES.items():
+    EXPERIMENTS_DB[_eid] = _build_default_experiment_entry(_eid, _prof)
+
 if SEED_JSON_PATH.exists():
     _RYAN_SEED = json.loads(SEED_JSON_PATH.read_text(encoding="utf-8"))
-else:
-    _RYAN_SEED = {"experiment_id": "exp_001", "protocol_id": "crp_elisa_dy1707", "protocol_version": 1, "active_step_id": "step_08", "steps": [], "samples": [], "plate_map": {}, "constraints": [], "dependencies": [], "related_evidence": []}
-
-EXPERIMENTS_DB: Dict[str, Dict[str, Any]] = {
-    "exp_001": _RYAN_SEED,
-}
+    _RYAN_SEED.setdefault("protocol_name", CANONICAL_EXPERIMENT_PROFILES["exp_001"]["protocol_name"])
+    EXPERIMENTS_DB["exp_001"] = _RYAN_SEED
 
 
-def trace_elisa_dependencies(exp: Dict[str, Any], well_id: str = "A1", bubble_count: int = 0) -> Dict[str, Any]:
-    """Traverse Ryan's `experiment_seed.json` plate_map, constraints (c_01, c_05), and dependency graph (d_001..d_064)."""
+def trace_experiment_dependencies(
+    exp: Dict[str, Any],
+    well_id: str = "A1",
+    bubble_count: int = 0,
+    max_obstruction_ratio: float = 0.0,
+) -> Dict[str, Any]:
+    """Universal dependency & constraint graph traversal for ANY experiment (`exp_001`..`exp_N` or custom JSON)."""
     plate_map = exp.get("plate_map", {})
     sample_id = plate_map.get(well_id.upper(), well_id)
     deps = exp.get("dependencies", [])
 
-    # BFS over Ryan's dependency graph starting from sample_id (e.g. STD01 -> standard_curve -> result_S01..result_S16)
+    # BFS over the experiment's dependency graph starting from sample_id / channel_id
     visited: List[str] = []
     triggered_edges: List[Dict[str, Any]] = []
     queue = [sample_id]
@@ -86,19 +140,38 @@ def trace_elisa_dependencies(exp: Dict[str, Any], well_id: str = "A1", bubble_co
                     queue.append(nxt)
 
     violated_constraints = []
-    if bubble_count > 0:
-        for c in exp.get("constraints", []):
-            if c.get("constraint_id") in ("c_01", "c_05"):
+    for c in exp.get("constraints", []):
+        cid = str(c.get("constraint_id", ""))
+        m_type = str(c.get("measurement_type") or c.get("metric") or "").lower()
+        max_allow = c.get("max_allowed")
+        if "bubble" in m_type or cid in ("c_01", "c_05"):
+            limit = int(max_allow) if max_allow is not None else 0
+            if bubble_count > limit:
+                violated_constraints.append(c)
+        elif "obstruction" in m_type:
+            limit_f = float(max_allow) if max_allow is not None else 0.40
+            if max_obstruction_ratio >= limit_f:
                 violated_constraints.append(c)
 
+    cascades = any(
+        k in visited
+        for k in ("standard_curve", "zero_correction", "calibration_curve", "assay_readout_validity", "downstream_lumen_integrity")
+    )
     return {
+        "experiment_id": exp.get("experiment_id", "exp_001"),
+        "protocol_id": exp.get("protocol_id", "custom_protocol"),
         "inspected_well": well_id.upper(),
         "mapped_sample_id": sample_id,
         "violated_constraints": violated_constraints,
         "affected_downstream_nodes": visited,
         "triggered_dependency_edges_count": len(triggered_edges),
-        " cascades_to_entire_plate": "standard_curve" in visited or "zero_correction" in visited,
+        "cascades_to_entire_plate": cascades,
+        " cascades_to_entire_plate": cascades,
     }
+
+
+# Keep backward-compatible function alias
+trace_elisa_dependencies = trace_experiment_dependencies
 
 OBSERVATIONS_DB: Dict[str, Dict[str, Any]] = {}
 EVENTS_LOG: List[Dict[str, Any]] = []
@@ -131,11 +204,45 @@ def get_capabilities() -> Dict[str, Any]:
     }
 
 
+@app.get("/experiments")
+def list_experiments() -> Dict[str, Any]:
+    """List all registered experiments (canonical + any dynamically registered custom experiments)."""
+    return {
+        "count": len(EXPERIMENTS_DB),
+        "experiments": [
+            {
+                "experiment_id": eid,
+                "protocol_id": exp.get("protocol_id"),
+                "protocol_name": exp.get("protocol_name"),
+                "active_step_id": exp.get("active_step_id"),
+                "constraints_count": len(exp.get("constraints", [])),
+            }
+            for eid, exp in EXPERIMENTS_DB.items()
+        ],
+    }
+
+
+@app.post("/experiments")
+def register_custom_experiment(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Register or update ANY custom experiment JSON so the system works for arbitrary wet-lab protocols."""
+    exp_id = str(payload.get("experiment_id") or f"exp_{uuid.uuid4().hex[:6]}").strip()
+    step_id = str(payload.get("active_step_id") or "step_01").strip()
+    prof = resolve_experiment_profile(exp_id, step_id, experiment_context=payload)
+    entry = _build_default_experiment_entry(exp_id, prof)
+    entry.update(payload)
+    entry["experiment_id"] = exp_id
+    EXPERIMENTS_DB[exp_id] = entry
+    return entry
+
+
 @app.get("/experiment/{experiment_id}")
 def get_experiment(experiment_id: str) -> Dict[str, Any]:
     exp = EXPERIMENTS_DB.get(experiment_id)
     if not exp:
-        raise HTTPException(status_code=404, detail=f"Experiment {experiment_id} not found")
+        # Dynamically initialize any requested experiment_id so teammates/judges can query ANY experiment
+        prof = resolve_experiment_profile(experiment_id=experiment_id)
+        exp = _build_default_experiment_entry(experiment_id, prof)
+        EXPERIMENTS_DB[experiment_id] = exp
     return exp
 
 
@@ -144,11 +251,13 @@ async def post_vision_analyse(
     experiment_id: str = Form("exp_001"),
     protocol_step_id: str = Form("step_08"),
     well_id: str = Form("A1"),
+    protocol_name: Optional[str] = Form(None),
+    experiment_context_json: Optional[str] = Form(None),
     case_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
 ) -> Dict[str, Any]:
     """
-    Runs Person 3's Multi-Step Autonomous Perception & Sceptic Agent on either:
+    Runs Person 3's Multi-Step Autonomous Perception & Sceptic Agent across ANY experiment on either:
       - An uploaded image file (`image`), OR
       - A named test case from `evals/vision_test/images/{case_id}.png`.
     Stores the resulting immutable observation in `OBSERVATIONS_DB` with `status: pending_review`.
@@ -169,12 +278,36 @@ async def post_vision_analyse(
     else:
         raise HTTPException(status_code=400, detail="Provide either an uploaded `image` file or a `case_id`.")
 
+    # Resolve or dynamically construct the experiment context for ANY experiment
+    custom_ctx: Dict[str, Any] = {}
+    if experiment_context_json:
+        try:
+            custom_ctx = json.loads(experiment_context_json)
+        except Exception:
+            custom_ctx = {}
+
+    if experiment_id not in EXPERIMENTS_DB:
+        prof_init = resolve_experiment_profile(
+            experiment_id=experiment_id,
+            protocol_step_id=protocol_step_id,
+            experiment_context={"protocol_name": protocol_name, **custom_ctx} if protocol_name else custom_ctx,
+        )
+        EXPERIMENTS_DB[experiment_id] = _build_default_experiment_entry(experiment_id, prof_init)
+
+    exp = EXPERIMENTS_DB[experiment_id]
+    merged_context = dict(exp)
+    if protocol_name and protocol_name.strip():
+        merged_context["protocol_name"] = protocol_name.strip()
+    if custom_ctx:
+        merged_context.update(custom_ctx)
+
     result = analyse_image(
         image_path=target_path,
         experiment_id=experiment_id,
         protocol_step_id=protocol_step_id,
         use_gemini_orchestrator=True,
         overlay_dir=str(OVERLAYS_DIR),
+        experiment_context=merged_context,
     )
 
     obs_id = result["observation_id"]
@@ -182,16 +315,20 @@ async def post_vision_analyse(
         ov_name = Path(result["annotated_overlay_path"]).name
         result["overlay_url"] = f"/overlays/{ov_name}"
 
-    exp = EXPERIMENTS_DB.setdefault(experiment_id, EXPERIMENTS_DB["exp_001"].copy())
-    result["elisa_dependency_impact"] = trace_elisa_dependencies(
-        exp,
+    dep_impact = trace_experiment_dependencies(
+        merged_context,
         well_id=well_id,
         bubble_count=int(result["measurement"]["value"]),
+        max_obstruction_ratio=float(result["measurement"].get("max_channel_obstruction_ratio", 0.0)),
     )
+    result["experiment_dependency_impact"] = dep_impact
+    result["elisa_dependency_impact"] = dep_impact
+
     OBSERVATIONS_DB[obs_id] = result
-    exp["related_evidence"].append({
+    exp.setdefault("related_evidence", []).append({
         "observation_id": obs_id,
         "well_id": well_id,
+        "protocol_step_id": protocol_step_id,
         "bubble_count": result["measurement"]["value"],
         "status": result["status"],
         "max_obstruction": result["measurement"]["max_channel_obstruction_ratio"],
@@ -199,6 +336,7 @@ async def post_vision_analyse(
     EVENTS_LOG.append({
         "event_id": f"evt_{len(EVENTS_LOG)+1:03d}",
         "type": "vision_observation_created",
+        "experiment_id": experiment_id,
         "observation_id": obs_id,
         "status": result["status"],
         "bubble_count": result["measurement"]["value"],
@@ -350,7 +488,20 @@ def get_live_cockpit() -> str:
           Select a held-out microfluidic test case OR upload any custom camera photo/microfluidic image to run the real multi-step perception agent live.
         </p>
         <div class="space-y-3">
-          <label class="block text-xs font-medium text-slate-300">Select Held-Out Benchmark Case:</label>
+          <label class="block text-xs font-medium text-cyan-300">Select Experiment / Wet-Lab Protocol Scenario:</label>
+          <select id="expSelect" onchange="toggleCustomExp()" class="w-full bg-slate-950 border border-cyan-500/40 rounded px-3 py-2 text-xs text-white">
+            <option value="exp_001" data-step="step_08">exp_001 · R&D Systems Human CRP DuoSet ELISA (450 nm Readout)</option>
+            <option value="exp_002" data-step="step_04_plate_seal_and_load">exp_002 · TaqMan Multiplex RT-qPCR Master Mix & Thermal Cycling</option>
+            <option value="exp_003" data-step="step_03_lumen_perfusion">exp_003 · Microfluidic Organ-on-a-Chip Endothelial Perfusion</option>
+            <option value="exp_004" data-step="step_02_chaotic_advection_mix">exp_004 · CRISPR-Cas9 mRNA Lipid Nanoparticle (LNP) Herringbone Mixer</option>
+            <option value="exp_005" data-step="step_05_column_elution">exp_005 · ÄKTA FPLC Affinity & Size-Exclusion Chromatography</option>
+            <option value="custom_exp" data-step="step_custom_01">Custom Experiment · Enter Any Wet-Lab / Microfluidic Protocol...</option>
+          </select>
+          <div id="customExpBox" class="hidden space-y-2 pt-1">
+            <input id="customProtoName" type="text" placeholder="e.g. Western Blot Electrotransfer or Droplet Digital PCR" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-xs text-white" />
+            <input id="customStepId" type="text" value="step_02_transfer" placeholder="Protocol Step ID (e.g. step_02)" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-1.5 text-xs text-white" />
+          </div>
+          <label class="block text-xs font-medium text-slate-300 pt-1">Select Held-Out Benchmark Case:</label>
           <select id="caseSelect" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-white">
             {options_html}
           </select>
@@ -456,12 +607,34 @@ def get_live_cockpit() -> str:
   <script>
     let currentObservationId = null;
 
+    function toggleCustomExp() {{
+      const sel = document.getElementById('expSelect').value;
+      const box = document.getElementById('customExpBox');
+      if (sel === 'custom_exp') {{ box.classList.remove('hidden'); }}
+      else {{ box.classList.add('hidden'); }}
+    }}
+
+    function appendExperimentParams(fd) {{
+      const selEl = document.getElementById('expSelect');
+      const expId = selEl.value;
+      const stepDefault = selEl.options[selEl.selectedIndex].getAttribute('data-step') || 'step_08';
+      if (expId === 'custom_exp') {{
+        const customName = document.getElementById('customProtoName').value.trim() || 'Custom Wet-Lab Protocol';
+        const customStep = document.getElementById('customStepId').value.trim() || 'step_01';
+        fd.append('experiment_id', 'exp_custom_' + customName.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 16));
+        fd.append('protocol_step_id', customStep);
+        fd.append('protocol_name', customName);
+      }} else {{
+        fd.append('experiment_id', expId);
+        fd.append('protocol_step_id', stepDefault);
+      }}
+    }}
+
     async function runCaseAnalysis() {{
       const caseId = document.getElementById('caseSelect').value;
       const fd = new FormData();
       fd.append('case_id', caseId);
-      fd.append('experiment_id', 'exp_001');
-      fd.append('protocol_step_id', 'step_003');
+      appendExperimentParams(fd);
       await executeAnalyse(fd);
     }}
 
@@ -470,8 +643,7 @@ def get_live_cockpit() -> str:
       if (!fileInput.files.length) {{ alert('Select an image file first'); return; }}
       const fd = new FormData();
       fd.append('image', fileInput.files[0]);
-      fd.append('experiment_id', 'exp_001');
-      fd.append('protocol_step_id', 'step_003');
+      appendExperimentParams(fd);
       await executeAnalyse(fd);
     }}
 

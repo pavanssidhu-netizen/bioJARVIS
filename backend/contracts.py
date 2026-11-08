@@ -146,6 +146,7 @@ class VisionAnalyseResponse(pydantic.BaseModel):
     scientific_interpretation: str = ""
     bayesian_predictive_assessment: Optional[Dict[str, Any]] = None
     council_consensus: Optional[Dict[str, Any]] = None
+    experiment_profile: Optional[Dict[str, Any]] = None
     human_review_prompt: str = ""
     annotated_overlay_path: Optional[str] = None
     agent_trace: List[AgentStepTrace] = pydantic.Field(default_factory=list)

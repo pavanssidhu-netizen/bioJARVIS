@@ -40,12 +40,13 @@ def analyse_image(
     protocol_step_id: str = "step_08",
     use_gemini_orchestrator: bool = True,
     overlay_dir: Optional[str] = None,
+    experiment_context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Primary entry point for LABMATE (`POST /vision/analyse`).
-    Runs the full multi-step Autonomous Perception & Sceptic Agent and returns a
-    JSON-serializable dict conforming to `VisionAnalyseResponse` and the Shared
-    Observation Contract.
+    Runs the full multi-step Autonomous Perception & Sceptic Agent across ANY experiment
+    (`experiment_id` + optional `experiment_context`) and returns a JSON-serializable dict
+    conforming to `VisionAnalyseResponse` and the Shared Observation Contract.
     """
     resp: VisionAnalyseResponse = run_autonomous_perception_agent(
         image_path=image_path,
@@ -53,6 +54,7 @@ def analyse_image(
         protocol_step_id=protocol_step_id,
         use_gemini_orchestrator=use_gemini_orchestrator,
         overlay_dir=overlay_dir,
+        experiment_context=experiment_context,
     )
     return resp.model_dump()
 
@@ -62,14 +64,15 @@ def analyse_live_camera_frame(
     experiment_id: str = "exp_001",
     protocol_step_id: str = "step_08",
     use_gemini_orchestrator: bool = True,
+    experiment_context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Direct helper for Pavan's Live Camera Stream (`<video>` / `<canvas>` / WebRTC / Gemini Live).
     Accepts either:
       - raw image `bytes` (JPEG/PNG), OR
       - a Base64 string / Data URL (`"data:image/jpeg;base64,..."`)
-    Runs the 6-step Agent Brain and returns the full observation dict PLUS `overlay_base64`
-    so Pavan's live camera UI can render the annotated bounding boxes immediately without file I/O.
+    Runs the 6-step Agent Brain across ANY experiment and returns the full observation dict PLUS
+    `overlay_base64` so Pavan's live camera UI can render the annotated bounding boxes immediately.
     """
     if isinstance(frame_data, str):
         b64_str = frame_data.split(",", 1)[1] if "," in frame_data else frame_data
@@ -88,6 +91,7 @@ def analyse_live_camera_frame(
         protocol_step_id=protocol_step_id,
         use_gemini_orchestrator=use_gemini_orchestrator,
         overlay_dir=str(tmp_dir),
+        experiment_context=experiment_context,
     )
     ov_path = result.get("annotated_overlay_path")
     if ov_path and Path(ov_path).exists():
