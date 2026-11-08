@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -471,10 +472,9 @@ class LiveSessionStateBar extends StatefulWidget {
 class _LiveSessionStateBarState extends State<LiveSessionStateBar> {
   String _stepId = 'step_05';
   String _channelId = 'CH01';
-  List<Map<String, dynamic>> _tracking = [
-    {'label': 'bubbles', 'channel_id': 'CH01', 'added_by': 'voice'},
-  ];
+  List<Map<String, dynamic>> _tracking = []; // real session state only (no demo defaults)
   final _trackCtl = TextEditingController();
+  Timer? _sync;
   bool _busy = false;
 
   static const _channels = [
@@ -486,10 +486,15 @@ class _LiveSessionStateBarState extends State<LiveSessionStateBar> {
   void initState() {
     super.initState();
     _syncFromLatest();
+    // Voice commands (set step/channel, track/untrack) change server state; reflect them here.
+    _sync = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted && widget.c.recordingActive && !_busy) _syncFromLatest();
+    });
   }
 
   @override
   void dispose() {
+    _sync?.cancel();
     _trackCtl.dispose();
     super.dispose();
   }
