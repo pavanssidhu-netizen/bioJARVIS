@@ -25,7 +25,7 @@ class LabmateApp extends StatelessWidget {
   final AppController c;
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'LABMATE',
+        title: 'Larvis',
         debugShowCheckedModeBanner: false,
         theme: labmateTheme(),
         home: Shell(c),

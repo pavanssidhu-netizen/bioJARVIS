@@ -1,4 +1,4 @@
-# LABMATE V2 API — for the UI build
+# Larvis V2 API — for the UI build
 
 Base: same origin, `/api/...` (local: `http://127.0.0.1:8000`, interactive docs at `/api/docs`).
 Send header `x-labmate-session: <per-page-load id>` on every call (already done by `LabmateApi`).

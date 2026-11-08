@@ -39,7 +39,7 @@ from .vision import VisionNotConfigured, decode_image, get_specialist_provider
 
 log = logging.getLogger("labmate")  # never log payloads, transcripts or keys
 
-app = FastAPI(title="LABMATE API", version="0.2.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
+app = FastAPI(title="Larvis API", version="0.2.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
 api = APIRouter(prefix="/api")
 
 ERR = {409: {"model": ErrorBody}, 404: {"model": ErrorBody}, 422: {"model": ErrorBody}}

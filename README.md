@@ -1,8 +1,8 @@
-# LABMATE (`bioJARVIS`) — Hands-Free Multimodal Scientific Copilot & Specialist Perception Agent
+# Larvis (`bioJARVIS`) — Hands-Free Multimodal Scientific Copilot & Specialist Perception Agent
 
 **UCL Agentverse 2026 · Biotech Track · Team bioJARVIS**
 
-> *"LABMATE doesn't simply interpret experiments through a foundation model. It combines live multimodal interaction, specialised scientific perception, persistent experimental state and verifiable reasoning to support reproducible laboratory work."*
+> *"Larvis doesn't simply interpret experiments through a foundation model. It combines live multimodal interaction, specialised scientific perception, persistent experimental state and verifiable reasoning to support reproducible laboratory work."*
 
 ---
 
@@ -10,7 +10,7 @@
 
 - **Named User**: Wet-lab scientist / assay technician running microfluidic immunoassays or multi-well diagnostic protocols with gloved hands.
 - **Specific Bottleneck**: Microbubbles and incomplete channel filling in microfluidic chips and diagnostic wells obstruct flow or distort optical/fluorescent readouts ([Analytical Chemistry 2022](https://pubmed.ncbi.nlm.nih.gov/35438971/); [Microbubble Immunoassay Quantification 2026](https://pubmed.ncbi.nlm.nih.gov/)). Meanwhile, general-purpose Vision-Language Models (VLMs) struggle to count translucent overlapping bubbles, hallucinate spatial coordinates, or get fooled by channel-wall meniscus glare and camera-border clipping.
-- **Why LABMATE Is Not an LLM Wrapper**:
+- **Why Larvis Is Not an LLM Wrapper**:
   1. **Multi-Step Autonomous Perception & Sceptic Agent (`backend/vision/`)**: Instead of asking Gemini to "guess" bubble counts from a raw photo, our agent executes a 6-step tool chain (`Frame Quality & Calibration Gate` → `Adaptive CLAHE + Specular Glare Inpainting` → `Hybrid PyTorch YOLOv8-seg + Marker-Controlled Watershed` → `Autonomous 2x Super-Sampled ROI Cluster Zoom` → `Perception Sceptic Physics + PyTorch Patch CNN Audit` → `PyTorch Biochemical Yield Forecast + Gaussian Process Bayesian Active Correction`).
   2. **3D Biophysical Spheroid Geometry (`backend/vision/geometry.py`)**: Fits Mikaelian split-ellipses ($a, b_1, b_2$) to every segmented mask and computes **Prolate vs. Oblate 3D Gas Volume intervals** $[V_{\text{prolate}}, V_{\text{oblate}}]$, **Sauter Mean Diameter ($d_{32}$)**, and **Optical Path / Channel Obstruction Ratio ($\Phi_{\text{obs}} = d_{\text{eq}} / W_{\text{channel}}$)**.
   3. **In-House Trained PyTorch Models + Gaussian Process Bayesian Optimizer (`backend/vision/patch_classifier.py`, `backend/vision/predictive_models.py`)**:
@@ -68,7 +68,7 @@ py -3 -m venv .venv
 *(Optional)* Copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable live Gemini (`gemini-3.8-flash`) scientific synthesis alongside the specialist perception agent.
 
 ### 1. Run the 3-Way Scientific Benchmark (`evals/evaluate.py`)
-Generates the 18 held-out test cases (`evals/vision_test/`), runs **(A) Single-Shot Baseline**, **(B) Specialist CV Single-Pass**, and **(C) LABMATE Multi-Step Perception + Sceptic Agent**, saves annotated visual overlays to `evals/vision_test/overlays/`, and writes [`evals/REPORT.md`](evals/REPORT.md):
+Generates the 18 held-out test cases (`evals/vision_test/`), runs **(A) Single-Shot Baseline**, **(B) Specialist CV Single-Pass**, and **(C) Larvis Multi-Step Perception + Sceptic Agent**, saves annotated visual overlays to `evals/vision_test/overlays/`, and writes [`evals/REPORT.md`](evals/REPORT.md):
 ```powershell
 .\.venv\Scripts\python.exe evals/evaluate.py
 ```
@@ -93,11 +93,11 @@ Then open **`http://127.0.0.1:8000`** in your browser to test any held-out case 
 
 ## 4. Datasets, References & Licences (Biotech Track Slide 12 Compliance)
 
-| Resource | Purpose in LABMATE | Licence & Attribution |
+| Resource | Purpose in Larvis | Licence & Attribution |
 | :--- | :--- | :--- |
 | **kLarity** ([`maxsiska/kLarity`](https://github.com/maxsiska/kLarity), Zenodo `10.5281/zenodo.19582132`) | Mikaelian split-ellipse (`a`, `b1`, `b2`), 3D Prolate/Oblate spheroid volume & surface area equations, and border-contact filtering rule (`border_contact_px / d_eq > 1.0`). | **AGPL-3.0 / CC-BY 4.0** (Willer, Siska et al., DTU, 2026) |
 | **BubbleID** ([`cldunlap73/BubbleID`](https://github.com/cldunlap73/BubbleID), OSF `3nwyx`) | Bubble interface dynamics & tracking benchmark reference. | **MIT License** (Dunlap et al., NED³ Lab, J. Appl. Phys.) |
-| **LABMATE Held-Out Optical Benchmark Suite (`evals/vision_test/`)** | 18 controlled microfluidic channel test images with exact pixel-level ground truth (clean negatives, wall-glare artifacts, border-clipped menisci, touching clusters, channel-obstructing slugs, and blank camera faults). | **Explicitly Labelled Synthetic Benchmark Data** per Agentverse Slide 12. Zero patient data used. |
+| **Larvis Held-Out Optical Benchmark Suite (`evals/vision_test/`)** | 18 controlled microfluidic channel test images with exact pixel-level ground truth (clean negatives, wall-glare artifacts, border-clipped menisci, touching clusters, channel-obstructing slugs, and blank camera faults). | **Explicitly Labelled Synthetic Benchmark Data** per Agentverse Slide 12. Zero patient data used. |
 
 ---
 

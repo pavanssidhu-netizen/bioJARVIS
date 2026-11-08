@@ -215,7 +215,7 @@ class AppController extends ChangeNotifier {
   void selectProtocolStep(String id) {
     highlightedStep = id;
     ui('protocol_step_select', detail: {'step': id});
-    if (live.ready) live.addContext('[LABMATE UI] The researcher selected protocol step $id as the current step.');
+    if (live.ready) live.addContext('[Larvis UI] The researcher selected protocol step $id as the current step.');
     _notify();
   }
 
@@ -655,7 +655,7 @@ class AppController extends ChangeNotifier {
       }
       // Give the live conversation the result so "what did you see in that snapshot?" is grounded.
       if (live.ready) {
-        live.addContext('[LABMATE snapshot analysis ${s.id} by ${r['model']}; ${saved ? 'SAVED' : 'NOT saved'}] '
+        live.addContext('[Larvis snapshot analysis ${s.id} by ${r['model']}; ${saved ? 'SAVED' : 'NOT saved'}] '
             'Question: $question. Result: ${jsonEncode(r['structured'])}');
       }
     } catch (e) {

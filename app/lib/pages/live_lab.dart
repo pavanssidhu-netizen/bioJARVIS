@@ -159,7 +159,7 @@ class _Landing extends StatelessWidget {
         const SizedBox(height: 18),
         _point(Icons.visibility_outlined, 'Camera frames are analysed into objects, actions and action counts, and logged to the experiment database.'),
         _point(Icons.mic_none, 'Speak notes ("note that tube A turned blue") and they are saved as observations.'),
-        _point(Icons.manage_search, 'Ask the log ("how many drops did I add 30 seconds ago?") and LABMATE answers from the database.'),
+        _point(Icons.manage_search, 'Ask the log ("how many drops did I add 30 seconds ago?") and Larvis answers from the database.'),
         _point(Icons.lock_outline, 'Nothing starts until you press the button. Stop ends camera, mic, Gemini and recording at once. Raw video/audio is never stored.'),
         const SizedBox(height: 14),
         SizedBox(
@@ -364,7 +364,7 @@ class StatusHeader extends StatelessWidget implements PreferredSizeWidget {
               child: const Icon(Icons.biotech, size: 16, color: LM.teal),
             ),
             const SizedBox(width: 10),
-            const Text('LABMATE', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 3, fontSize: 16)),
+            const Text('LARVIS', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 3, fontSize: 16)),
             const Spacer(),
             Text(c.experimentId, style: const TextStyle(fontFamily: LM.mono, fontSize: 11, color: LM.muted)),
           ]),
@@ -542,7 +542,7 @@ class _TranscriptRow extends StatelessWidget {
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(
           width: 62,
-          child: Text(me ? 'YOU' : 'LABMATE',
+          child: Text(me ? 'YOU' : 'LARVIS',
               style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: me ? LM.text : LM.teal, letterSpacing: 1)),
         ),
         Expanded(child: Text(l.text, style: TextStyle(color: l.final_ ? LM.text : LM.muted))),

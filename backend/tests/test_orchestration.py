@@ -116,7 +116,7 @@ def test_steering_and_live_config_composition(client):
     from backend.app.services.store import Store
     cfg, ref = live_config(Store(get_db()), EXP)
     si = cfg["system_instruction"]
-    assert si.startswith("You are LABMATE")
+    assert si.startswith("You are Larvis")
     assert "query_lab_log" in si and "scientific-integrity" in si and "lab-safety" in si
     assert "Approved protocol v1" in si and "S2:" in si
     names = {d["name"] for d in cfg["tools"][0]["function_declarations"]}
