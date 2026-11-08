@@ -287,7 +287,6 @@ class _LiveFeedViewState extends State<_LiveFeedView> {
     final c = widget.c;
     final p = c.latestPerception;
     final actions = (p?['actions'] as List?) ?? const [];
-    final objects = (p?['objects'] as List?) ?? const [];
     return ListView(padding: const EdgeInsets.fromLTRB(12, 4, 12, 24), children: [
       // ---- status + what Larvis sees: ABOVE the camera (no text over the video) ----
       Wrap(spacing: 6, runSpacing: 6, children: [
@@ -326,18 +325,38 @@ class _LiveFeedViewState extends State<_LiveFeedView> {
           child: Stack(fit: StackFit.expand, children: [
             if (c.cameraOpen) const HtmlElementView(viewType: cameraViewType) else Container(color: Colors.black),
             if (c.liveFeedStarting) const Center(child: CircularProgressIndicator()),
-            if (c.cameraOpen && p != null)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: CustomPaint(painter: TagPainter(objects.cast<Map>(), (p['specialist'] as Map?), c.media.videoAspect())),
-                ),
-              ),
           ]),
         ),
       ),
-      const SizedBox(height: 4),
-      const Text('Tags lag the live video by ~5 s (Gemini call time). Teal = object · amber = tracked · red = specialist bubble.',
-          style: TextStyle(color: LM.muted, fontSize: 11)),
+      const SizedBox(height: 8),
+      // ---- live activity stream (what Larvis picked up, newest first) ----
+      Container(
+        height: 150,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(color: LM.bg, borderRadius: BorderRadius.circular(10), border: Border.all(color: LM.line)),
+        child: c.activity.isEmpty
+            ? const Center(child: Text('Live activity appears here every ~3 s (actions, objects entering/leaving frame).',
+                textAlign: TextAlign.center, style: TextStyle(color: LM.muted, fontSize: 12)))
+            : ListView.builder(
+                itemCount: c.activity.length,
+                itemBuilder: (_, i) {
+                  final (t, text, kind) = c.activity[i];
+                  final color = switch (kind) { 'action' => LM.warn, 'flag' => LM.rec, 'leave' => LM.muted, _ => LM.teal };
+                  final icon = switch (kind) {
+                    'action' => Icons.back_hand_outlined, 'flag' => Icons.warning_amber, 'leave' => Icons.logout, _ => Icons.login };
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: Row(children: [
+                      Text(hhmmss(t), style: const TextStyle(fontFamily: LM.mono, fontSize: 10.5, color: LM.muted)),
+                      const SizedBox(width: 8),
+                      Icon(icon, size: 14, color: color),
+                      const SizedBox(width: 6),
+                      Expanded(child: Text(text, style: TextStyle(fontSize: 12.5, color: i == 0 ? LM.text : LM.muted))),
+                    ]),
+                  );
+                },
+              ),
+      ),
       const SizedBox(height: 10),
       SizedBox(
         height: 52,

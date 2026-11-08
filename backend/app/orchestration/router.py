@@ -171,10 +171,20 @@ async def route_utterance(store: Store, experiment_id: str, session_id: Optional
             args.setdefault("question", text)
         if tool == "investigate_discrepancy":
             args.setdefault("question", text)
+        # Deterministic rule: an utterance starting with "note" is a direct instruction to log it verbatim as a note.
+        import re as _re
+        is_note = bool(_re.match(r"^\s*(please\s+)?(take\s+a\s+)?notes?\b[\s,:-]*", text, _re.I))
+        if is_note:
+            cat, tool, amb = "observation", "propose_observation", False
+            args = {k: v for k, v in args.items() if k in ("channel_id", "measurement_type", "measurement_value",
+                                                         "measurement_unit", "protocol_step", "subject", "value")}
+            args.update({"observation_type": "note", "summary": text[:600]})
+            if ids.get("channel_id") and not args.get("channel_id"):
+                args["channel_id"] = ids["channel_id"]
         if tool == "set_active_step" and not args.get("step_id"):
             tool, args = "propose_observation", {"observation_type": "protocol_step_done", "summary": text[:300]}
             amb = True
-        sp.set(category=cat, tool=tool, ambiguous=amb, confidence=str(d.get("confidence")))
+        sp.set(category=cat, tool=tool, ambiguous=amb, confidence=str(d.get("confidence")), note_rule=is_note)
     out: dict[str, Any] = {"text": text, "source": source, "category": cat, "tool": tool, "args": args, "ambiguous": amb,
                            "ambiguity_reason": d.get("ambiguity_reason"), "confidence": d.get("confidence"),
                            "router_model": model, "stored": False}

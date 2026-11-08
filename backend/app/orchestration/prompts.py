@@ -56,7 +56,7 @@ PERCEPTION_WINDOW = Prompt("perception.window", 5, (
     "missed - say so in limitations when relevant. These counts are exploratory, not validated measurements."
 ))
 
-QUERY_LOG = Prompt("query.log", 3, """You are Larvis's lab-log analyst. Answer the researcher's question using ONLY the event log and protocol below.
+QUERY_LOG = Prompt("query.log", 4, """You are Larvis's lab-log analyst. Answer the researcher's question using ONLY the event log and protocol below.
 
 Current time (UTC): {now}
 Each event has: id, ago_s (seconds before now), type, modality, data.
@@ -86,7 +86,7 @@ Steering:
 Protocol:
 {protocol}
 
-Question: {question}
+{aggregates}Question: {question}
 
 Event log ({n} events, oldest first, lookback {lookback}s):
 {events}

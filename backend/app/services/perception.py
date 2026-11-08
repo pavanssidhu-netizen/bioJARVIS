@@ -92,9 +92,14 @@ async def process_window(store: Store, body: PerceptionWindowIn) -> PerceptionRe
         o.tracked = any(t in o.label.lower() or o.label.lower() in t for t in sess["tracking"])
         if o.box_2d is not None and (len(o.box_2d) != 4 or not all(0 <= v <= 1000 for v in o.box_2d)):
             o.box_2d = None  # deterministic validation of model coordinates
-    specialist = await run_specialist(store, "frames", frames=frames, interval_s=body.frame_interval_s,
-                                      experiment_id=body.experiment_id,
-                                      step_id=sess["active_step_id"] or "step_05")
+    # Domain gate: the specialist measures bubbles in channels; running it on hands/laptops yields false blobs.
+    # Only call it when Gemini sees its domain in frame or the researcher is tracking bubbles.
+    domain_words = ("channel", "chip", "microfluidic", "tube", "tubing", "straw", "capillary", "bubble", "inlet", "well")
+    in_domain = any(w in o.label.lower() for o in objects for w in domain_words) or \
+        any("bubble" in t for t in sess["tracking"])
+    specialist = (await run_specialist(store, "frames", frames=frames, interval_s=body.frame_interval_s,
+                                       experiment_id=body.experiment_id,
+                                       step_id=sess["active_step_id"] or "step_05") if in_domain else None)
     payload = PerceptionPayload(
         window_start=body.window_start, window_end=body.window_end, frame_count=len(frames),
         scene_summary=str(st.get("scene_summary", ""))[:500], objects=objects,
@@ -106,7 +111,8 @@ async def process_window(store: Store, body: PerceptionWindowIn) -> PerceptionRe
     )
 
     with telemetry.span("perception.persist", "guardrail", db=store.db, actions=len(payload.actions),
-                        objects=len(payload.objects), action_count_total=sum(a.count for a in payload.actions)) as gp:
+                        objects=len(payload.objects), action_count_total=sum(a.count for a in payload.actions),
+                        specialist_gated_in=in_domain) as gp:
         if not body.session_id:
             gp.set(outcome="recording_inactive")
             return PerceptionResult(perception=payload, saved=False, skipped_reason="recording_inactive")

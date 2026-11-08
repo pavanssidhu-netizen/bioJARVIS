@@ -64,24 +64,67 @@ def load_log(store: Store, experiment_id: str, lookback_seconds: int, now: datet
     return [_compact(r, now) for r in rows]
 
 
-async def answer_question(store: Store, q: LogQueryIn) -> LogQueryResult:
+WINDOWS_S = (30, 60, 120, 300, 1800)
+
+
+def aggregates(events: list[dict]) -> dict:
+    """Deterministic counts the LLM should not compute itself: action totals per time window (rejected excluded),
+    notes by type, bubble measurements by channel."""
+    acts: dict[str, dict[str, int]] = {}
+    notes: dict[str, int] = {}
+    bubbles: dict[str, int] = {}
+    for e in events:
+        if e.get("review_status") == "rejected":
+            continue
+        d = e["data"]
+        if e["type"] == "perception":
+            for a in d.get("actions") or []:
+                label = str(a.get("action", "")).lower().strip()
+                if not label:
+                    continue
+                row = acts.setdefault(label, {f"last_{w}s": 0 for w in WINDOWS_S})
+                for w in WINDOWS_S:
+                    if e["ago_s"] <= w:
+                        row[f"last_{w}s"] += int(a.get("count") or 0)
+            sp = d.get("specialist") or {}
+            if isinstance(sp.get("count"), int):
+                bubbles["specialist_latest"] = sp["count"]
+        elif e["type"] == "observation_proposal":
+            t = str(d.get("observation_type") or "note")
+            notes[t] = notes.get(t, 0) + 1
+            if d.get("measurement_type") == "bubble_count" and d.get("channel_id"):
+                ch = str(d["channel_id"])
+                bubbles[ch] = bubbles.get(ch, 0) + int(float(d.get("measurement_value") or 0))
+    return {"action_counts_by_window": acts, "notes_by_type": notes, "notes_total": sum(notes.values()),
+            "bubbles_noted_by_channel": bubbles,
+            "note": "computed by code from non-rejected events; windows are measured from now using frame time"}
+
+
+async def answer_question(store: Store, q: LogQueryIn, now: datetime | None = None) -> LogQueryResult:
+    """`now` is overridable only for reproducible evals (fixed fixture clock)."""
     s = get_settings()
     if not s.gemini_api_key:
         raise ApiError(503, "gemini_not_configured", "GEMINI_API_KEY is not set")
     store.get_experiment(q.experiment_id)
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
     events = load_log(store, q.experiment_id, q.lookback_seconds, now)
     proto = store.get_protocol(q.experiment_id)
     steering, steer_hash = compose("query")
     model = model_for("query")
+    import os
+    use_agg = os.getenv("LARVIS_QUERY_AGGREGATES", "1") != "0"
+    agg_txt = ("Deterministic aggregates (computed by code - use these for any count; cite the events they came from):\n"
+               + json.dumps(aggregates(events), separators=(",", ":")) + "\n\n") if use_agg else ""
     prompt = QUERY_LOG.render(
+        aggregates=agg_txt,
         now=now.isoformat(timespec="seconds"), question=q.question, n=len(events), lookback=q.lookback_seconds,
         steering=steering or "(none)",
         protocol=proto.content.model_dump_json(exclude_none=True) if proto else "(no protocol loaded)",
         events=json.dumps(events, separators=(",", ":")))
     with telemetry.span("model.query.answer", "generation", db=store.db, model=model,
                         prompt=f"{QUERY_LOG.ref}+steer:{steer_hash}", events_considered=len(events),
-                        prompt_chars=len(prompt), protocol_version=proto.version if proto else None) as sp:
+                        prompt_chars=len(prompt), protocol_version=proto.version if proto else None,
+                        aggregates=use_agg) as sp:
         resp = await _generate(genai.Client(api_key=s.gemini_api_key), model=model, contents=prompt,
             config=types.GenerateContentConfig(response_mime_type="application/json", response_json_schema=SCHEMA))
         sp.record_usage(resp)

@@ -116,7 +116,9 @@ class AppController extends ChangeNotifier {
   Map<String, dynamic>? latestPerception;
   bool latestPerceptionSaved = false;
   int perceptionWindows = 0, perceptionSaved = 0;
-  bool _perceptionInFlight = false;
+  int _perceptionInFlight = 0; // up to 2 windows in flight -> an update every ~3 s despite ~6 s model latency
+  final List<(DateTime, String, String)> activity = []; // (time, text, kind: action|enter|leave|flag)
+  Set<String> _lastLabels = {};
   final List<(DateTime, String)> _frameBuf = [];
   Timer? _perceptionTimer;
   Completer<bool>? _setupWaiter;
@@ -397,13 +399,15 @@ class AppController extends ChangeNotifier {
   void _startPerception() {
     _perceptionTimer?.cancel();
     _frameBuf.clear();
+    activity.clear();
+    _lastLabels = {};
     _perceptionTimer = Timer.periodic(perceptionFrameInterval, (_) {
       if (!cameraOpen) return;
       final f = media.captureFrame(512, 0.6);
       if (f == null) return;
       _frameBuf.add((DateTime.now().toUtc(), f));
       if (_frameBuf.length > 12) _frameBuf.removeAt(0); // bound latency if the model is slow
-      if (_frameBuf.length >= perceptionWindowFrames && !_perceptionInFlight) _sendPerceptionWindow();
+      if (_frameBuf.length >= perceptionWindowFrames && _perceptionInFlight < 2) _sendPerceptionWindow();
     });
   }
 
@@ -416,7 +420,7 @@ class AppController extends ChangeNotifier {
   Future<void> _sendPerceptionWindow() async {
     final frames = List.of(_frameBuf);
     _frameBuf.clear();
-    _perceptionInFlight = true;
+    _perceptionInFlight++;
     final key = newKey('pw');
     try {
       final r = await api.perceptionWindow({
@@ -430,6 +434,7 @@ class AppController extends ChangeNotifier {
       });
       perceptionWindows++;
       latestPerception = (r['perception'] as Map).cast<String, dynamic>();
+      _pushActivity(latestPerception!);
       latestPerceptionSaved = r['saved'] == true;
       if (latestPerceptionSaved) {
         perceptionSaved++;
@@ -439,8 +444,33 @@ class AppController extends ChangeNotifier {
     } catch (e) {
       _error('Perception window failed: $e');
     }
-    _perceptionInFlight = false;
+    _perceptionInFlight--;
     _notify();
+  }
+
+  // ================= live activity ticker =================
+  /// Turn each perception window into short human-readable lines: actions, objects entering/leaving frame.
+  void _pushActivity(Map<String, dynamic> p) {
+    final now = DateTime.now();
+    final lines = <(DateTime, String, String)>[];
+    for (final a in ((p['actions'] as List?) ?? const []).cast<Map>()) {
+      lines.add((now, '${a['action']}${a['object'] != null && !'${a['action']}'.contains('${a['object']}') ? ' · ${a['object']}' : ''} ×${a['count']}'
+          '${a['certainty'] == 'uncertain' ? ' (uncertain)' : ''}', 'action'));
+    }
+    final labels = {for (final o in ((p['objects'] as List?) ?? const []).cast<Map>()) '${o['label']}'.toLowerCase()};
+    for (final l in labels.difference(_lastLabels)) {
+      lines.add((now, '$l entered frame', 'enter'));
+    }
+    for (final l in _lastLabels.difference(labels)) {
+      lines.add((now, '$l left frame', 'leave'));
+    }
+    _lastLabels = labels;
+    final sp = p['specialist'] as Map?;
+    if (sp != null && sp['count'] != null && (sp['count'] as num) > 0) {
+      lines.add((now, 'specialist: ${sp['count']} bubble(s) measured', 'flag'));
+    }
+    activity.insertAll(0, lines);
+    if (activity.length > 40) activity.removeRange(40, activity.length);
   }
 
   // ================= voice output gate =================

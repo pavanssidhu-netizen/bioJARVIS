@@ -128,7 +128,7 @@ async def execute(name: str, ctx: SkillContext, args: dict[str, Any]) -> dict[st
 # =====================================================================================================
 # Built-in skills
 # =====================================================================================================
-OBS_TYPES = ["colour_change", "precipitate", "temperature_note", "timing_note", "volume_note", "equipment_note",
+OBS_TYPES = ["note", "colour_change", "precipitate", "temperature_note", "timing_note", "volume_note", "equipment_note",
              "sample_label", "visual_description", "protocol_step_done", "deviation", "general_note"]
 
 

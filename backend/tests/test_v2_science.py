@@ -154,3 +154,30 @@ def test_investigate_endpoint(client):
                                               "step_id": "step_05", "measurement_type": "duplicate_cv_percent",
                                               "measurement_value": 22.4})
     assert r.status_code == 200 and isinstance(r.json(), dict) and r.json()
+
+
+class _HandOnly:
+    name = "gemini"
+
+    async def analyse_frames(self, frames, interval_s, hint, protocol_hint=""):
+        return VisionAnalysis("gemini", "fake-flash", "hand", {
+            "scene_summary": "A hand moves", "objects": [{"label": "hand", "certainty": "certain"},
+                                                        {"label": "bracelet", "certainty": "likely"}],
+            "actions": [], "limitations": []})
+
+
+def test_specialist_not_run_on_out_of_domain_scene(client, rec, monkeypatch):
+    """Regression: watershed found 'bubbles' in skin/laptop texture. No channel/tube in view -> no specialist."""
+    import backend.app.services.perception as perc
+    monkeypatch.setattr(perc, "get_vision_provider", lambda: _HandOnly())
+    called = []
+
+    async def spy(*a, **k):
+        called.append(1)
+        return {"count": 3}
+    monkeypatch.setattr(perc, "run_specialist", spy)
+    r = client.post("/api/perception/window", json={
+        "frames_base64": [base64.b64encode(b"\xff\xd8\xff\xe0" + b"\0" * 64).decode()] * 2,
+        "window_start": "2026-11-08T10:00:00Z", "window_end": "2026-11-08T10:00:01Z", "experiment_id": EXP,
+        "session_id": rec["id"], "idempotency_key": f"pw-{uuid.uuid4().hex}"}).json()
+    assert called == [] and r["perception"].get("specialist") is None and r["reconciliation"] is None

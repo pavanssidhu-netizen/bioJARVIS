@@ -143,7 +143,7 @@ class _FakeGemini:
     async def analyse_frames(self, frames, interval_s, hint, protocol_hint=""):
         assert "S2=dispense drop 3 drops" in protocol_hint  # protocol context reaches the vision prompt
         return VisionAnalysis("gemini", "fake-flash", "drops", {
-            "scene_summary": "drops", "objects": [{"label": "dropper", "certainty": "certain"}],
+            "scene_summary": "drops", "objects": [{"label": "tube", "certainty": "certain"}],
             "actions": [{"action": "dispense drop", "count": 2, "certainty": "likely", "protocol_step": "S2"}],
             "limitations": []}, usage={"input": 1000, "output": 50}, prompt_ref="perception.window@v2")
 
