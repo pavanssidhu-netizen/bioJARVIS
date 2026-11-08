@@ -16,6 +16,7 @@ import statistics
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+from pydantic import BaseModel
 
 from fastapi import APIRouter, Depends, FastAPI, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -532,6 +533,73 @@ async def tools_call(body: ToolCallIn, st: Store = Depends(store)) -> dict:
     """Relay target for Gemini functionCalls. Result is always structured; never raises for tool-level failures."""
     return await execute_tool(st, body)
 
+
+
+
+class VoiceSynthesizeIn(BaseModel):
+    text: str
+    voice: Optional[str] = "Kore"
+    style: Optional[str] = "warm, articulate, crystal clear, studio scientific assistant"
+
+
+@api.post("/voice/synthesize")
+def voice_synthesize(body: VoiceSynthesizeIn) -> dict:
+    """Synthesizes speech using Gemini 3.8 Flash TTS with Voice Design or instructs Siri-grade local fallback."""
+    api_key = get_settings().gemini_api_key
+    if not api_key:
+        return {
+            "available": False,
+            "engine": "web_siri_neural_fallback",
+            "reason": "GEMINI_API_KEY not configured on server",
+            "recommended_voice": "Samantha",
+            "speech_rate": 0.98,
+            "speech_pitch": 1.02,
+        }
+    try:
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        interaction = client.interactions.create(
+            model="gemini-3.8-flash-tts",
+            input=[{
+                "type": "user_input",
+                "content": [{
+                    "type": "text",
+                    "text": body.text,
+                    "annotations": [{
+                        "type": "speech_metadata",
+                        "style": body.style or "warm, intelligent and articulate, studio scientific assistant",
+                    }],
+                }],
+            }],
+            response_format={"type": "audio"},
+            generation_config={
+                "speech_config": [
+                    {"voice": body.voice or "Kore"},
+                ]
+            },
+        )
+        audio_b64 = None
+        if hasattr(interaction, "output_audio") and interaction.output_audio:
+            audio_b64 = interaction.output_audio.data
+        return {
+            "available": True,
+            "engine": "gemini-3.8-flash-tts",
+            "model": "gemini-3.8-flash-tts",
+            "voice": body.voice or "Kore",
+            "audio_base64": audio_b64,
+            "mime_type": "audio/wav",
+        }
+    except Exception as e:
+        log.warning("TTS synthesis failed: %s", type(e).__name__)
+        err_msg = str(e)[:150]
+        return {
+            "available": False,
+            "engine": "web_siri_neural_fallback",
+            "reason": f"{type(e).__name__}: {err_msg}",
+            "recommended_voice": "Samantha",
+            "speech_rate": 0.98,
+            "speech_pitch": 1.02,
+        }
 
 app.include_router(api)
 
