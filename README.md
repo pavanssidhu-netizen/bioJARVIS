@@ -2,14 +2,11 @@
 
 **UCL Agentverse 2026 · Biotech track · Gemini track**
 
-> Every experiment has a plan and a reality. Larvis connects them: it listens and (when permitted) sees, turns what
-> happens at the bench into an auditable record, checks it against the approved protocol, shows which results may be
-> affected, and brings in specialist models and a human reviewer when it matters.
+> EEvery experiment has a plan and a reality. Larvis connects them: it is a universal, protocol-agnostic wet-lab copilot (supporting microfluidics, ELISA, RT-qPCR, cell culture, and chromatography). It listens and (when permitted) sees, turns what happens at the bench into an auditable record, checks it against protocol rules, shows which downstream results are affected, and brings in specialist models and a human reviewer when it matters.
 
-**Bottleneck.** In microfluidic immunoassays, bubbles and incomplete channel filling distort optical read-outs
-([Bhuiyan et al., Anal. Chem. 2022](https://doi.org/10.1021/acs.analchem.1c04827)), and bench notes are taken by hand
-with gloved hands. A missed bubble in one standard channel silently corrupts the standard curve and every sample result
-read from it. Larvis targets that gap between the protocol and what was actually done.
+Bottleneck & Real-World Need: In wet-lab immunoassays, bubbles, pipetting drift, and thermal excursions distort optical read-outs (Bhuiyan et al., Anal. Chem. 2022
+), while sterile-gloved hands prevent manual note-taking. An unnoticed bubble in one standard channel silently corrupts the entire standard curve and every dependent patient sample. Preclinical irreproducibility costs ~$28B annually (Freedman et al., 2015
+). Larvis targets that execution gap. Next step to real use: validation on live wet-chip video with a UCL partner lab.
 
 ## What Larvis does (demo experiment: CEA microfluidic sandwich immunoassay, 12-channel chip)
 - **Voice, hands-free (Gemini Live).** "I'm on step seven, channel eight" · "detection antibody incubated nine minutes" ·
