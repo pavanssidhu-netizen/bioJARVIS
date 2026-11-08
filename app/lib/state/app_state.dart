@@ -433,11 +433,37 @@ class AppController extends ChangeNotifier {
         perceptionSaved++;
         _mergePersisted(r['event'] as Map<String, dynamic>);
       }
+      _announceFlag(r['reconciliation'] as Map<String, dynamic>?);
     } catch (e) {
       _error('Perception window failed: $e');
     }
     _perceptionInFlight = false;
     _notify();
+  }
+
+  // ================= spoken camera flags =================
+  Map<String, dynamic>? latestFlag;
+  String? _lastAnnounced;
+  DateTime _lastAnnounceAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// A deterministic camera flag (steering engine verdict needing sign-off) is voiced by Gemini, throttled
+  /// to one per 20 s and never repeated for the same message. The text comes from the engine, not the model.
+  void _announceFlag(Map<String, dynamic>? rc) {
+    if (rc == null || rc['requires_human_approval'] != true) return;
+    latestFlag = rc;
+    final msg = '${rc['spoken_response'] ?? ''}'.trim();
+    final now = DateTime.now();
+    if (msg.isEmpty || msg == _lastAnnounced || now.difference(_lastAnnounceAt) < const Duration(seconds: 20)) return;
+    _lastAnnounced = msg;
+    _lastAnnounceAt = now;
+    final cross = rc['cross_check'] as Map?;
+    final note = cross != null && cross['agree'] == false
+        ? ' (Note: Gemini counted ${cross['gemini_count']} and the specialist counted ${cross['specialist_count']}; ask the researcher to confirm.)'
+        : '';
+    if (live.ready) {
+      live.announce('[Larvis camera flag from the protocol engine - tell the researcher briefly, in your own words, '
+          'without adding numbers]: $msg$note');
+    }
   }
 
   /// Typed equivalent of the voice query path (same backend agent as the query_lab_log tool).

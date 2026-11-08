@@ -108,6 +108,16 @@ class LiveClient {
         }
       });
 
+  /// Backend-originated event the assistant should voice now (e.g. a deterministic camera flag).
+  void announce(String text) => _send({
+        'clientContent': {
+          'turns': [
+            {'role': 'user', 'parts': [{'text': text}]}
+          ],
+          'turnComplete': true
+        }
+      });
+
   void sendToolResponses(List<Map<String, dynamic>> responses) =>
       _send({'toolResponse': {'functionResponses': responses}});
 

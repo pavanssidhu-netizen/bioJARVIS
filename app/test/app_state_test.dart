@@ -129,6 +129,11 @@ class FakeApi extends LabmateApi {
     return {
       'perception': {'scene_summary': 'dropper', 'objects': [], 'actions': [{'action': 'dispense drop', 'count': 2, 'certainty': 'likely'}]},
       'saved': false, 'skipped_reason': 'no_change',
+      'reconciliation': {
+        'action': 'warn', 'requires_human_approval': true, 'step_id': 'step_05',
+        'spoken_response': 'Possible bubble in CH01; the standard curve may need review.',
+        'cross_check': {'gemini_count': 1, 'specialist_count': 1, 'agree': true},
+      },
     };
   }
 
@@ -357,6 +362,18 @@ void main() {
         'frames_share_on', 'tab_change', 'protocol_step_select', 'live_feed_stop']));
     expect(api.uiLog.every((a) => a['source'] == 'user'), isTrue);
     expect(api.uiLog.firstWhere((a) => a['action'] == 'tab_change')['detail'], {'tab': 'log'});
+  });
+
+  test('camera flag from the engine is voiced once via Live (throttled, not repeated)', () async {
+    await c.init();
+    await c.startLiveFeed();
+    await Future<void>.delayed(const Duration(milliseconds: 120)); // several perception windows
+    final announces = sock!.sent.where((m) => m['clientContent']?['turnComplete'] == true).toList();
+    expect(announces.length, 1);
+    final text = announces.single['clientContent']['turns'][0]['parts'][0]['text'] as String;
+    expect(text, contains('Possible bubble in CH01'));
+    expect(c.latestFlag?['action'], 'warn');
+    await c.stopLiveFeed();
   });
 
   test('api client sends a stable session header', () {
