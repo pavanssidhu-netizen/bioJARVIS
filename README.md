@@ -69,7 +69,7 @@ every step ─► content-free telemetry spans (model, prompt version, tokens, l
   (`backend/vision/`, `evals/vision_test/`).
 - **Katarina (Person 4)** — steering engine, 7-action taxonomy, investigation, steering cases
   (`backend/agents/`, `science/`, `evals/steering/`).
-- **UI** — Flutter UI (`app/lib/pages`, `app/lib/ui`).
+- **Lauren UI** — Flutter UI (`app/lib/pages`, `app/lib/ui`).
 
 ## Run it
 ```bash
