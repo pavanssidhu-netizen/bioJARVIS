@@ -51,99 +51,54 @@ app = FastAPI(
 app.mount("/overlays", StaticFiles(directory=str(OVERLAYS_DIR)), name="overlays")
 app.mount("/test-images", StaticFiles(directory=str(IMAGES_DIR)), name="test_images")
 
-# In-memory versioned scientific state store aligned with Person 2 (Ryan) R&D Systems Human CRP DuoSet ELISA (DY1707)
+# Load Person 2 (Ryan) canonical experiment_seed.json (R&D Systems Human CRP DuoSet ELISA DY1707)
+SEED_JSON_PATH = Path(__file__).resolve().parent / "experiment_seed.json"
+if SEED_JSON_PATH.exists():
+    _RYAN_SEED = json.loads(SEED_JSON_PATH.read_text(encoding="utf-8"))
+else:
+    _RYAN_SEED = {"experiment_id": "exp_001", "protocol_id": "crp_elisa_dy1707", "protocol_version": 1, "active_step_id": "step_08", "steps": [], "samples": [], "plate_map": {}, "constraints": [], "dependencies": [], "related_evidence": []}
+
 EXPERIMENTS_DB: Dict[str, Dict[str, Any]] = {
-    "exp_001": {
-        "experiment_id": "exp_001",
-        "protocol_id": "rnd_duoset_elisa_human_crp_dy1707",
-        "protocol_name": "Sandwich ELISA for Human C-Reactive Protein (CRP), 96-Well Strip Plate (R&D Systems DY1707)",
-        "protocol_version": 1,
-        "active_step_id": "step_003",
-        "steps": [
-            {
-                "step_id": "step_001",
-                "name": "Plate Coating & Wash (3 x 400 µL 0.05% Tween-20 in PBS) + Block (1% BSA in PBS)",
-                "status": "completed",
-                "source_refs": ["ref_01"],
-            },
-            {
-                "step_id": "step_002",
-                "name": "Sample/Standard Load (100 µL/well, 7-pt 2-fold curve 15.6–1000 pg/mL in duplicate), Detection Ab, Streptavidin-HRP & TMB Substrate",
-                "status": "completed",
-                "source_refs": ["ref_01", "ref_02", "ref_03"],
-            },
-            {
-                "step_id": "step_003",
-                "name": "Stop Solution Addition & Pre-Read Optical Bubble Inspection (Before 450 nm / 540 nm Plate Reader)",
-                "status": "in_progress",
-                "acceptance_criteria": {
-                    "no_bubbles_before_450nm_read": True,
-                    "duplicate_cv_target_pct": 15.0,
-                    "max_optical_path_obstruction_ratio": 0.45,
-                    "requires_human_signoff": True,
-                },
-                "source_refs": ["ref_01", "ref_02", "ref_04", "ref_05"],
-            },
-            {
-                "step_id": "step_004_optical_readout",
-                "name": "Microplate Reader 450 nm Optical Density Read (with 540/570 nm Wavelength Correction & 4-PL Fit)",
-                "status": "blocked_pending_step_003_qc",
-                "source_refs": ["ref_01", "ref_02"],
-            },
-        ],
-        "samples": [
-            {"sample_id": "strips_1_2", "type": "7_point_standard_curve_duplicate_15.6_to_1000_pg_ml"},
-            {"sample_id": "strips_3_6", "type": "human_crp_unknown_samples_duplicate_100uL"},
-        ],
-        "constraints": [
-            {
-                "rule_id": "elisa_no_bubbles_before_reading",
-                "description": "No bubbles in wells/optical path before 450 nm reading: bubbles scatter light and cause high variability between duplicate replicates (CV > 15%). Remedy: centrifuge plate or pop with a dry pipette tip before reading.",
-                "source_refs": ["ref_04", "ref_05"],
-            },
-            {
-                "rule_id": "elisa_read_immediately_with_wavelength_correction",
-                "description": "Read immediately at 450 nm after Stop Solution and subtract 540 nm or 570 nm readings to correct for optical imperfections in the plate.",
-                "source_refs": ["ref_01", "ref_02", "ref_04"],
-            },
-        ],
-        "dependencies": [
-            {"from": "step_003", "to": "step_004_optical_readout", "type": "blocks_until_reviewed"}
-        ],
-        "related_evidence": [
-            {
-                "ref_id": "ref_01",
-                "title": "Human C-Reactive Protein/CRP DuoSet ELISA Development System, Catalog # DY1707 (R&D Systems / Bio-Techne, rev. 10/26)",
-                "url": "https://resources.rndsystems.com/pdfs/datasheets/dy1707.pdf",
-                "used_for": "All assay steps, volumes (100 µL sample, 3 x 400 µL 0.05% Tween-20 Wash Buffer, 1% BSA Block Buffer), 7-point 2-fold standard curve in duplicate, 450 nm read with 540/570 nm correction, 4-PL curve fit.",
-            },
-            {
-                "ref_id": "ref_02",
-                "title": "Human C-Reactive Protein/CRP DuoSet ELISA Product Page (R&D Systems DY1707)",
-                "url": "https://rndsystems.com/products/human-c-reactive-protein-crp-duoset-elisa_dy1707",
-                "used_for": "Assay range 15.6–1,000 pg/mL; sample volume 100 µL; 96-well strip plate; TMB substrate 450 nm colorimetric detection; warning that uncorrected 450 nm readings may be higher and less accurate.",
-            },
-            {
-                "ref_id": "ref_03",
-                "title": "How to Run an R&D Systems DuoSet ELISA (Protocol Guide)",
-                "url": "https://www.rndsystems.com/resources/protocols/how-run-rd-systems-duoset-elisa",
-                "used_for": "Plate layout (standards in duplicate in strips 1–2, samples in duplicate in strips 3–6), 1000 -> 500 -> 250 pg/mL serial dilution.",
-            },
-            {
-                "ref_id": "ref_04",
-                "title": "ELISA Troubleshooting Guide (R&D Systems)",
-                "url": "https://www.rndsystems.com/resources/protocols/elisa-troubleshooting-guide",
-                "used_for": "Constraint 'no bubbles in wells before reading' — lists 'Plate contains bubbles, affecting the optical reading' as a cause of high replicate variability (remedy: centrifuge plate before reading); constraint 'read immediately after stop solution'.",
-            },
-            {
-                "ref_id": "ref_05",
-                "title": "Inconsistent results and high CV in ELISA (Abcam Troubleshooting)",
-                "url": "https://www.abcam.com/en-us/technical-resources/troubleshooting/inconsistent-results-and-high-cv-elisa",
-                "used_for": "Constraint 'no bubbles in wells before reading' (pop with a dry pipette tip; add solutions gently); duplicate CV acceptance target (< 15%).",
-            },
-        ],
-    }
+    "exp_001": _RYAN_SEED,
 }
+
+
+def trace_elisa_dependencies(exp: Dict[str, Any], well_id: str = "A1", bubble_count: int = 0) -> Dict[str, Any]:
+    """Traverse Ryan's `experiment_seed.json` plate_map, constraints (c_01, c_05), and dependency graph (d_001..d_064)."""
+    plate_map = exp.get("plate_map", {})
+    sample_id = plate_map.get(well_id.upper(), well_id)
+    deps = exp.get("dependencies", [])
+
+    # BFS over Ryan's dependency graph starting from sample_id (e.g. STD01 -> standard_curve -> result_S01..result_S16)
+    visited: List[str] = []
+    triggered_edges: List[Dict[str, Any]] = []
+    queue = [sample_id]
+    seen = {sample_id}
+    while queue:
+        curr = queue.pop(0)
+        for d in deps:
+            if d.get("from") == curr:
+                nxt = d.get("to")
+                triggered_edges.append(d)
+                if nxt and nxt not in seen:
+                    seen.add(nxt)
+                    visited.append(nxt)
+                    queue.append(nxt)
+
+    violated_constraints = []
+    if bubble_count > 0:
+        for c in exp.get("constraints", []):
+            if c.get("constraint_id") in ("c_01", "c_05"):
+                violated_constraints.append(c)
+
+    return {
+        "inspected_well": well_id.upper(),
+        "mapped_sample_id": sample_id,
+        "violated_constraints": violated_constraints,
+        "affected_downstream_nodes": visited,
+        "triggered_dependency_edges_count": len(triggered_edges),
+        " cascades_to_entire_plate": "standard_curve" in visited or "zero_correction" in visited,
+    }
 
 OBSERVATIONS_DB: Dict[str, Dict[str, Any]] = {}
 EVENTS_LOG: List[Dict[str, Any]] = []
@@ -187,7 +142,8 @@ def get_experiment(experiment_id: str) -> Dict[str, Any]:
 @app.post("/vision/analyse")
 async def post_vision_analyse(
     experiment_id: str = Form("exp_001"),
-    protocol_step_id: str = Form("step_003"),
+    protocol_step_id: str = Form("step_08"),
+    well_id: str = Form("A1"),
     case_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
 ) -> Dict[str, Any]:
@@ -226,10 +182,16 @@ async def post_vision_analyse(
         ov_name = Path(result["annotated_overlay_path"]).name
         result["overlay_url"] = f"/overlays/{ov_name}"
 
-    OBSERVATIONS_DB[obs_id] = result
     exp = EXPERIMENTS_DB.setdefault(experiment_id, EXPERIMENTS_DB["exp_001"].copy())
+    result["elisa_dependency_impact"] = trace_elisa_dependencies(
+        exp,
+        well_id=well_id,
+        bubble_count=int(result["measurement"]["value"]),
+    )
+    OBSERVATIONS_DB[obs_id] = result
     exp["related_evidence"].append({
         "observation_id": obs_id,
+        "well_id": well_id,
         "bubble_count": result["measurement"]["value"],
         "status": result["status"],
         "max_obstruction": result["measurement"]["max_channel_obstruction_ratio"],
