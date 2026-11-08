@@ -2,7 +2,7 @@
 
 **UCL Agentverse 2026 · Biotech track · Gemini track**
 
-> EEvery experiment has a plan and a reality. Larvis connects them: it is a universal, protocol-agnostic wet-lab copilot (supporting microfluidics, ELISA, RT-qPCR, cell culture, and chromatography). It listens and (when permitted) sees, turns what happens at the bench into an auditable record, checks it against protocol rules, shows which downstream results are affected, and brings in specialist models and a human reviewer when it matters.
+> Every experiment has a plan and a reality. Larvis connects them: it is a universal, protocol-agnostic wet-lab copilot (supporting microfluidics, ELISA, RT-qPCR, cell culture, and chromatography). It listens and (when permitted) sees, turns what happens at the bench into an auditable record, checks it against protocol rules, shows which downstream results are affected, and brings in specialist models and a human reviewer when it matters.
 
 Bottleneck & Real-World Need: In wet-lab immunoassays, bubbles, pipetting drift, and thermal excursions distort optical read-outs (Bhuiyan et al., Anal. Chem. 2022
 ), while sterile-gloved hands prevent manual note-taking. An unnoticed bubble in one standard channel silently corrupts the entire standard curve and every dependent patient sample. Preclinical irreproducibility costs ~$28B annually (Freedman et al., 2015
