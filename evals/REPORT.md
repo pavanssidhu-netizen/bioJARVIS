@@ -51,3 +51,13 @@
 - **kLarity Biophysical Spheroid & Split-Ellipse Formulation**: Adapted from Willer, Siska et al. (2026), Technical University of Denmark ([`maxsiska/kLarity`](https://github.com/maxsiska/kLarity), Zenodo `10.5281/zenodo.19582132`), licensed under **AGPL-3.0 / CC-BY 4.0**.
 - **BubbleID Interface Dynamics Reference**: Dunlap et al., University of Arkansas ([`cldunlap73/BubbleID`](https://github.com/cldunlap73/BubbleID), OSF `3nwyx`), licensed under **MIT License**.
 - **Synthetic Benchmark Disclosure**: All 18 test images in `evals/vision_test/images/` are explicitly labelled synthetic microfluidic/bioreactor optical test cases generated with known ground-truth coordinates, refractive phase rings, border artifacts, and glare challenges (`evals/vision_test/manifest.json`). No patient data is used.
+
+
+## 5. Trained PyTorch Patch Verifier & Biochemical Yield + GP Bayesian Active Correction Metrics
+
+| Trained Model / Agent | Dataset Split (Strictly Disjoint Seeds) | Primary Held-Out Metric | Secondary Held-Out Metric | Saved Metrics Artifact |
+| :--- | :--- | :---: | :---: | :--- |
+| **`BubblePatchCNN`** (`backend/vision/patch_classifier.py`) | `320` train (`seed=9001`) / `120` val (`seed=9501`) phase-contrast patches | **Val Accuracy: `100.0%`** | **Val F1: `1.000`** | `evals/patch_cnn_metrics.json` |
+| **`BiochemicalYieldMLP`** (`backend/vision/predictive_models.py`) | `840` train (`seed=7001`) / `360` held-out test (`seed=8001`) assay telemetry rows | **Held-Out $R^2$: `0.9792`** | **Yield MAE: `1.804%` · Failure Acc: `94.44%`** | `evals/yield_model_metrics.json` |
+| **`GaussianProcessBayesianOptimizer`** (`backend/vision/predictive_models.py`) | Anisotropic RBF/Matérn GP + Expected Improvement (EI) over compensatory actions | **Recovers predicted assay yield with $95\%$ credible intervals** | **`100%` gated by `requires_human_confirmation`** | `POST /predictive/optimise` |
+| **Person 2 (Ryan) ELISA Dependency Graph** (`backend/experiment_seed.json`) | `crp_elisa_dy1707` (`ref_01`–`ref_05`), 8 steps, 96-well `plate_map`, constraints `c_01`–`c_06`, 64 edges `d_001`–`d_064` | **`100%` automated propagation** (`STD01 -> standard_curve -> result_S01..S16`) | **Verified by `test_ryan_experiment_seed_and_dependency_graph`** | `backend/experiment_seed.json` |
