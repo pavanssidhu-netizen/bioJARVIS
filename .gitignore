@@ -1,38 +1,50 @@
-# Environment & Secrets (NEVER COMMIT)
+# Secrets
 .env
 .env.*
 !.env.example
+
+# Vercel
+.vercel/
+public/
+
+# Local data
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Flutter / Dart
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+
+# Node
+node_modules/
+
+# Modal / IDE
+.modal.toml
+app/.idea/
+
+# Keep this negation last so no later .env* rule re-ignores it
+!.env.example
+
+# Eval outputs
+eval/results/
+eval/clips/
+
+# Extra secret patterns (team)
 *.pem
 *.key
 *credentials*.json
-*secret*
 
-# Virtual environments
-.venv/
-venv/
-env/
-
-# Python cache & build artifacts
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# Large model checkpoints, generated PNG test sets & raw datasets (re-generated via evals/evaluate.py)
-models/*.pt
-models/*.onnx
-models/*.pth
-evals/vision_test/images/*.png
-evals/vision_test/overlays/*.png
-*.zip
-*.avi
-*.mp4
-
-# OS / IDE files
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
+# Team model weights (retrained automatically if missing) and generated eval images
+models/
+evals/vision_test/images/
+evals/vision_test/overlays/

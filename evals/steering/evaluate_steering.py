@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -31,8 +31,8 @@ def normalize_endpoint(ep: str) -> str:
 def run_benchmark() -> int:
     seed_path = ROOT / "science" / "experiment_seed.json"
     ryan_cases_path = ROOT / "science" / "scientific_cases.json"
-    eval_cases_path = ROOT / "evals" / "eval_cases.json"
-    report_path = ROOT / "evals" / "BENCHMARK_REPORT.md"
+    eval_cases_path = ROOT / "evals" / "steering" / "eval_cases.json"
+    report_path = ROOT / "evals" / "steering" / "BENCHMARK_REPORT.md"
 
     with open(seed_path, "r", encoding="utf-8") as f:
         experiment_seed = json.load(f)

@@ -1,0 +1,5 @@
+# Teammate model dependencies (installed into the Modal image only, not into Vercel). Pin versions.
+# e.g.
+# torch==2.x.x
+# ultralytics==8.x.x
+# opencv-python-headless==4.x.x.xx

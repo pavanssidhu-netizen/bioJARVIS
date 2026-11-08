@@ -1,0 +1,19 @@
+[
+  {
+    "id": "drops-4-a",
+    "path": "clips/drops_4_a.mp4",
+    "expected_count": 4,
+    "target_action": "dispense drop",
+    "specialist_label": "drop",
+    "frame_interval_s": 1.0,
+    "window_frames": 5,
+    "notes": "4 drops of indicator into tube A, dropper clearly in frame, phone held 30 cm above bench"
+  },
+  {
+    "id": "drops-0-control",
+    "path": "clips/no_drops_frames/",
+    "expected_count": 0,
+    "target_action": "dispense drop",
+    "notes": "negative control: hands move but no drops. A folder of JPEGs also works."
+  }
+]

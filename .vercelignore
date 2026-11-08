@@ -1,0 +1,12 @@
+# Root-anchored: "app" alone would also drop backend/app.
+/.env
+/.env.*
+/.venv
+/data
+/app
+/backend/tests
+/scripts
+/docs
+**/__pycache__
+*.db
+*.db-*

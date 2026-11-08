@@ -1,0 +1,759 @@
+{
+  "schema_note": "Field names follow the LABMATE build plan; pending confirmation by integrator",
+  "experiment_id": "exp_001",
+  "protocol_id": "microfluidic_sandwich_immunoassay_cea",
+  "protocol_version": 1,
+  "active_step_id": "step_01",
+  "experiment": {
+    "name": "Microfluidic sandwich immunoassay for CEA (demo)",
+    "analyte": "human carcinoembryonic antigen (CEA)",
+    "result_unit": "ng/mL",
+    "sample_matrix": "serum, diluted 1:1 in PBS",
+    "sample_matrix_source": "ref_01",
+    "format": "microfluidic chip, parallel channels",
+    "readout": "fluorescence imaging of patterned capture spots",
+    "temperature_c": 25,
+    "replicate_spots_per_channel": null,
+    "replicate_spots_note": "ref_01 patterns multiple reactive spots per channel; count not stated.",
+    "note": "Step timings in ref_01 are reported for the IgG sandwich model on the same chip platform; CEA-specific incubation times are not stated in ref_01."
+  },
+  "reagents": [
+    {
+      "reagent_id": "blocking_buffer",
+      "name": "Blocking buffer",
+      "composition": "PBS with 1% BSA and 10 mM Tris-buffered saline",
+      "source": "ref_01"
+    },
+    {
+      "reagent_id": "wash_buffer",
+      "name": "Wash buffer",
+      "composition": "PBS",
+      "source": "ref_01"
+    },
+    {
+      "reagent_id": "capture_antibody",
+      "name": "Capture antibody",
+      "concentration": "500 µg/mL",
+      "source": "ref_01"
+    },
+    {
+      "reagent_id": "detection_antibody",
+      "name": "Detection antibody",
+      "concentration": "125 µg/mL",
+      "source": "ref_01"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "step_01",
+      "name": "Block",
+      "order": 1,
+      "duration_min": 10,
+      "temperature_c": 25,
+      "reagent": "blocking_buffer",
+      "reagent_concentration": null,
+      "is_fill_step": true,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "ref_01 does not describe a separate channel-priming step. Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_02",
+      "name": "Wash",
+      "order": 2,
+      "duration_min": 3,
+      "temperature_c": 25,
+      "reagent": "wash_buffer",
+      "reagent_concentration": null,
+      "is_fill_step": false,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_03",
+      "name": "Capture antibody",
+      "order": 3,
+      "duration_min": 15,
+      "temperature_c": 25,
+      "reagent": "capture_antibody",
+      "reagent_concentration": "500 µg/mL",
+      "is_fill_step": true,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_04",
+      "name": "Wash",
+      "order": 4,
+      "duration_min": 3,
+      "temperature_c": 25,
+      "reagent": "wash_buffer",
+      "reagent_concentration": null,
+      "is_fill_step": false,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_05",
+      "name": "Load samples and standards",
+      "order": 5,
+      "duration_min": 15,
+      "temperature_c": 25,
+      "reagent": "samples_and_standards",
+      "reagent_concentration": null,
+      "is_fill_step": true,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Sera best at 1:1 dilution in PBS; 2-fold serial dilutions were tested. Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_06",
+      "name": "Wash",
+      "order": 6,
+      "duration_min": 3,
+      "temperature_c": 25,
+      "reagent": "wash_buffer",
+      "reagent_concentration": null,
+      "is_fill_step": false,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_07",
+      "name": "Detection antibody",
+      "order": 7,
+      "duration_min": 10,
+      "temperature_c": 25,
+      "reagent": "detection_antibody",
+      "reagent_concentration": "125 µg/mL",
+      "is_fill_step": true,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_08",
+      "name": "Wash",
+      "order": 8,
+      "duration_min": 3,
+      "temperature_c": 25,
+      "reagent": "wash_buffer",
+      "reagent_concentration": null,
+      "is_fill_step": false,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Volume and flow rate not stated in ref_01."
+    },
+    {
+      "step_id": "step_09",
+      "name": "Read out",
+      "order": 9,
+      "duration_min": null,
+      "temperature_c": 25,
+      "reagent": null,
+      "reagent_concentration": null,
+      "is_fill_step": false,
+      "volume_ul": null,
+      "flow_rate_ul_min": null,
+      "source": "ref_01",
+      "note": "Fluorescence imaging; integrate signal within each reactive spot and subtract a non-reactive background region. Volume and flow rate not stated in ref_01."
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "STD01",
+      "type": "standard",
+      "channels": [
+        "CH01"
+      ],
+      "concentration_ng_ml": null,
+      "team_set": true,
+      "note": "Standard concentrations to be set by team scientist; ref_01 tested 2-fold serial dilutions."
+    },
+    {
+      "sample_id": "STD02",
+      "type": "standard",
+      "channels": [
+        "CH02"
+      ],
+      "concentration_ng_ml": null,
+      "team_set": true,
+      "note": "Standard concentrations to be set by team scientist; ref_01 tested 2-fold serial dilutions."
+    },
+    {
+      "sample_id": "STD03",
+      "type": "standard",
+      "channels": [
+        "CH03"
+      ],
+      "concentration_ng_ml": null,
+      "team_set": true,
+      "note": "Standard concentrations to be set by team scientist; ref_01 tested 2-fold serial dilutions."
+    },
+    {
+      "sample_id": "STD04",
+      "type": "standard",
+      "channels": [
+        "CH04"
+      ],
+      "concentration_ng_ml": null,
+      "team_set": true,
+      "note": "Standard concentrations to be set by team scientist; ref_01 tested 2-fold serial dilutions."
+    },
+    {
+      "sample_id": "STD05",
+      "type": "standard",
+      "channels": [
+        "CH05"
+      ],
+      "concentration_ng_ml": null,
+      "team_set": true,
+      "note": "Standard concentrations to be set by team scientist; ref_01 tested 2-fold serial dilutions."
+    },
+    {
+      "sample_id": "STD00",
+      "type": "zero_standard",
+      "channels": [
+        "CH06"
+      ],
+      "concentration_ng_ml": 0,
+      "team_set": true,
+      "note": "Zero standard is part of the team-designed demo layout."
+    },
+    {
+      "sample_id": "S01",
+      "type": "sample",
+      "channels": [
+        "CH07"
+      ],
+      "concentration_ng_ml": null,
+      "matrix": "serum, diluted 1:1 in PBS",
+      "team_set": true,
+      "note": "Sample concentration is the measured result; matrix and dilution from ref_01."
+    },
+    {
+      "sample_id": "S02",
+      "type": "sample",
+      "channels": [
+        "CH08"
+      ],
+      "concentration_ng_ml": null,
+      "matrix": "serum, diluted 1:1 in PBS",
+      "team_set": true,
+      "note": "Sample concentration is the measured result; matrix and dilution from ref_01."
+    },
+    {
+      "sample_id": "S03",
+      "type": "sample",
+      "channels": [
+        "CH09"
+      ],
+      "concentration_ng_ml": null,
+      "matrix": "serum, diluted 1:1 in PBS",
+      "team_set": true,
+      "note": "Sample concentration is the measured result; matrix and dilution from ref_01."
+    },
+    {
+      "sample_id": "S04",
+      "type": "sample",
+      "channels": [
+        "CH10"
+      ],
+      "concentration_ng_ml": null,
+      "matrix": "serum, diluted 1:1 in PBS",
+      "team_set": true,
+      "note": "Sample concentration is the measured result; matrix and dilution from ref_01."
+    },
+    {
+      "sample_id": "S05",
+      "type": "sample",
+      "channels": [
+        "CH11"
+      ],
+      "concentration_ng_ml": null,
+      "matrix": "serum, diluted 1:1 in PBS",
+      "team_set": true,
+      "note": "Sample concentration is the measured result; matrix and dilution from ref_01."
+    },
+    {
+      "sample_id": "S06",
+      "type": "sample",
+      "channels": [
+        "CH12"
+      ],
+      "concentration_ng_ml": null,
+      "matrix": "serum, diluted 1:1 in PBS",
+      "team_set": true,
+      "note": "Sample concentration is the measured result; matrix and dilution from ref_01."
+    }
+  ],
+  "channel_map": {
+    "CH01": "STD01",
+    "CH02": "STD02",
+    "CH03": "STD03",
+    "CH04": "STD04",
+    "CH05": "STD05",
+    "CH06": "STD00",
+    "CH07": "S01",
+    "CH08": "S02",
+    "CH09": "S03",
+    "CH10": "S04",
+    "CH11": "S05",
+    "CH12": "S06"
+  },
+  "constraints": [
+    {
+      "constraint_id": "c_01",
+      "step_id": "step_09",
+      "applies_to_step_ids": [
+        "step_01",
+        "step_03",
+        "step_05",
+        "step_07",
+        "step_09"
+      ],
+      "applies_to_channels": "all",
+      "rule": "No bubbles in any channel after each fill step and before readout",
+      "measurement_type": "bubble_count",
+      "max_allowed": 0,
+      "tolerance": null,
+      "rationale": "Bubbles and incomplete filling are recognised microfluidic errors; bubbles can cause false signals during the immunoassay.",
+      "source": "ref_02"
+    },
+    {
+      "constraint_id": "c_02",
+      "step_id": "step_05",
+      "applies_to_step_ids": [
+        "step_01",
+        "step_03",
+        "step_05",
+        "step_07"
+      ],
+      "applies_to_channels": "all",
+      "rule": "Channels completely filled after each fill step (no incomplete filling or channel-obstructing gas slug)",
+      "measurement_type": "channel_fill_complete",
+      "expected_value": true,
+      "tolerance": null,
+      "rationale": "Incomplete filling is a recognised microfluidic error alongside bubbles.",
+      "source": "ref_02"
+    },
+    {
+      "constraint_id": "c_03",
+      "step_id": "step_05",
+      "applies_to_step_ids": [
+        "step_05"
+      ],
+      "applies_to_channels": "all",
+      "rule": "Sample/standard incubation 15 min at 25 °C",
+      "measurement_type": "incubation_duration_min",
+      "expected_value": 15,
+      "tolerance_min": 2,
+      "rationale": "Too short or too long incubation causes under- or over-adsorption, artifacts, false concentration readings and large replicate errors.",
+      "source": "ref_01",
+      "note": "Tolerance set by team scientist (team_set) — not stated in ref_01.",
+      "acceptable_range_min": [
+        13,
+        17
+      ],
+      "tolerance_team_set": true
+    },
+    {
+      "constraint_id": "c_04",
+      "step_id": "step_03",
+      "applies_to_step_ids": [
+        "step_03"
+      ],
+      "applies_to_channels": "all",
+      "rule": "Capture antibody incubation 15 min at 25 °C",
+      "measurement_type": "incubation_duration_min",
+      "expected_value": 15,
+      "tolerance_min": 2,
+      "rationale": "Too short or too long incubation causes under- or over-adsorption, artifacts, false concentration readings and large replicate errors.",
+      "source": "ref_01",
+      "note": "Tolerance set by team scientist (team_set) — not stated in ref_01.",
+      "acceptable_range_min": [
+        13,
+        17
+      ],
+      "tolerance_team_set": true
+    },
+    {
+      "constraint_id": "c_05",
+      "step_id": "step_07",
+      "applies_to_step_ids": [
+        "step_07"
+      ],
+      "applies_to_channels": "all",
+      "rule": "Detection antibody incubation 10 min at 25 °C",
+      "measurement_type": "incubation_duration_min",
+      "expected_value": 10,
+      "tolerance_min": 1,
+      "rationale": "Too short or too long incubation causes under- or over-adsorption, artifacts, false concentration readings and large replicate errors.",
+      "source": "ref_01",
+      "note": "Tolerance set by team scientist (team_set) — not stated in ref_01. ref_01's rationale is stated for immunoglobulin adsorption incubation; applied here by analogy.",
+      "acceptable_range_min": [
+        9,
+        11
+      ],
+      "tolerance_team_set": true
+    },
+    {
+      "constraint_id": "c_06",
+      "step_id": "step_02",
+      "applies_to_step_ids": [
+        "step_02",
+        "step_04",
+        "step_06",
+        "step_08"
+      ],
+      "applies_to_channels": "all",
+      "rule": "Wash with PBS for 3 min after blocking, capture, sample and detection steps",
+      "measurement_type": "wash_duration_min",
+      "expected_value": 3,
+      "tolerance": null,
+      "rationale": "Protocol specifies a 3-minute PBS wash between binding steps.",
+      "source": "ref_01"
+    },
+    {
+      "constraint_id": "c_07",
+      "step_id": "step_01",
+      "applies_to_step_ids": [
+        "step_01",
+        "step_02",
+        "step_03",
+        "step_04",
+        "step_05",
+        "step_06",
+        "step_07",
+        "step_08",
+        "step_09"
+      ],
+      "applies_to_channels": "all",
+      "rule": "All steps at 25 °C",
+      "measurement_type": "temperature_c",
+      "expected_value": 25,
+      "rationale": "Protocol specifies all steps at 25 °C.",
+      "source": "ref_01",
+      "note": "Tolerance set by team scientist (team_set) — not stated in ref_01.",
+      "tolerance_c": 2,
+      "acceptable_range_c": [
+        23,
+        27
+      ],
+      "tolerance_team_set": true
+    }
+  ],
+  "derived_values": [
+    {
+      "id": "background_correction",
+      "description": "Non-reactive background region subtracted from each spot signal",
+      "source": "ref_01"
+    },
+    {
+      "id": "standard_curve",
+      "description": "Curve fitted from standard channels STD00–STD05",
+      "source": "ref_01",
+      "team_set": true,
+      "note": "Curve-fitting method not stated in ref_01."
+    },
+    {
+      "id": "result_S01",
+      "description": "CEA concentration (ng/mL) for S01, read from its channel via the standard curve",
+      "source": "ref_01"
+    },
+    {
+      "id": "result_S02",
+      "description": "CEA concentration (ng/mL) for S02, read from its channel via the standard curve",
+      "source": "ref_01"
+    },
+    {
+      "id": "result_S03",
+      "description": "CEA concentration (ng/mL) for S03, read from its channel via the standard curve",
+      "source": "ref_01"
+    },
+    {
+      "id": "result_S04",
+      "description": "CEA concentration (ng/mL) for S04, read from its channel via the standard curve",
+      "source": "ref_01"
+    },
+    {
+      "id": "result_S05",
+      "description": "CEA concentration (ng/mL) for S05, read from its channel via the standard curve",
+      "source": "ref_01"
+    },
+    {
+      "id": "result_S06",
+      "description": "CEA concentration (ng/mL) for S06, read from its channel via the standard curve",
+      "source": "ref_01"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependency_id": "d_001",
+      "from": "step_01",
+      "to": "step_02",
+      "dependency_type": "sequential_step",
+      "reason": "step_02 requires step_01 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_002",
+      "from": "step_02",
+      "to": "step_03",
+      "dependency_type": "sequential_step",
+      "reason": "step_03 requires step_02 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_003",
+      "from": "step_03",
+      "to": "step_04",
+      "dependency_type": "sequential_step",
+      "reason": "step_04 requires step_03 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_004",
+      "from": "step_04",
+      "to": "step_05",
+      "dependency_type": "sequential_step",
+      "reason": "step_05 requires step_04 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_005",
+      "from": "step_05",
+      "to": "step_06",
+      "dependency_type": "sequential_step",
+      "reason": "step_06 requires step_05 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_006",
+      "from": "step_06",
+      "to": "step_07",
+      "dependency_type": "sequential_step",
+      "reason": "step_07 requires step_06 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_007",
+      "from": "step_07",
+      "to": "step_08",
+      "dependency_type": "sequential_step",
+      "reason": "step_08 requires step_07 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_008",
+      "from": "step_08",
+      "to": "step_09",
+      "dependency_type": "sequential_step",
+      "reason": "step_09 requires step_08 to have been completed correctly."
+    },
+    {
+      "dependency_id": "d_009",
+      "from": "STD00",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "A compromised standard channel (e.g. bubble or incomplete fill) distorts the standard curve."
+    },
+    {
+      "dependency_id": "d_010",
+      "from": "STD01",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "A compromised standard channel (e.g. bubble or incomplete fill) distorts the standard curve."
+    },
+    {
+      "dependency_id": "d_011",
+      "from": "STD02",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "A compromised standard channel (e.g. bubble or incomplete fill) distorts the standard curve."
+    },
+    {
+      "dependency_id": "d_012",
+      "from": "STD03",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "A compromised standard channel (e.g. bubble or incomplete fill) distorts the standard curve."
+    },
+    {
+      "dependency_id": "d_013",
+      "from": "STD04",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "A compromised standard channel (e.g. bubble or incomplete fill) distorts the standard curve."
+    },
+    {
+      "dependency_id": "d_014",
+      "from": "STD05",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "A compromised standard channel (e.g. bubble or incomplete fill) distorts the standard curve."
+    },
+    {
+      "dependency_id": "d_015",
+      "from": "standard_curve",
+      "to": "result_S01",
+      "dependency_type": "calibration",
+      "reason": "Every sample concentration is read off the standard curve, so one compromised standard channel affects all results."
+    },
+    {
+      "dependency_id": "d_016",
+      "from": "standard_curve",
+      "to": "result_S02",
+      "dependency_type": "calibration",
+      "reason": "Every sample concentration is read off the standard curve, so one compromised standard channel affects all results."
+    },
+    {
+      "dependency_id": "d_017",
+      "from": "standard_curve",
+      "to": "result_S03",
+      "dependency_type": "calibration",
+      "reason": "Every sample concentration is read off the standard curve, so one compromised standard channel affects all results."
+    },
+    {
+      "dependency_id": "d_018",
+      "from": "standard_curve",
+      "to": "result_S04",
+      "dependency_type": "calibration",
+      "reason": "Every sample concentration is read off the standard curve, so one compromised standard channel affects all results."
+    },
+    {
+      "dependency_id": "d_019",
+      "from": "standard_curve",
+      "to": "result_S05",
+      "dependency_type": "calibration",
+      "reason": "Every sample concentration is read off the standard curve, so one compromised standard channel affects all results."
+    },
+    {
+      "dependency_id": "d_020",
+      "from": "standard_curve",
+      "to": "result_S06",
+      "dependency_type": "calibration",
+      "reason": "Every sample concentration is read off the standard curve, so one compromised standard channel affects all results."
+    },
+    {
+      "dependency_id": "d_021",
+      "from": "S01",
+      "to": "result_S01",
+      "dependency_type": "measurement",
+      "reason": "Each sample's result comes from its own channel only, so a bubble in a sample channel affects only that sample."
+    },
+    {
+      "dependency_id": "d_022",
+      "from": "S02",
+      "to": "result_S02",
+      "dependency_type": "measurement",
+      "reason": "Each sample's result comes from its own channel only, so a bubble in a sample channel affects only that sample."
+    },
+    {
+      "dependency_id": "d_023",
+      "from": "S03",
+      "to": "result_S03",
+      "dependency_type": "measurement",
+      "reason": "Each sample's result comes from its own channel only, so a bubble in a sample channel affects only that sample."
+    },
+    {
+      "dependency_id": "d_024",
+      "from": "S04",
+      "to": "result_S04",
+      "dependency_type": "measurement",
+      "reason": "Each sample's result comes from its own channel only, so a bubble in a sample channel affects only that sample."
+    },
+    {
+      "dependency_id": "d_025",
+      "from": "S05",
+      "to": "result_S05",
+      "dependency_type": "measurement",
+      "reason": "Each sample's result comes from its own channel only, so a bubble in a sample channel affects only that sample."
+    },
+    {
+      "dependency_id": "d_026",
+      "from": "S06",
+      "to": "result_S06",
+      "dependency_type": "measurement",
+      "reason": "Each sample's result comes from its own channel only, so a bubble in a sample channel affects only that sample."
+    },
+    {
+      "dependency_id": "d_027",
+      "from": "background_correction",
+      "to": "standard_curve",
+      "dependency_type": "calibration",
+      "reason": "Background-corrected spot signals are used to build the standard curve."
+    },
+    {
+      "dependency_id": "d_028",
+      "from": "background_correction",
+      "to": "result_S01",
+      "dependency_type": "calibration",
+      "reason": "Background is subtracted from every sample spot signal."
+    },
+    {
+      "dependency_id": "d_029",
+      "from": "background_correction",
+      "to": "result_S02",
+      "dependency_type": "calibration",
+      "reason": "Background is subtracted from every sample spot signal."
+    },
+    {
+      "dependency_id": "d_030",
+      "from": "background_correction",
+      "to": "result_S03",
+      "dependency_type": "calibration",
+      "reason": "Background is subtracted from every sample spot signal."
+    },
+    {
+      "dependency_id": "d_031",
+      "from": "background_correction",
+      "to": "result_S04",
+      "dependency_type": "calibration",
+      "reason": "Background is subtracted from every sample spot signal."
+    },
+    {
+      "dependency_id": "d_032",
+      "from": "background_correction",
+      "to": "result_S05",
+      "dependency_type": "calibration",
+      "reason": "Background is subtracted from every sample spot signal."
+    },
+    {
+      "dependency_id": "d_033",
+      "from": "background_correction",
+      "to": "result_S06",
+      "dependency_type": "calibration",
+      "reason": "Background is subtracted from every sample spot signal."
+    }
+  ],
+  "related_evidence": [
+    {
+      "ref_id": "ref_01",
+      "citation": "Zheng C, Wang J, Pang Y, Wang J, Li W, Ge Z, Huang Y. High-throughput immunoassay through in-channel microfluidic patterning. Lab on a Chip 2012;12(14):2487–90.",
+      "doi": "10.1039/c2lc40145b",
+      "url": "https://doi.org/10.1039/c2lc40145b",
+      "protocol_url": "https://www.rsc.org/suppdata/lc/c2/c2lc40145b/c2lc40145b.pdf",
+      "used_for": "All steps, timings, temperature, buffers, antibody concentrations, serum dilution, readout, incubation-time rationale"
+    },
+    {
+      "ref_id": "ref_02",
+      "citation": "Bhuiyan NH, Hong JH, Uddin MJ, Shim JS. Artificial Intelligence-Controlled Microfluidic Device for Fluid Automation and Bubble Removal of Immunoassay Operated by a Smartphone. Analytical Chemistry 2022;94(9):3872–3880.",
+      "doi": "10.1021/acs.analchem.1c04827",
+      "url": "https://doi.org/10.1021/acs.analchem.1c04827",
+      "used_for": "Bubbles and incomplete filling as microfluidic errors; bubble removal to prevent false signals (c_01, c_02)"
+    },
+    {
+      "ref_id": "ref_03",
+      "citation": "Doganay MT, Chakraborty P, Bommakanti SM, et al. Artificial intelligence performance in testing microfluidics for point-of-care. Lab on a Chip 2024;24(21):4998–5008.",
+      "doi": "10.1039/d4lc00671b",
+      "url": "https://doi.org/10.1039/d4lc00671b",
+      "used_for": "Context only: smartphone AI classification of bubbles in microfluidic channels; transparent bubbles cause refraction and variable light scattering that challenge imaging. Not a protocol source."
+    }
+  ]
+}

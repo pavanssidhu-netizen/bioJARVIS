@@ -1,0 +1,17 @@
+{
+  "title": "Demo: pH indicator colour-change assay",
+  "version": 1,
+  "summary": "Add universal indicator to three buffer tubes and record the colour change. Simulated, non-hazardous demo protocol.",
+  "materials": ["test tube rack", "3 test tubes (A, B, C)", "dropper bottle: universal indicator", "pH 4 / 7 / 10 buffers", "micropipette (1000 uL)", "gloves"],
+  "safety": ["Wear gloves and eye protection.", "Indicator stains skin and clothing."],
+  "steps": [
+    {"id": "S1", "action": "pipette buffer", "description": "Pipette 1 mL of pH 4 buffer into tube A, pH 7 into tube B, pH 10 into tube C.",
+     "reagent": "buffer", "quantity": 1, "unit": "mL", "tolerance": "+/-0.1 mL", "expected_observation": "Three clear, colourless liquids.", "perception_actions": ["pipette liquid"]},
+    {"id": "S2", "action": "dispense drop", "description": "Add 3 drops of universal indicator to each tube.",
+     "reagent": "universal indicator", "quantity": 3, "unit": "drops", "tolerance": "exactly 3 per tube", "expected_observation": "Liquid changes colour within seconds.", "perception_actions": ["dispense drop"]},
+    {"id": "S3", "action": "swirl", "description": "Gently swirl each tube for 5 seconds.",
+     "quantity": 5, "unit": "s", "expected_observation": "Uniform colour.", "perception_actions": ["shake tube", "swirl"]},
+    {"id": "S4", "action": "observe and record", "description": "Dictate the colour of each tube (expected: A red/orange, B green, C blue/purple).",
+     "expected_observation": "A red/orange, B green, C blue/purple.", "perception_actions": []}
+  ]
+}
