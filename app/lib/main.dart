@@ -11,8 +11,10 @@ import 'ui/theme.dart';
 
 void main() {
   registerCameraView();
+  // Local UI dev: flutter run -d chrome --dart-define=API_BASE=http://127.0.0.1:8000  (see docs/UI_DEV.md)
+  const apiBase = String.fromEnvironment('API_BASE');
   final controller = AppController(
-    api: LabmateApi(baseUrl: currentOrigin()), // same origin: no CORS, no mixed content
+    api: LabmateApi(baseUrl: apiBase.isNotEmpty ? apiBase : currentOrigin()), // default: same origin (deployed)
     media: WebMediaBridge(),
     socketFactory: webLiveSocketFactory,
   );

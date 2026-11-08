@@ -42,6 +42,13 @@ log = logging.getLogger("labmate")  # never log payloads, transcripts or keys
 app = FastAPI(title="Larvis API", version="0.2.0", docs_url="/api/docs", openapi_url="/api/openapi.json")
 api = APIRouter(prefix="/api")
 
+# Local UI development ONLY (flutter run serves the app on another localhost port). Off unless LARVIS_DEV_CORS=1,
+# restricted to loopback origins, and refused on any Vercel deployment.
+if os.getenv("LARVIS_DEV_CORS") == "1" and not os.getenv("VERCEL_ENV"):
+    from fastapi.middleware.cors import CORSMiddleware
+    app.add_middleware(CORSMiddleware, allow_origin_regex=r"^http://(localhost|127\.0\.0\.1):\d+$",
+                       allow_methods=["*"], allow_headers=["*"], allow_credentials=False)
+
 ERR = {409: {"model": ErrorBody}, 404: {"model": ErrorBody}, 422: {"model": ErrorBody}}
 _SESSION_RE = re.compile(r"^[A-Za-z0-9_-]{6,64}$")
 
