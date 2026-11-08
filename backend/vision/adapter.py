@@ -163,16 +163,24 @@ def analyse_image_native_gemini_baseline(
                 "in pixel coordinates [x1, y1, x2, y2]. Return strict JSON with keys: "
                 '{"bubble_count": int, "boxes_xyxy": [[x1,y1,x2,y2], ...], "escalate_warning": bool}.'
             )
-            resp = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=[pil_img, prompt],
-                config=genai_types.GenerateContentConfig(
-                    temperature=0.0,
-                    response_mime_type="application/json",
-                ),
-            )
+            if hasattr(client, "interactions"):
+                interaction = client.interactions.create(
+                    model="gemini-3.8-flash",
+                    input=[pil_img, prompt],
+                )
+                raw_text = getattr(interaction, "output_text", None) or "{}"
+            else:
+                resp = client.models.generate_content(
+                    model="gemini-3.8-flash",
+                    contents=[pil_img, prompt],
+                    config=genai_types.GenerateContentConfig(
+                        temperature=0.0,
+                        response_mime_type="application/json",
+                    ),
+                )
+                raw_text = resp.text or "{}"
             dt_ms = (time.perf_counter() - t0) * 1000.0
-            parsed = json.loads(resp.text or "{}")
+            parsed = json.loads(raw_text)
             boxes = parsed.get("boxes_xyxy", [])
             dets = [
                 {

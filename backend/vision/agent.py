@@ -768,17 +768,25 @@ def run_autonomous_perception_agent(
                 f"d32_px={d32}, volume_interval_px3={v_int}, max_channel_obstruction_ratio={max_obs}, "
                 f"sceptic_critique='{audit['sceptic_critique']}'."
             )
-            resp = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config=genai_types.GenerateContentConfig(temperature=0.1),
-            )
-            if resp and resp.text:
-                interpretation = resp.text.strip()
+            if hasattr(client, "interactions"):
+                interaction = client.interactions.create(
+                    model="gemini-3.8-flash",
+                    input=prompt,
+                )
+                out_text = getattr(interaction, "output_text", None)
+            else:
+                resp = client.models.generate_content(
+                    model="gemini-3.8-flash",
+                    contents=prompt,
+                    config=genai_types.GenerateContentConfig(temperature=0.1),
+                )
+                out_text = resp.text if resp else None
+            if out_text:
+                interpretation = out_text.strip()
                 session.log_step(
-                    agent_role="perception_orchestrator",
+                    agent_role="chief_chair_orchestrator",
                     action_or_tool="gemini_scientific_synthesis",
-                    input_summary=f"model=gemini-2.5-flash, verified_count={verified_n}",
+                    input_summary=f"model=gemini-3.8-flash, verified_count={verified_n}",
                     finding_summary=interpretation[:140] + ("..." if len(interpretation) > 140 else ""),
                     decision_rationale="Synthesized grounded explanation strictly from computed biophysical telemetry.",
                     duration_ms=(time.perf_counter() - t_gem) * 1000.0,

@@ -65,7 +65,7 @@ py -3 -m venv .venv
 .\.venv\Scripts\pip install -r requirements.txt
 ```
 
-*(Optional)* Copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable live Gemini (`gemini-2.5-flash`) scientific synthesis alongside the specialist perception agent.
+*(Optional)* Copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable live Gemini (`gemini-3.8-flash`) scientific synthesis alongside the specialist perception agent.
 
 ### 1. Run the 3-Way Scientific Benchmark (`evals/evaluate.py`)
 Generates the 18 held-out test cases (`evals/vision_test/`), runs **(A) Single-Shot Baseline**, **(B) Specialist CV Single-Pass**, and **(C) LABMATE Multi-Step Perception + Sceptic Agent**, saves annotated visual overlays to `evals/vision_test/overlays/`, and writes [`evals/REPORT.md`](evals/REPORT.md):
