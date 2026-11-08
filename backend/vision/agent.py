@@ -586,17 +586,25 @@ def run_autonomous_perception_agent(
     interpretation = (
         f"Detected {verified_n} verified bubble(s) (tolerance band {ens['tolerance_band']}) "
         f"with Sauter mean diameter d32={d32:.1f} px, 3D volume interval [{v_int[0]:.0f}, {v_int[1]:.0f}] px^3 "
-        f"(prolate-to-oblate bounds), and max channel obstruction ratio {max_obs*100:.1f}%."
+        f"(prolate-to-oblate bounds), and max optical path/channel obstruction ratio {max_obs*100:.1f}%."
     )
     if max_obs >= 0.45:
         interpretation += (
-            " WARNING: Candidate bubble diameter exceeds 45% of microfluidic channel width, "
-            "posing a potential flow obstruction or incomplete assay filling risk."
+            " WARNING [ref_01, ref_04, ref_05 — R&D Systems DY1707 CRP ELISA & Abcam Troubleshooting]: "
+            "Bubble obstruction >= 45% scatters the 450 nm colorimetric reading (even with 540/570 nm wavelength correction) "
+            "and risks inflating duplicate replicate CV above the < 15% acceptance target. "
+            "Remedy before reading: centrifuge plate briefly or pop bubbles with a sterile dry pipette tip."
         )
     elif verified_n > 0:
-        interpretation += " Microbubbles are small relative to channel width (<45% obstruction); low immediate flow blockage risk."
+        interpretation += (
+            " Minor microbubbles detected (<45% optical path obstruction). Per R&D Systems DY1707 (ref_01, ref_04) "
+            "and Abcam (ref_05), pop meniscus bubbles with a dry pipette tip or centrifuge before the 450 nm / 540 nm plate read "
+            "to keep duplicate CV < 15%."
+        )
     else:
-        interpretation += " Channel appears clear of gas bubble obstructions."
+        interpretation += (
+            " Optical path is clear of gas bubble artifacts [satisfies ref_04 & ref_05 pre-read constraint for 450 nm CRP ELISA]."
+        )
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if use_gemini_orchestrator and api_key and api_key != "your_gemini_api_key_here":
@@ -607,12 +615,12 @@ def run_autonomous_perception_agent(
 
             client = genai.Client(api_key=api_key)
             prompt = (
-                "You are the LABMATE Scientific Perception Investigator for protocol step "
-                f"{protocol_step_id} in experiment {experiment_id}. "
-                "Using ONLY the computed biophysical numbers below (never invent numbers), "
-                "write a concise 2-sentence scientific assessment for the laboratory researcher "
-                "explaining the bubble count, 3D volume range, channel obstruction risk, and what "
-                "the Sceptic agent filtered out.\n"
+                "You are the LABMATE Scientific Perception Investigator for R&D Systems Human CRP DuoSet ELISA (DY1707) "
+                f"step {protocol_step_id} in experiment {experiment_id}. "
+                "Using ONLY the computed biophysical numbers below (never invent numbers) and citing ref_01, ref_04 "
+                "(R&D Systems ELISA Troubleshooting: centrifuge plate before 450 nm read), and ref_05 (Abcam: pop bubbles "
+                "with dry pipette tip to keep duplicate CV < 15%), write a concise 2-sentence scientific assessment "
+                "explaining the bubble count, 3D volume range, 450 nm optical scattering risk, and Sceptic filtering.\n"
                 f"Computed telemetry: verified_count={verified_n}, tolerance_band={ens['tolerance_band']}, "
                 f"d32_px={d32}, volume_interval_px3={v_int}, max_channel_obstruction_ratio={max_obs}, "
                 f"sceptic_critique='{audit['sceptic_critique']}'."
