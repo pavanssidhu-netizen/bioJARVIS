@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bioJARVIS · Autonomous Lab Copilot</title>
+  <title>LARVIS · Autonomous Lab Copilot</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
@@ -168,7 +168,7 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-base font-bold tracking-tight">bioJARVIS</h1>
+            <h1 class="text-base font-bold tracking-tight">LARVIS</h1>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
               V2 SYSTEM
             </span>
@@ -194,7 +194,7 @@
 
     <!-- Hero Section: Luminous 3D Liquid Orb & AI Assistant Greeting -->
     <div class="text-center pt-2 pb-1 space-y-3">
-      <div class="liquid-orb-container cursor-pointer" onclick="startVirtualScientistCall()" title="Click to trigger Live Call with bioJARVIS">
+      <div class="liquid-orb-container cursor-pointer" onclick="startVirtualScientistCall()" title="Click to trigger Live Call with LARVIS">
         <div class="liquid-orb-pulse"></div>
         <div class="liquid-orb"></div>
       </div>
@@ -210,7 +210,7 @@
       <!-- Quick Action Pills -->
       <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
         <button onclick="startVirtualScientistCall()" class="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/25 flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-          <span>📞</span> <span>Call bioJARVIS (Siri Voice / Vance)</span>
+          <span>📞</span> <span>Call LARVIS (Siri Voice / Vance)</span>
         </button>
         <button onclick="switchVideoSource('bench_phone')" class="px-4 py-2 rounded-full glass-panel hover:bg-white text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
           <span>📱</span> <span>Filmable Phone Camera</span>
@@ -459,10 +459,10 @@
             <div class="space-y-2 text-xs" id="callDialogHistory">
               <div class="glass-card rounded-2xl p-3">
                 <span class="font-bold text-slate-700 dark:text-slate-300">Dr. Vance:</span>
-                <span class="text-slate-600 dark:text-slate-400" id="dialogVanceText">"bioJARVIS, I've loaded CEA-24 into Channel 1. Please inspect for bubbles."</span>
+                <span class="text-slate-600 dark:text-slate-400" id="dialogVanceText">"Hi LARVIS, what is the protocol today?"</span>
               </div>
               <div class="glass-card rounded-2xl p-3 bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-500/20">
-                <span class="font-bold text-emerald-700 dark:text-emerald-300">bioJARVIS:</span>
+                <span class="font-bold text-emerald-700 dark:text-emerald-300">LARVIS:</span>
                 <span class="text-emerald-800 dark:text-emerald-200" id="dialogJarvisText">"Standing by. Click 'Start Call' to run live voice interrogation."</span>
               </div>
             </div>
@@ -990,11 +990,11 @@
       setTimeout(() => {
         ind.textContent = 'DR. VANCE SPEAKING';
         ind.className = 'text-[10px] text-rose-500 font-mono font-bold';
-        const q = "bioJARVIS, I've loaded CEA-24 into Channel 1. Please inspect the channel for gas inclusions or bubbles before we start the 37°C incubation.";
+        const q = "Hi LARVIS, what is the protocol today?";
         vText.textContent = `"${q}"`;
 
         speak(q, 'vance', async () => {
-          ind.textContent = 'bioJARVIS COMPUTING BAYESIAN RECOVERY';
+          ind.textContent = 'LARVIS COMPUTING BAYESIAN RECOVERY';
           ind.className = 'text-[10px] text-emerald-600 font-mono font-bold animate-pulse';
           jText.textContent = 'Executing 5-Agent Council & PyTorch GP Optimizer...';
 
@@ -1108,7 +1108,7 @@
         u.rate = 1.0;
         u.pitch = 0.95;
       } else {
-        // bioJARVIS: Apple Siri / Natural Neural voice (warm, silky, zero static)
+        // LARVIS: Apple Siri / Natural Neural voice (warm, silky, zero static)
         const siriVoice = voices.find(v => /Samantha|Siri|Victoria|Karen|Jenny|Aria|Natural|Google UK English Female/i.test(v.name)) 
           || voices.find(v => /female|woman|Zira/i.test(v.name)) 
           || voices[0];
