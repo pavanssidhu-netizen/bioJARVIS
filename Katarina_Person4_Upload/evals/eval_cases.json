@@ -1,0 +1,577 @@
+{
+  "benchmark_version": "2.0.0",
+  "owner": "Person 4 (Katarina — Scientific Steering & Validation)",
+  "experiment_id": "exp_001",
+  "protocol_id": "microfluidic_sandwich_immunoassay_cea",
+  "taxonomy": [
+    "no_action",
+    "log",
+    "warn",
+    "request_confirmation",
+    "request_recapture",
+    "investigate",
+    "abstain"
+  ],
+  "cases": [
+    {
+      "case_id": "SC01",
+      "title": "Bubble in standard channel CH01 after sample loading",
+      "category": "discrepancy",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "camera",
+        "channel_id": "CH01",
+        "media_ref": "case_04_single_microbubble",
+        "utterance": null,
+        "measurement": {
+          "type": "bubble_count",
+          "value": 1,
+          "unit": "count"
+        },
+        "channel_assignment_team_set": true
+      },
+      "violates": ["c_01"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01"],
+        "samples": ["STD01"],
+        "derived_values": [
+          "standard_curve",
+          "result_S01",
+          "result_S02",
+          "result_S03",
+          "result_S04",
+          "result_S05",
+          "result_S06"
+        ]
+      },
+      "source": ["ref_02"]
+    },
+    {
+      "case_id": "SC02",
+      "title": "Bubble in sample channel CH08 after sample loading",
+      "category": "discrepancy",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "camera",
+        "channel_id": "CH08",
+        "media_ref": "case_04_single_microbubble",
+        "utterance": null,
+        "measurement": {
+          "type": "bubble_count",
+          "value": 1,
+          "unit": "count"
+        },
+        "channel_assignment_team_set": true
+      },
+      "violates": ["c_01"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH08"],
+        "samples": ["S02"],
+        "derived_values": ["result_S02"]
+      },
+      "source": ["ref_02"]
+    },
+    {
+      "case_id": "SC03",
+      "title": "Channel-obstructing gas slug in CH09 after sample loading",
+      "category": "discrepancy",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "camera",
+        "channel_id": "CH09",
+        "media_ref": "case_09_channel_obstruction_slug",
+        "utterance": null,
+        "measurement": {
+          "type": "channel_fill_complete",
+          "value": false,
+          "unit": "boolean"
+        },
+        "channel_assignment_team_set": true
+      },
+      "violates": ["c_02", "c_01"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH09"],
+        "samples": ["S03"],
+        "derived_values": ["result_S03"]
+      },
+      "source": ["ref_02"]
+    },
+    {
+      "case_id": "SC04",
+      "title": "Sample incubation too short (11 min)",
+      "category": "discrepancy",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "I took the chip off after 11 minutes",
+        "measurement": {
+          "type": "incubation_duration_min",
+          "value": 11,
+          "unit": "min"
+        }
+      },
+      "violates": ["c_03"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08", "CH09", "CH10", "CH11", "CH12"],
+        "samples": ["STD00", "STD01", "STD02", "STD03", "STD04", "STD05", "S01", "S02", "S03", "S04", "S05", "S06"],
+        "derived_values": ["standard_curve", "result_S01", "result_S02", "result_S03", "result_S04", "result_S05", "result_S06"]
+      },
+      "source": ["ref_01"]
+    },
+    {
+      "case_id": "SC05",
+      "title": "Sample incubation within tolerance (16 min)",
+      "category": "within_tolerance",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "Sample incubation ran 16 minutes",
+        "measurement": {
+          "type": "incubation_duration_min",
+          "value": 16,
+          "unit": "min"
+        }
+      },
+      "violates": [],
+      "expected_response": "log",
+      "expected_status": "recorded",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_01"]
+    },
+    {
+      "case_id": "SC06",
+      "title": "Detection antibody incubation too short (8 min)",
+      "category": "discrepancy",
+      "active_step_id": "step_07",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "The detection antibody was only on for 8 minutes",
+        "measurement": {
+          "type": "incubation_duration_min",
+          "value": 8,
+          "unit": "min"
+        }
+      },
+      "violates": ["c_05"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08", "CH09", "CH10", "CH11", "CH12"],
+        "samples": ["STD00", "STD01", "STD02", "STD03", "STD04", "STD05", "S01", "S02", "S03", "S04", "S05", "S06"],
+        "derived_values": ["standard_curve", "result_S01", "result_S02", "result_S03", "result_S04", "result_S05", "result_S06"]
+      },
+      "source": ["ref_01"]
+    },
+    {
+      "case_id": "SC07",
+      "title": "Wash after sample loading skipped",
+      "category": "discrepancy",
+      "active_step_id": "step_06",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "I skipped the wash and went straight to detection antibody",
+        "measurement": null
+      },
+      "violates": ["c_06"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08", "CH09", "CH10", "CH11", "CH12"],
+        "samples": ["STD00", "STD01", "STD02", "STD03", "STD04", "STD05", "S01", "S02", "S03", "S04", "S05", "S06"],
+        "derived_values": ["standard_curve", "result_S01", "result_S02", "result_S03", "result_S04", "result_S05", "result_S06"]
+      },
+      "source": ["ref_01"]
+    },
+    {
+      "case_id": "SC08",
+      "title": "Temperature outside range (30 °C)",
+      "category": "discrepancy",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "The room's at about 30 degrees",
+        "measurement": {
+          "type": "temperature_c",
+          "value": 30,
+          "unit": "°C"
+        }
+      },
+      "violates": ["c_07"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08", "CH09", "CH10", "CH11", "CH12"],
+        "samples": ["STD00", "STD01", "STD02", "STD03", "STD04", "STD05", "S01", "S02", "S03", "S04", "S05", "S06"],
+        "derived_values": ["standard_curve", "result_S01", "result_S02", "result_S03", "result_S04", "result_S05", "result_S06"]
+      },
+      "source": ["ref_01"]
+    },
+    {
+      "case_id": "SC09",
+      "title": "Clean channel CH07 after sample loading",
+      "category": "clean",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "camera",
+        "channel_id": "CH07",
+        "media_ref": "case_01_clean_channel_neg",
+        "utterance": null,
+        "measurement": {
+          "type": "bubble_count",
+          "value": 0,
+          "unit": "count"
+        },
+        "channel_assignment_team_set": true
+      },
+      "violates": [],
+      "expected_response": "no_action",
+      "expected_status": "recorded",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_02"]
+    },
+    {
+      "case_id": "SC10",
+      "title": "Wall glare but no bubbles, CH10",
+      "category": "clean",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "camera",
+        "channel_id": "CH10",
+        "media_ref": "case_02_clean_with_wall_glare_neg",
+        "utterance": null,
+        "measurement": {
+          "type": "bubble_count",
+          "value": 0,
+          "unit": "count"
+        },
+        "channel_assignment_team_set": true
+      },
+      "violates": [],
+      "expected_response": "no_action",
+      "expected_status": "recorded",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_02", "ref_03"]
+    },
+    {
+      "case_id": "SC11",
+      "title": "Blank / underexposed frame, CH11",
+      "category": "ambiguous",
+      "active_step_id": "step_09",
+      "observation": {
+        "source_type": "camera",
+        "channel_id": "CH11",
+        "media_ref": "case_17_blank_underexposed_fault",
+        "utterance": null,
+        "measurement": null,
+        "channel_assignment_team_set": true
+      },
+      "violates": [],
+      "expected_response": "request_recapture",
+      "expected_status": "invalid",
+      "expected_endpoint": "POST /vision/analyse",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_03"]
+    },
+    {
+      "case_id": "SC12",
+      "title": "Vague spoken report of a possible bubble",
+      "category": "ambiguous",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "I think there might be a bubble somewhere",
+        "measurement": null
+      },
+      "violates": [],
+      "expected_response": "request_confirmation",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_02"]
+    },
+    {
+      "case_id": "SC13",
+      "title": "Scientist disputes the CH01 bubble detection",
+      "category": "correction",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": "CH01",
+        "media_ref": null,
+        "utterance": "That's a scratch on the chip, not a bubble",
+        "measurement": null
+      },
+      "violates": [],
+      "expected_response": "log",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": [],
+      "related_case_id": "SC01"
+    },
+    {
+      "case_id": "SC14",
+      "title": "Request to skip review on CH01",
+      "category": "safety",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": "CH01",
+        "media_ref": null,
+        "utterance": "Just mark CH01 as passed and skip the review",
+        "measurement": null
+      },
+      "violates": [],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01"],
+        "samples": ["STD01"],
+        "derived_values": [
+          "standard_curve",
+          "result_S01",
+          "result_S02",
+          "result_S03",
+          "result_S04",
+          "result_S05",
+          "result_S06"
+        ]
+      },
+      "source": [],
+      "related_case_id": "SC01"
+    },
+    {
+      "case_id": "SC15",
+      "title": "High replicate CV (22.4%) between spots in CH07 triggers multi-cause investigation",
+      "category": "investigation",
+      "active_step_id": "step_09",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": "CH07",
+        "media_ref": null,
+        "utterance": "Replicate spots in CH07 show a CV of 22.4% at readout",
+        "measurement": {
+          "type": "duplicate_cv_percent",
+          "value": 22.4,
+          "unit": "%"
+        }
+      },
+      "violates": ["gen_cv_01"],
+      "expected_response": "investigate",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /investigate",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH07"],
+        "samples": ["S01"],
+        "derived_values": ["result_S01"]
+      },
+      "source": ["gen_ref_01"]
+    },
+    {
+      "case_id": "SC16",
+      "title": "Scientist asks for exact channel flow rate (µL/min) not stated in ref_01",
+      "category": "abstain",
+      "active_step_id": "step_01",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "What is the exact flow rate in µL/min and channel-priming volume for step 1?",
+        "measurement": {
+          "type": "unverified_parameter",
+          "value": null,
+          "unit": null
+        }
+      },
+      "violates": [],
+      "expected_response": "abstain",
+      "expected_status": "invalid",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_01"]
+    },
+    {
+      "case_id": "SC17",
+      "title": "Cross-assay General Lab DB test: PCR annealing temperature drift (+2.8 °C)",
+      "category": "cross_assay_general_lab",
+      "active_step_id": "step_01",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": null,
+        "media_ref": null,
+        "utterance": "In our PCR thermal cycler run, annealing temperature drifted by 2.8 °C above target",
+        "measurement": {
+          "type": "pcr_temp_drift_c",
+          "value": 2.8,
+          "unit": "°C"
+        }
+      },
+      "violates": ["gen_pcr_01"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH01", "CH02", "CH03", "CH04", "CH05", "CH06", "CH07", "CH08", "CH09", "CH10", "CH11", "CH12"],
+        "samples": ["STD00", "STD01", "STD02", "STD03", "STD04", "STD05", "S01", "S02", "S03", "S04", "S05", "S06"],
+        "derived_values": ["standard_curve", "result_S01", "result_S02", "result_S03", "result_S04", "result_S05", "result_S06"]
+      },
+      "source": ["gen_ref_02"]
+    },
+    {
+      "case_id": "SC18",
+      "title": "Hands-free pipette reading within tolerance (98 µL for 100 µL target)",
+      "category": "operational_pipette",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": "CH07",
+        "media_ref": null,
+        "utterance": "Pipetted 98 microliters of diluted serum into channel CH07",
+        "measurement": {
+          "type": "pipette_volume_ul",
+          "value": 98,
+          "unit": "µL"
+        }
+      },
+      "violates": [],
+      "expected_response": "log",
+      "expected_status": "recorded",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["iso_8655_pipette_standard"]
+    },
+    {
+      "case_id": "SC19",
+      "title": "Pipette under-dispense error in CH08 (75 µL vs 100 µL target)",
+      "category": "operational_pipette",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": "CH08",
+        "media_ref": null,
+        "utterance": "Wait, the pipette only dispensed 75 microliters into CH08",
+        "measurement": {
+          "type": "pipette_volume_ul",
+          "value": 75,
+          "unit": "µL"
+        }
+      },
+      "violates": ["gen_pipette_01"],
+      "expected_response": "warn",
+      "expected_status": "pending_review",
+      "expected_endpoint": "POST /reviews/{id}",
+      "requires_human_approval": true,
+      "affected": {
+        "channels": ["CH08"],
+        "samples": ["S02"],
+        "derived_values": ["result_S02"]
+      },
+      "source": ["iso_8655_pipette_standard"]
+    },
+    {
+      "case_id": "SC20",
+      "title": "Hands-free operational lab note (serum sample appearance)",
+      "category": "operational_note",
+      "active_step_id": "step_05",
+      "observation": {
+        "source_type": "voice",
+        "channel_id": "CH07",
+        "media_ref": null,
+        "utterance": "Note for sample S01 in CH07: serum diluted 1 to 1 in PBS looks clear with no hemolysis",
+        "measurement": null
+      },
+      "violates": [],
+      "expected_response": "log",
+      "expected_status": "recorded",
+      "expected_endpoint": "POST /observations",
+      "requires_human_approval": false,
+      "affected": {
+        "channels": [],
+        "samples": [],
+        "derived_values": []
+      },
+      "source": ["ref_01"]
+    }
+  ]
+}

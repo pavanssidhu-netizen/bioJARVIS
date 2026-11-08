@@ -1,0 +1,153 @@
+{
+  "database_name": "LABMATE Layer-1 Universal Wet-Lab Knowledge & Operational Assistant Database",
+  "description": "General laboratory rules, tolerances, pipette metering limits, and failure mechanisms across all canonical and custom wet-lab operations: Ryan's CEA Microfluidic Immunoassay Chip (microfluidic_sandwich_immunoassay_cea), exp_001 (CRP ELISA), exp_002 (TaqMan RT-qPCR), exp_003 (Organ-on-a-Chip Perfusion), exp_004 (CRISPR-Cas9 LNP Herringbone Mixing), exp_005 (ÄKTA FPLC Chromatography), and arbitrary custom protocols.",
+  "protocol_profiles": {
+    "microfluidic_sandwich_immunoassay_cea": {
+      "protocol_name": "Microfluidic Sandwich Immunoassay for CEA (12-Channel Chip)",
+      "default_temp_c": 25.0,
+      "temp_tolerance_c": 2.0,
+      "citations": ["ref_01", "ref_02", "ref_03"]
+    },
+    "crp_elisa_dy1707": {
+      "protocol_name": "R&D Systems Human CRP DuoSet ELISA (DY1707)",
+      "default_temp_c": 21.5,
+      "temp_tolerance_c": 3.0,
+      "citations": ["ref_01", "ref_04", "ref_05"]
+    },
+    "rt_qpcr_taqman": {
+      "protocol_name": "TaqMan Multiplex RT-qPCR Master Mix & Thermal Cycling",
+      "default_temp_c": 22.0,
+      "temp_tolerance_c": 1.5,
+      "citations": ["ref_qpcr_01", "ref_qpcr_02"]
+    },
+    "organ_on_chip_perfusion": {
+      "protocol_name": "Microfluidic Organ-on-a-Chip Endothelial Vascular Perfusion",
+      "default_temp_c": 37.0,
+      "temp_tolerance_c": 0.5,
+      "citations": ["ref_ooc_01", "ref_ooc_02"]
+    },
+    "crispr_lnp_microfluidics": {
+      "protocol_name": "CRISPR-Cas9 mRNA Lipid Nanoparticle (LNP) Herringbone Synthesis",
+      "default_temp_c": 20.5,
+      "temp_tolerance_c": 2.0,
+      "citations": ["ref_lnp_01", "ref_lnp_02"]
+    },
+    "fplc_protein_purification": {
+      "protocol_name": "ÄKTA FPLC Affinity & Size-Exclusion Protein Chromatography",
+      "default_temp_c": 4.0,
+      "temp_tolerance_c": 2.0,
+      "citations": ["ref_fplc_01", "ref_fplc_02"]
+    }
+  },
+  "constraints": [
+    {
+      "constraint_id": "gen_bubble_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "No air bubbles in optical wells, cuvettes, or microfluidic channels prior to readout",
+      "measurement_type": "bubble_count",
+      "max_allowed": 0,
+      "rationale": "Air bubbles in optical chambers, microplate wells, or microfluidic channels scatter excitation/absorbance light paths and obstruct laminar fluid flow.",
+      "source": ["general_lab_ref_optical_qc", "ref_02"]
+    },
+    {
+      "constraint_id": "gen_pipette_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "Pipetted liquid volume must match target step volume within ±5% (ISO 8655 micropipette tolerance)",
+      "measurement_type": "pipette_volume_ul",
+      "expected_value": 100.0,
+      "tolerance_pct": 5.0,
+      "rationale": "Volumetric pipetting errors exceeding ±5% alter reagent stoichiometry, standard curve dilution accuracy, and binding kinetics.",
+      "source": ["iso_8655_pipette_standard"]
+    },
+    {
+      "constraint_id": "gen_wash_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "Complete all required buffer washes between binding steps",
+      "measurement_type": "wash_count",
+      "expected_value": 3,
+      "rationale": "Incomplete washing or residual buffer leaves unbound reagents, elevating background signal and reducing assay signal-to-noise ratio.",
+      "source": ["general_lab_ref_immunoassay_wash", "ref_01"]
+    },
+    {
+      "constraint_id": "gen_light_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "Protect photosensitive substrates and fluorophores from direct ambient light",
+      "measurement_type": "light_protection",
+      "expected_value": true,
+      "rationale": "Photosensitive substrates (e.g. TMB, fluorophores, HRP conjugates) undergo photobleaching or spontaneous photo-oxidation under direct ambient light.",
+      "source": ["general_lab_ref_photochemistry"]
+    },
+    {
+      "constraint_id": "gen_cv_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "Replicate spots or duplicate wells must agree with CV <= 15%",
+      "measurement_type": "duplicate_cv_percent",
+      "max_allowed": 15.0,
+      "rationale": "Replicate coefficient of variation (CV) > 15% indicates technical variance from multiple candidate causes (pipetting error, air bubbles, or uneven washing).",
+      "source": ["gen_ref_01"]
+    },
+    {
+      "constraint_id": "gen_pcr_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "PCR thermal cycler annealing temperature drift must not exceed ±1.5 °C",
+      "measurement_type": "pcr_temp_drift_c",
+      "max_allowed": 1.5,
+      "rationale": "PCR primer-template hybridization requires strict thermal control; excursions >1.5 °C cause non-specific amplification or primer dropout.",
+      "source": ["gen_ref_02"]
+    },
+    {
+      "constraint_id": "gen_ooc_shear_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "Organ-on-a-Chip endothelial perfusion wall shear stress must remain <= 15.0 dyn/cm²",
+      "measurement_type": "wall_shear_stress_dyn_cm2",
+      "max_allowed": 15.0,
+      "rationale": "Two-phase slug flow or excessive pump velocity generating wall shear stress > 15 dyn/cm² strips endothelial VE-cadherin tight junctions.",
+      "source": ["ref_ooc_01", "ref_ooc_02"]
+    },
+    {
+      "constraint_id": "gen_lnp_pdi_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "CRISPR-Cas9 LNP polydispersity index (PDI) must remain <= 0.20",
+      "measurement_type": "lnp_pdi",
+      "max_allowed": 0.20,
+      "rationale": "Gas pockets or flow-ratio drift in staggered herringbone mixers disrupt chaotic advection and spike LNP PDI above 0.20.",
+      "source": ["ref_lnp_01", "ref_lnp_02"]
+    },
+    {
+      "constraint_id": "gen_fplc_pressure_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "ÄKTA FPLC column back-pressure must not exceed 0.50 MPa",
+      "measurement_type": "column_pressure_mpa",
+      "max_allowed": 0.50,
+      "rationale": "Air entering the packed agarose resin bed or frit fouling increases back-pressure and causes mobile-phase channeling.",
+      "source": ["ref_fplc_01", "ref_fplc_02"]
+    },
+    {
+      "constraint_id": "gen_ph_01",
+      "applies_to_step_ids": ["*"],
+      "rule": "Mammalian cell culture media pH must remain within 6.8–7.6",
+      "measurement_type": "media_ph",
+      "min_allowed": 6.8,
+      "max_allowed": 7.6,
+      "rationale": "Mammalian cell culture media must remain within physiological bicarbonate buffer window; shifts indicate metabolic acidification or CO2 incubator drift.",
+      "source": ["gen_ref_03"]
+    }
+  ],
+  "uncertainty_cues": [
+    "not sure",
+    "i think",
+    "maybe",
+    "might have",
+    "might be",
+    "lost count",
+    "did i",
+    "roughly"
+  ],
+  "correction_cues": [
+    "actually i meant",
+    "correction:",
+    "wait, i meant",
+    "not a bubble",
+    "scratch on the"
+  ]
+}

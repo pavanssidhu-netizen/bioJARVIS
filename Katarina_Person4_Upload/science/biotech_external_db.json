@@ -1,0 +1,144 @@
+{
+  "schema_note": "Agentverse 2026 Biotech Track Compliant Multi-Database Knowledge Store & Synthetic Cross-Researcher Reproducibility Log",
+  "synthetic_data_disclosure": {
+    "contains_synthetic_run_logs": true,
+    "synthetic_data_label": "EXPLICITLY SYNTHETIC BENCHMARK DATA — Generated deterministically by LABMATE evaluation harness to model inter-operator wet-lab variability. Not real clinical or patient performance data. Zero real patient data used.",
+    "external_databases_integrated": [
+      "Literature: PubMed & Europe PMC (PMID:22565653, PMID:35438971, DOI:10.1039/d4lc00671b)",
+      "Proteins & Structures: UniProtKB (P06731 CEACAM5/CEA, P02741 CRP, P01857 IgG1) & AlphaFold DB (AF-P06731-F1)",
+      "Molecules & Buffers: PubChem (CID:24978514 Phosphate Buffered Saline, CID:448537 Tween-20)",
+      "Dataset Hubs: Zenodo (10.5281/zenodo.19582132 kLarity CC-BY 4.0) & OSF (3nwyx BubbleID MIT License)"
+    ]
+  },
+  "pubmed_europe_pmc_records": [
+    {
+      "ref_id": "ref_01",
+      "database": "PubMed / Europe PMC",
+      "pmid": "22565653",
+      "doi": "10.1039/c2lc40145b",
+      "title": "High-throughput immunoassay through in-channel microfluidic patterning",
+      "authors": "Zheng C, Wang J, Pang Y, Wang J, Li W, Ge Z, Huang Y",
+      "journal": "Lab on a Chip 2012;12(14):2487-2490",
+      "licence": "Royal Society of Chemistry (Cited Protocol Source)",
+      "key_findings": "Specifies 10 min BSA blocking, 15 min capture antibody (500 µg/mL), 15 min sample incubation (1:1 serum in PBS), 10 min detection antibody (125 µg/mL), and 3 min PBS washes at 25 °C. Under-incubation (<13 min) or over-incubation (>17 min) causes incomplete surface adsorption, replicate spot variance, and false concentration readings.",
+      "relevant_measurements": ["incubation_duration_min", "wash_duration_min", "temperature_c", "pipette_volume_ul"]
+    },
+    {
+      "ref_id": "ref_02",
+      "database": "PubMed / Europe PMC",
+      "pmid": "35438971",
+      "doi": "10.1021/acs.analchem.1c04827",
+      "title": "Artificial Intelligence-Controlled Microfluidic Device for Fluid Automation and Bubble Removal of Immunoassay Operated by a Smartphone",
+      "authors": "Bhuiyan NH, Hong JH, Uddin MJ, Shim JS",
+      "journal": "Analytical Chemistry 2022;94(9):3872-3880",
+      "licence": "ACS Publications (Cited Protocol Source)",
+      "key_findings": "Demonstrates that trapped air microbubbles and incomplete channel filling (gas slugs) in microfluidic immunoassay channels physically mask patterned capture spots and scatter optical readout signals, requiring bubble removal or channel re-filling before readout.",
+      "relevant_measurements": ["bubble_count", "channel_fill_complete", "duplicate_cv_percent"]
+    },
+    {
+      "ref_id": "ref_03",
+      "database": "Europe PMC",
+      "pmid": "39360812",
+      "doi": "10.1039/d4lc00671b",
+      "title": "Artificial intelligence performance in testing microfluidics for point-of-care",
+      "authors": "Doganay MT, Chakraborty P, Bommakanti SM, et al.",
+      "journal": "Lab on a Chip 2024;24(21):4998-5008",
+      "licence": "CC-BY 3.0 / Royal Society of Chemistry",
+      "key_findings": "Transparent bubbles create refractive index boundaries and variable light scattering; wall glare and underexposed camera frames challenge optical classification and require image quality gating.",
+      "relevant_measurements": ["bubble_count", "image_quality"]
+    }
+  ],
+  "uniprot_alphafold_records": [
+    {
+      "uniprot_id": "P06731",
+      "alphafold_id": "AF-P06731-F1",
+      "database": "UniProtKB / AlphaFold DB",
+      "protein_name": "Carcinoembryonic antigen-related cell adhesion molecule 5 (CEACAM5 / CEA)",
+      "organism": "Homo sapiens (Human)",
+      "mass_da": 76795,
+      "biophysical_properties": {
+        "optimal_binding_temp_c": 25.0,
+        "safe_temp_window_c": [23.0, 27.0],
+        "optimal_ph_window": [7.2, 7.6],
+        "thermal_sensitivity_note": "Heavy N-linked glycosylation (60% carbohydrate by weight) stabilizes IgV-like N-domain, but ambient excursions >=30 °C accelerate off-rate (k_off) of capture/detection mAb complexes and increase non-specific serum background binding."
+      },
+      "licence": "CC-BY 4.0 (UniProt Consortium / EMBL-EBI)"
+    },
+    {
+      "uniprot_id": "P02741",
+      "alphafold_id": "AF-P02741-F1",
+      "database": "UniProtKB / AlphaFold DB",
+      "protein_name": "C-reactive protein (CRP)",
+      "organism": "Homo sapiens (Human)",
+      "mass_da": 25039,
+      "biophysical_properties": {
+        "optimal_binding_temp_c": 22.0,
+        "safe_temp_window_c": [20.0, 25.0],
+        "optimal_ph_window": [7.2, 7.4],
+        "thermal_sensitivity_note": "Pentameric calcium-dependent ligand binding; requires strict pH 7.2-7.4 PBS/BSA diluent and complete 3x Tween-20 washing to prevent monomeric dissociation."
+      },
+      "licence": "CC-BY 4.0 (UniProt Consortium / EMBL-EBI)"
+    }
+  ],
+  "pubchem_reagent_records": [
+    {
+      "pubchem_cid": "24978514",
+      "database": "PubChem (NCBI)",
+      "compound_name": "Phosphate-Buffered Saline (PBS, 1X pH 7.4)",
+      "role_in_protocol": "Sample dilution matrix (1:1 serum dilution) and 3-minute inter-step microfluidic channel wash buffer",
+      "chemical_note": "Skipping the 3-minute PBS wash (violation of c_06) leaves unbound serum proteins and free detection antibodies in the PDMS channel lumen, causing high non-specific fluorescence background across all channels.",
+      "licence": "Public Domain (NCBI PubChem)"
+    },
+    {
+      "pubchem_cid": "448537",
+      "database": "PubChem (NCBI)",
+      "compound_name": "Polysorbate 20 (Tween-20 Surfactant)",
+      "role_in_protocol": "Non-ionic surfactant reducing gas-liquid interfacial tension and non-specific protein adsorption",
+      "chemical_note": "Low surfactant wetting or rapid syringe injection traps air pockets at hydrophobic PDMS channel corners (ref_02).",
+      "licence": "Public Domain (NCBI PubChem)"
+    }
+  ],
+  "cross_researcher_reproducibility_runs": {
+    "synthetic_note": "Explicitly synthetic benchmark dataset comparing two operators running protocol 'microfluidic_sandwich_immunoassay_cea' (exp_001) to diagnose inter-researcher reproducibility discrepancies.",
+    "runs": {
+      "run_person_A": {
+        "run_id": "run_person_A",
+        "researcher": "Researcher A (Dr. Alice — Reference Gold-Standard Run)",
+        "protocol_id": "microfluidic_sandwich_immunoassay_cea",
+        "outcome_status": "reproducible_pass",
+        "standard_curve_r2": 0.998,
+        "replicate_spot_cv_pct": 4.2,
+        "step_metrics": {
+          "step_01_block_duration_min": 10.0,
+          "step_03_capture_ab_duration_min": 15.0,
+          "step_05_sample_incubation_min": 15.0,
+          "step_05_temperature_c": 25.0,
+          "step_05_pipette_volume_ul_CH08": 100.0,
+          "step_05_bubble_count_CH01": 0,
+          "step_05_bubble_count_CH08": 0,
+          "step_06_wash_duration_min": 3.0,
+          "step_07_detection_ab_duration_min": 10.0
+        }
+      },
+      "run_person_B": {
+        "run_id": "run_person_B",
+        "researcher": "Researcher B (Dr. Ben — Discrepant Run on Same Protocol)",
+        "protocol_id": "microfluidic_sandwich_immunoassay_cea",
+        "outcome_status": "high_variance_flagged",
+        "standard_curve_r2": 0.841,
+        "replicate_spot_cv_pct": 22.4,
+        "step_metrics": {
+          "step_01_block_duration_min": 10.0,
+          "step_03_capture_ab_duration_min": 15.0,
+          "step_05_sample_incubation_min": 11.0,
+          "step_05_temperature_c": 30.0,
+          "step_05_pipette_volume_ul_CH08": 75.0,
+          "step_05_bubble_count_CH01": 1,
+          "step_05_bubble_count_CH08": 0,
+          "step_06_wash_duration_min": 0.0,
+          "step_07_detection_ab_duration_min": 8.0
+        }
+      }
+    }
+  }
+}
