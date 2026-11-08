@@ -1,7 +1,7 @@
-"""Local dev server: LABMATE API + built Flutter web app on ONE origin, bound to loopback only.
+"""Local dev server: LABMATE API + built Flutter web app on ONE origin, bound to 0.0.0.0.
 
     .venv/bin/python scripts/dev_server.py            # http://127.0.0.1:8000
-Phone access goes through the Vercel deployment, not this server.
+Accessible via localhost or local network IP.
 """
 from __future__ import annotations
 
@@ -25,4 +25,5 @@ else:
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8000"))
-    uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
+    host = os.getenv("HOST", "0.0.0.0")
+    uvicorn.run(app, host=host, port=port, log_level="warning")
