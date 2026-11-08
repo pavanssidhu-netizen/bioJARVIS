@@ -1,0 +1,22 @@
+{
+  "case_id": "case_04_single_microbubble",
+  "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_04_single_microbubble.png",
+  "category": "standard_microfluidics",
+  "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+  "ground_truth": {
+    "valid_bubble_count": 1,
+    "border_clipped_artifacts": 0,
+    "wall_glare_artifact_present": false,
+    "is_unusable_blank_frame": false,
+    "boxes_xyxy": [
+      [
+        162.0,
+        138.0,
+        198.0,
+        172.0
+      ]
+    ],
+    "should_escalate_obstruction": false,
+    "max_obstruction_ratio": 0.2332
+  }
+}

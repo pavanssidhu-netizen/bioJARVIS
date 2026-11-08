@@ -1,0 +1,38 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+*secret*
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache & build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Large model checkpoints, generated PNG test sets & raw datasets (re-generated via evals/evaluate.py)
+models/*.pt
+models/*.onnx
+models/*.pth
+evals/vision_test/images/*.png
+evals/vision_test/overlays/*.png
+*.zip
+*.avi
+*.mp4
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

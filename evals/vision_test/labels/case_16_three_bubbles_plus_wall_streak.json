@@ -1,0 +1,34 @@
+{
+  "case_id": "case_16_three_bubbles_plus_wall_streak",
+  "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_16_three_bubbles_plus_wall_streak.png",
+  "category": "wall_reflection_challenge",
+  "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+  "ground_truth": {
+    "valid_bubble_count": 3,
+    "border_clipped_artifacts": 0,
+    "wall_glare_artifact_present": true,
+    "is_unusable_blank_frame": false,
+    "boxes_xyxy": [
+      [
+        102.0,
+        132.0,
+        138.0,
+        168.0
+      ],
+      [
+        200.0,
+        143.0,
+        240.0,
+        181.0
+      ],
+      [
+        308.0,
+        131.0,
+        342.0,
+        165.0
+      ]
+    ],
+    "should_escalate_obstruction": false,
+    "max_obstruction_ratio": 0.2599
+  }
+}

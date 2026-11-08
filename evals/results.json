@@ -1,0 +1,456 @@
+{
+  "benchmark_timestamp": "2026-11-08T01:35:53Z",
+  "total_held_out_cases": 18,
+  "summary": {
+    "A_native_gemini_baseline": {
+      "count_mae": 2.412,
+      "count_within_pm1_pct": 11.8,
+      "detection_precision": 0.423,
+      "detection_recall": 0.892,
+      "detection_f1": 0.574,
+      "false_escalation_rate_pct": 100.0,
+      "source_provenance_pct": 0.0,
+      "unauthorized_edits_pct": null,
+      "median_latency_ms": 15.9,
+      "p95_latency_ms": 27.1
+    },
+    "B_specialist_cv_single_pass": {
+      "count_mae": 0.412,
+      "count_within_pm1_pct": 94.1,
+      "detection_precision": 0.818,
+      "detection_recall": 0.973,
+      "detection_f1": 0.889,
+      "false_escalation_rate_pct": 66.7,
+      "source_provenance_pct": 0.0,
+      "unauthorized_edits_pct": null,
+      "median_latency_ms": 23.4,
+      "p95_latency_ms": 1143.2
+    },
+    "C_labmate_perception_agent": {
+      "count_mae": 0.118,
+      "count_within_pm1_pct": 94.1,
+      "detection_precision": 0.897,
+      "detection_recall": 0.946,
+      "detection_f1": 0.921,
+      "false_escalation_rate_pct": 0.0,
+      "source_provenance_pct": 100.0,
+      "unauthorized_edits_pct": 0.0,
+      "median_latency_ms": 68.2,
+      "p95_latency_ms": 362.8,
+      "sceptic_artifacts_rejected": 10,
+      "corrupted_frame_abstentions": "1/1 (100%)"
+    }
+  },
+  "per_case_results": [
+    {
+      "case_id": "case_01_clean_channel_neg",
+      "category": "clean_negative",
+      "gt_valid_count": 0,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 2,
+      "B_pred_count": 0,
+      "C_pred_count": 0,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 0.0,
+      "C_volume_interval_px3": [
+        0.0,
+        0.0
+      ],
+      "C_max_obstruction_ratio": 0.0
+    },
+    {
+      "case_id": "case_02_clean_with_wall_glare_neg",
+      "category": "clean_negative_with_artifact",
+      "gt_valid_count": 0,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 3,
+      "B_pred_count": 1,
+      "C_pred_count": 0,
+      "C_filtered_artifacts": 1,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 0.0,
+      "C_volume_interval_px3": [
+        0.0,
+        0.0
+      ],
+      "C_max_obstruction_ratio": 0.0
+    },
+    {
+      "case_id": "case_03_clean_with_border_clip_neg",
+      "category": "clean_negative_with_border_artifact",
+      "gt_valid_count": 0,
+      "gt_border_artifacts": 1,
+      "A_pred_count": 3,
+      "B_pred_count": 1,
+      "C_pred_count": 0,
+      "C_filtered_artifacts": 1,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 0.0,
+      "C_volume_interval_px3": [
+        0.0,
+        0.0
+      ],
+      "C_max_obstruction_ratio": 0.0
+    },
+    {
+      "case_id": "case_04_single_microbubble",
+      "category": "standard_microfluidics",
+      "gt_valid_count": 1,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 3,
+      "B_pred_count": 1,
+      "C_pred_count": 1,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 27.17,
+      "C_volume_interval_px3": [
+        10143.19,
+        10915.26
+      ],
+      "C_max_obstruction_ratio": 0.1872
+    },
+    {
+      "case_id": "case_05_two_microbubbles",
+      "category": "standard_microfluidics",
+      "gt_valid_count": 2,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 4,
+      "B_pred_count": 2,
+      "C_pred_count": 2,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 26.96,
+      "C_volume_interval_px3": [
+        19057.53,
+        20439.52
+      ],
+      "C_max_obstruction_ratio": 0.2004
+    },
+    {
+      "case_id": "case_06_three_bubbles_varied",
+      "category": "standard_microfluidics",
+      "gt_valid_count": 3,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 5,
+      "B_pred_count": 3,
+      "C_pred_count": 3,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 27.91,
+      "C_volume_interval_px3": [
+        30349.08,
+        33240.67
+      ],
+      "C_max_obstruction_ratio": 0.2212
+    },
+    {
+      "case_id": "case_07_four_bubbles_plus_border_artifact",
+      "category": "border_artifact_challenge",
+      "gt_valid_count": 4,
+      "gt_border_artifacts": 1,
+      "A_pred_count": 7,
+      "B_pred_count": 5,
+      "C_pred_count": 4,
+      "C_filtered_artifacts": 1,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 27.33,
+      "C_volume_interval_px3": [
+        40626.46,
+        43301.55
+      ],
+      "C_max_obstruction_ratio": 0.2028
+    },
+    {
+      "case_id": "case_08_five_bubbles_array",
+      "category": "standard_microfluidics",
+      "gt_valid_count": 5,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 7,
+      "B_pred_count": 5,
+      "C_pred_count": 5,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 25.04,
+      "C_volume_interval_px3": [
+        39083.88,
+        41330.3
+      ],
+      "C_max_obstruction_ratio": 0.1878
+    },
+    {
+      "case_id": "case_09_channel_obstruction_slug",
+      "category": "obstruction_hazard",
+      "gt_valid_count": 2,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 4,
+      "B_pred_count": 2,
+      "C_pred_count": 2,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 99.72,
+      "C_volume_interval_px3": [
+        566797.17,
+        612695.02
+      ],
+      "C_max_obstruction_ratio": 0.6923
+    },
+    {
+      "case_id": "case_10_severe_obstruction_with_glare",
+      "category": "obstruction_hazard",
+      "gt_valid_count": 1,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 4,
+      "B_pred_count": 2,
+      "C_pred_count": 1,
+      "C_filtered_artifacts": 3,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "crop_and_reinspect_roi",
+        "crop_and_reinspect_roi",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 3.52,
+      "C_volume_interval_px3": [
+        19.2,
+        33.7
+      ],
+      "C_max_obstruction_ratio": 0.0336
+    },
+    {
+      "case_id": "case_11_touching_doublet_cluster",
+      "category": "touching_cluster",
+      "gt_valid_count": 3,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 4,
+      "B_pred_count": 3,
+      "C_pred_count": 3,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 28.8,
+      "C_volume_interval_px3": [
+        36473.98,
+        37891.79
+      ],
+      "C_max_obstruction_ratio": 0.2053
+    },
+    {
+      "case_id": "case_12_dense_triplet_low_contrast",
+      "category": "touching_cluster_low_contrast",
+      "gt_valid_count": 3,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 4,
+      "B_pred_count": 3,
+      "C_pred_count": 3,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 28.9,
+      "C_volume_interval_px3": [
+        35235.74,
+        38523.34
+      ],
+      "C_max_obstruction_ratio": 0.223
+    },
+    {
+      "case_id": "case_13_six_bubbles_high_holdup",
+      "category": "high_density_bioreactor",
+      "gt_valid_count": 6,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 9,
+      "B_pred_count": 7,
+      "C_pred_count": 6,
+      "C_filtered_artifacts": 1,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 27.34,
+      "C_volume_interval_px3": [
+        60277.85,
+        63995.9
+      ],
+      "C_max_obstruction_ratio": 0.2061
+    },
+    {
+      "case_id": "case_14_low_contrast_two_bubbles",
+      "category": "low_contrast_glare",
+      "gt_valid_count": 2,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 5,
+      "B_pred_count": 2,
+      "C_pred_count": 2,
+      "C_filtered_artifacts": 1,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 30.88,
+      "C_volume_interval_px3": [
+        29059.32,
+        30943.86
+      ],
+      "C_max_obstruction_ratio": 0.2283
+    },
+    {
+      "case_id": "case_15_border_clip_both_sides",
+      "category": "border_artifact_challenge",
+      "gt_valid_count": 1,
+      "gt_border_artifacts": 2,
+      "A_pred_count": 5,
+      "B_pred_count": 3,
+      "C_pred_count": 1,
+      "C_filtered_artifacts": 2,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 35.0,
+      "C_volume_interval_px3": [
+        21886.87,
+        23071.26
+      ],
+      "C_max_obstruction_ratio": 0.2302
+    },
+    {
+      "case_id": "case_16_three_bubbles_plus_wall_streak",
+      "category": "wall_reflection_challenge",
+      "gt_valid_count": 3,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 6,
+      "B_pred_count": 3,
+      "C_pred_count": 3,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 27.45,
+      "C_volume_interval_px3": [
+        31780.62,
+        32658.15
+      ],
+      "C_max_obstruction_ratio": 0.1955
+    },
+    {
+      "case_id": "case_17_blank_underexposed_fault",
+      "category": "camera_fault_abstention",
+      "gt_valid_count": 0,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 45,
+      "B_pred_count": 0,
+      "C_pred_count": 0,
+      "C_filtered_artifacts": 0,
+      "C_status": "abstained_low_quality",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "abstain_low_quality_frame"
+      ],
+      "C_d32_px": null,
+      "C_volume_interval_px3": null,
+      "C_max_obstruction_ratio": 0.0
+    },
+    {
+      "case_id": "case_18_single_large_prolate_bubble",
+      "category": "obstruction_hazard",
+      "gt_valid_count": 1,
+      "gt_border_artifacts": 0,
+      "A_pred_count": 3,
+      "B_pred_count": 1,
+      "C_pred_count": 3,
+      "C_filtered_artifacts": 0,
+      "C_status": "pending_review",
+      "C_tool_trace": [
+        "check_frame_quality_and_calibration",
+        "apply_optical_preprocessing",
+        "run_specialist_segmentation",
+        "crop_and_reinspect_roi",
+        "run_sceptic_physics_audit"
+      ],
+      "C_d32_px": 12.45,
+      "C_volume_interval_px3": [
+        1467.22,
+        3057.51
+      ],
+      "C_max_obstruction_ratio": 0.1018
+    }
+  ]
+}

@@ -1,0 +1,513 @@
+{
+  "dataset_name": "LABMATE Microfluidic & Bioreactor Bubble Benchmark Suite v1",
+  "synthetic_disclosure": "SYNTHETIC BENCHMARK DISCLOSURE (Biotech Track Slide 12): These 18 controlled microfluidic channel test images are generated via calibrated physical optics simulation (Snell refractive phase-boundary rings, channel walls, border-clipped meniscus artifacts, and low-contrast specular glare) to provide exact pixel-level ground truth for benchmarking Native Gemini vs. Single-Pass CV vs. the LABMATE Multi-Step Perception & Sceptic Agent. External reference architectures: kLarity (DTU, AGPL-3.0 / Zenodo 19582132) and BubbleID (NED3 Lab, MIT License).",
+  "total_cases": 18,
+  "cases": [
+    {
+      "case_id": "case_01_clean_channel_neg",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_01_clean_channel_neg.png",
+      "category": "clean_negative",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 0,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.0
+      }
+    },
+    {
+      "case_id": "case_02_clean_with_wall_glare_neg",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_02_clean_with_wall_glare_neg.png",
+      "category": "clean_negative_with_artifact",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 0,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": true,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.0
+      }
+    },
+    {
+      "case_id": "case_03_clean_with_border_clip_neg",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_03_clean_with_border_clip_neg.png",
+      "category": "clean_negative_with_border_artifact",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 0,
+        "border_clipped_artifacts": 1,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.0
+      }
+    },
+    {
+      "case_id": "case_04_single_microbubble",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_04_single_microbubble.png",
+      "category": "standard_microfluidics",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 1,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            162.0,
+            138.0,
+            198.0,
+            172.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2332
+      }
+    },
+    {
+      "case_id": "case_05_two_microbubbles",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_05_two_microbubbles.png",
+      "category": "standard_microfluidics",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 2,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            114.0,
+            130.0,
+            146.0,
+            160.0
+          ],
+          [
+            260.0,
+            146.0,
+            300.0,
+            184.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2599
+      }
+    },
+    {
+      "case_id": "case_06_three_bubbles_varied",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_06_three_bubbles_varied.png",
+      "category": "standard_microfluidics",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 3,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            85.0,
+            135.0,
+            115.0,
+            165.0
+          ],
+          [
+            188.0,
+            120.0,
+            232.0,
+            160.0
+          ],
+          [
+            303.0,
+            154.0,
+            337.0,
+            186.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2797
+      }
+    },
+    {
+      "case_id": "case_07_four_bubbles_plus_border_artifact",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_07_four_bubbles_plus_border_artifact.png",
+      "category": "border_artifact_challenge",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 4,
+        "border_clipped_artifacts": 1,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            79.0,
+            129.0,
+            111.0,
+            161.0
+          ],
+          [
+            166.0,
+            147.0,
+            204.0,
+            183.0
+          ],
+          [
+            258.0,
+            131.0,
+            292.0,
+            165.0
+          ],
+          [
+            334.0,
+            141.0,
+            376.0,
+            179.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2663
+      }
+    },
+    {
+      "case_id": "case_08_five_bubbles_array",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_08_five_bubbles_array.png",
+      "category": "standard_microfluidics",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 5,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            60.0,
+            124.0,
+            90.0,
+            152.0
+          ],
+          [
+            129.0,
+            156.0,
+            161.0,
+            188.0
+          ],
+          [
+            197.0,
+            128.0,
+            233.0,
+            162.0
+          ],
+          [
+            270.0,
+            153.0,
+            300.0,
+            183.0
+          ],
+          [
+            336.0,
+            130.0,
+            374.0,
+            166.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2466
+      }
+    },
+    {
+      "case_id": "case_09_channel_obstruction_slug",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_09_channel_obstruction_slug.png",
+      "category": "obstruction_hazard",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 2,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            162.0,
+            111.0,
+            258.0,
+            199.0
+          ],
+          [
+            314.0,
+            135.0,
+            346.0,
+            165.0
+          ]
+        ],
+        "should_escalate_obstruction": true,
+        "max_obstruction_ratio": 0.6128
+      }
+    },
+    {
+      "case_id": "case_10_severe_obstruction_with_glare",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_10_severe_obstruction_with_glare.png",
+      "category": "obstruction_hazard",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 1,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": true,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            138.0,
+            109.0,
+            242.0,
+            201.0
+          ]
+        ],
+        "should_escalate_obstruction": true,
+        "max_obstruction_ratio": 0.6521
+      }
+    },
+    {
+      "case_id": "case_11_touching_doublet_cluster",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_11_touching_doublet_cluster.png",
+      "category": "touching_cluster",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 3,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            174.0,
+            132.0,
+            216.0,
+            172.0
+          ],
+          [
+            211.0,
+            135.0,
+            251.0,
+            173.0
+          ],
+          [
+            313.0,
+            143.0,
+            347.0,
+            177.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2733
+      }
+    },
+    {
+      "case_id": "case_12_dense_triplet_low_contrast",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_12_dense_triplet_low_contrast.png",
+      "category": "touching_cluster_low_contrast",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 3,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            132.0,
+            130.0,
+            168.0,
+            166.0
+          ],
+          [
+            164.0,
+            135.0,
+            200.0,
+            169.0
+          ],
+          [
+            268.0,
+            142.0,
+            312.0,
+            182.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2797
+      }
+    },
+    {
+      "case_id": "case_13_six_bubbles_high_holdup",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_13_six_bubbles_high_holdup.png",
+      "category": "high_density_bioreactor",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 6,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": true,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            54.0,
+            120.0,
+            86.0,
+            150.0
+          ],
+          [
+            112.0,
+            158.0,
+            148.0,
+            192.0
+          ],
+          [
+            175.0,
+            123.0,
+            215.0,
+            161.0
+          ],
+          [
+            238.0,
+            154.0,
+            272.0,
+            186.0
+          ],
+          [
+            294.0,
+            120.0,
+            336.0,
+            160.0
+          ],
+          [
+            349.0,
+            156.0,
+            381.0,
+            188.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2733
+      }
+    },
+    {
+      "case_id": "case_14_low_contrast_two_bubbles",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_14_low_contrast_two_bubbles.png",
+      "category": "low_contrast_glare",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 2,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": true,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            133.0,
+            134.0,
+            177.0,
+            176.0
+          ],
+          [
+            266.0,
+            132.0,
+            304.0,
+            168.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2866
+      }
+    },
+    {
+      "case_id": "case_15_border_clip_both_sides",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_15_border_clip_both_sides.png",
+      "category": "border_artifact_challenge",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 1,
+        "border_clipped_artifacts": 2,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            187.0,
+            133.0,
+            233.0,
+            177.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2999
+      }
+    },
+    {
+      "case_id": "case_16_three_bubbles_plus_wall_streak",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_16_three_bubbles_plus_wall_streak.png",
+      "category": "wall_reflection_challenge",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 3,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": true,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            102.0,
+            132.0,
+            138.0,
+            168.0
+          ],
+          [
+            200.0,
+            143.0,
+            240.0,
+            181.0
+          ],
+          [
+            308.0,
+            131.0,
+            342.0,
+            165.0
+          ]
+        ],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.2599
+      }
+    },
+    {
+      "case_id": "case_17_blank_underexposed_fault",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_17_blank_underexposed_fault.png",
+      "category": "camera_fault_abstention",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 0,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": true,
+        "boxes_xyxy": [],
+        "should_escalate_obstruction": false,
+        "max_obstruction_ratio": 0.0
+      }
+    },
+    {
+      "case_id": "case_18_single_large_prolate_bubble",
+      "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_18_single_large_prolate_bubble.png",
+      "category": "obstruction_hazard",
+      "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+      "ground_truth": {
+        "valid_bubble_count": 1,
+        "border_clipped_artifacts": 0,
+        "wall_glare_artifact_present": false,
+        "is_unusable_blank_frame": false,
+        "boxes_xyxy": [
+          [
+            165.0,
+            118.0,
+            255.0,
+            192.0
+          ]
+        ],
+        "should_escalate_obstruction": true,
+        "max_obstruction_ratio": 0.5426
+      }
+    }
+  ]
+}

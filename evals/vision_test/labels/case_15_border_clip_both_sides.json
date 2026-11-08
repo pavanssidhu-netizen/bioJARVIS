@@ -1,0 +1,22 @@
+{
+  "case_id": "case_15_border_clip_both_sides",
+  "image_path": "C:\\Users\\Yeeye\\.gemini\\antigravity\\scratch\\bioJARVIS\\evals\\vision_test\\images\\case_15_border_clip_both_sides.png",
+  "category": "border_artifact_challenge",
+  "data_origin": "calibrated_synthetic_microfluidic_bench_v1 (explicitly labelled per Agentverse Slide 12)",
+  "ground_truth": {
+    "valid_bubble_count": 1,
+    "border_clipped_artifacts": 2,
+    "wall_glare_artifact_present": false,
+    "is_unusable_blank_frame": false,
+    "boxes_xyxy": [
+      [
+        187.0,
+        133.0,
+        233.0,
+        177.0
+      ]
+    ],
+    "should_escalate_obstruction": false,
+    "max_obstruction_ratio": 0.2999
+  }
+}
