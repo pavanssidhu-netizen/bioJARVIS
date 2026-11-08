@@ -276,7 +276,7 @@ def get_benchmark_results() -> Dict[str, Any]:
     return json.loads(res_file.read_text(encoding="utf-8"))
 
 
-class BayesianOptimiseRequest(BaseModel):
+class BayesianOptimiseRequest(pydantic.BaseModel):
     volume_variance_ul: float = 0.0
     concentration_ratio: float = 1.0
     wait_time_min: float = 3.0
