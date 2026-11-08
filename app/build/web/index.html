@@ -9,280 +9,204 @@
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
           },
           colors: {
-            appleEmerald: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              200: '#a7f3d0',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b'
-            }
+            lmBg: '#F4F7F6',
+            lmSurface: '#FFFFFF',
+            lmSurfaceHi: '#E9F5F1',
+            lmLine: '#DCE6E2',
+            lmTeal: '#087F73',
+            lmTealDim: '#06635A',
+            lmText: '#172F38',
+            lmMuted: '#53676F',
+            lmReviewBg: '#FFF3D6',
+            lmReviewBorder: '#D8B46C',
+            lmReviewText: '#8B4E0F',
+            lmRec: '#DC2626',
+            lmWarn: '#8B4E0F',
+            lmOk: '#15803D',
+            lmOkBg: '#D8F3DF',
+            lmOkText: '#135E2E'
           }
         }
       }
     };
   </script>
   <style>
-    /* Apple Liquid Glass Styling */
     :root {
-      --bg-ambient: radial-gradient(circle at 50% 0%, #D1FAE5 0%, #ECFDF5 25%, #F8FAFC 70%);
-      --glass-bg: rgba(255, 255, 255, 0.72);
-      --glass-border: rgba(255, 255, 255, 0.85);
-      --glass-shadow: 0 16px 40px -8px rgba(16, 185, 129, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
-      --card-bg: rgba(255, 255, 255, 0.6);
-      --text-main: #0F172A;
-      --text-muted: #64748B;
+      --bg: #F4F7F6;
+      --surface: #FFFFFF;
+      --surface-hi: #E9F5F1;
+      --line: #DCE6E2;
+      --teal: #087F73;
+      --text: #172F38;
+      --muted: #53676F;
     }
-
-    body.dark {
-      --bg-ambient: radial-gradient(circle at 50% 0%, #064E3B 0%, #0B171A 35%, #050B0D 100%);
-      --glass-bg: rgba(15, 23, 42, 0.72);
-      --glass-border: rgba(255, 255, 255, 0.12);
-      --glass-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.1) inset;
-      --card-bg: rgba(30, 41, 59, 0.5);
-      --text-main: #F8FAFC;
-      --text-muted: #94A3B8;
-    }
-
     body {
-      background: var(--bg-ambient);
-      color: var(--text-main);
-      min-height: 100vh;
-      transition: background 0.4s ease, color 0.4s ease;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-
-    .glass-panel {
-      background: var(--glass-bg);
-      backdrop-filter: blur(28px) saturate(190%);
-      -webkit-backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow);
+    .lm-panel {
+      background-color: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
     }
-
-    .glass-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-    }
-
-    /* 3D Liquid Glass Emerald Orb */
-    .liquid-orb-container {
-      position: relative;
-      width: 88px;
-      height: 88px;
-      margin: 0 auto;
-    }
-
-    .liquid-orb {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #6EE7B7 0%, #10B981 40%, #047857 75%, #064E3B 100%);
-      box-shadow:
-        0 12px 30px -4px rgba(5, 150, 105, 0.5),
-        inset -8px -10px 20px rgba(4, 120, 87, 0.8),
-        inset 8px 10px 16px rgba(255, 255, 255, 0.7),
-        0 0 45px rgba(52, 211, 153, 0.45);
-      position: relative;
-      overflow: hidden;
-      animation: floatOrb 5s ease-in-out infinite;
-    }
-
-    .liquid-orb::before {
-      content: '';
-      position: absolute;
-      top: 14%;
-      left: 20%;
-      width: 32%;
-      height: 24%;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 75%);
-      transform: rotate(-25deg);
-    }
-
-    .liquid-orb-pulse {
-      position: absolute;
-      inset: -12px;
-      border-radius: 50%;
-      border: 2px solid rgba(16, 185, 129, 0.35);
-      animation: pulseWave 2.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-    }
-
-    @keyframes floatOrb {
-      0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-6px) scale(1.02); }
-    }
-
-    @keyframes pulseWave {
-      0% { transform: scale(0.9); opacity: 0.8; }
-      100% { transform: scale(1.4); opacity: 0; }
-    }
-
-    /* Waveform Equalizer */
     .waveform-bar {
       width: 3.5px;
-      background: linear-gradient(to top, #059669, #34D399);
+      background: #087F73;
       border-radius: 9999px;
       transition: height 0.12s ease;
     }
-
-    /* Smooth Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.25); border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.45); }
+    ::-webkit-scrollbar-thumb { background: rgba(8, 127, 115, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(8, 127, 115, 0.45); }
   </style>
 </head>
-<body class="antialiased selection:bg-emerald-500 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased">
 
-  <!-- Floating Ambient Glow Orbs -->
-  <div class="fixed top-0 left-1/4 w-96 h-96 bg-emerald-300/25 rounded-full blur-3xl pointer-events-none -z-10"></div>
-  <div class="fixed top-1/3 right-1/4 w-80 h-80 bg-teal-200/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
-
-  <!-- Main Container -->
-  <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
-
-    <!-- Top Apple Glass Navigation Header -->
-    <header class="glass-panel rounded-3xl p-4 sm:px-6 flex items-center justify-between transition-all">
-      <div class="flex items-center gap-3.5">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/25">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-          </svg>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base font-bold tracking-tight">LARVIS</h1>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-              V2 SYSTEM
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Autonomous Biotech Copilot · Gemini Live & 5-Agent Council</p>
-        </div>
-      </div>
-
-      <!-- Live System Badges & Mode Switcher -->
-      <div class="flex items-center gap-2.5">
-        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs font-medium">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="backendBadgeText" class="text-slate-700 dark:text-slate-300">Backend Ready (52 Tests)</span>
-        </div>
-        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-full glass-card flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-105 transition">
-          <span id="themeIcon">🌙</span>
-        </button>
-        <a href="/api/docs" target="_blank" class="px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/10 hover:bg-emerald-500/10 text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
-          API Docs ↗
-        </a>
-      </div>
-    </header>
-
-    <!-- Hero Section: Luminous 3D Liquid Orb & AI Assistant Greeting -->
-    <div class="text-center pt-2 pb-1 space-y-3">
-      <div class="liquid-orb-container cursor-pointer" onclick="startVirtualScientistCall()" title="Click to trigger Live Call with LARVIS">
-        <div class="liquid-orb-pulse"></div>
-        <div class="liquid-orb"></div>
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="bg-white border-b border-lmLine sticky top-0 z-40 px-4 py-2.5 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-lmTeal text-white font-bold flex items-center justify-center text-sm shadow-sm">
+        LV
       </div>
       <div>
-        <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
-          Hello, Scientist. <span class="text-emerald-600 dark:text-emerald-400">How can I assist your assay?</span>
-        </h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-lg mx-auto">
-          Hands-free monitoring of microfluidic channels, 3D bubble obstruction physics, and closed-loop protocol recovery.
-        </p>
-      </div>
-
-      <!-- Quick Action Pills -->
-      <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
-        <button onclick="startVirtualScientistCall()" class="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/25 flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-          <span>📞</span> <span>Call LARVIS (Siri Voice / Vance)</span>
-        </button>
-        <button onclick="switchVideoSource('bench_phone')" class="px-4 py-2 rounded-full glass-panel hover:bg-white text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-          <span>📱</span> <span>Filmable Phone Camera</span>
-        </button>
-        <button onclick="switchVideoSource('bench_scientist')" class="px-4 py-2 rounded-full glass-panel hover:bg-white text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-          <span>🧪</span> <span>Bench Scientist View</span>
-        </button>
-        <button onclick="switchVideoSource('bubbles_50k')" class="px-4 py-2 rounded-full glass-panel hover:bg-white text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-          <span>🔬</span> <span>50,000 FPS Microscopy</span>
-        </button>
-        <button onclick="runCouncilOnCurrentFrame()" class="px-4 py-2 rounded-full bg-teal-500/15 hover:bg-teal-500/25 text-teal-700 dark:text-teal-300 border border-teal-500/30 font-semibold text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-          <span>⚡</span> <span>5-Agent Council</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm font-extrabold tracking-tight text-lmText">LARVIS</h1>
+          <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-lmSurfaceHi text-lmTeal border border-lmTeal/20">
+            Autonomous Lab Copilot
+          </span>
+        </div>
+        <div class="text-[11px] text-lmMuted font-mono">
+          exp_001 · CEA Sandwich Immunoassay
+        </div>
       </div>
     </div>
 
-    <!-- Navigation Tabs: Apple Liquid Segmented Bar -->
-    <div class="glass-panel p-1.5 rounded-2xl max-w-xl mx-auto flex items-center justify-between gap-1">
-      <button onclick="switchTab(0)" id="nav-0" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm">
-        Live Lab Cockpit
-      </button>
-      <button onclick="switchTab(1)" id="nav-1" class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all">
-        Event Stream (13)
-      </button>
-      <button onclick="switchTab(2)" id="nav-2" class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all">
-        Dependency Graph
-      </button>
-      <button onclick="switchTab(3)" id="nav-3" class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all">
-        Sessions & Audit
-      </button>
+    <!-- Right Telemetry Status Badges -->
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Backend Ready (52 Tests)
+      </span>
+      <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200">
+        UCL AgentVerse
+      </span>
     </div>
+  </header>
 
-    <!-- ================= TAB 0: LIVE LAB COCKPIT ================= -->
+  <!-- ================= DESKTOP & MOBILE TABS NAVIGATION ================= -->
+  <nav class="bg-white border-b border-lmLine px-4 py-1.5 flex items-center gap-1 overflow-x-auto text-xs font-semibold">
+    <button onclick="switchTab(0)" id="tabNav-0" class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-lmSurfaceHi text-lmTeal font-bold transition">
+      <span>🧪</span> <span>Live Lab</span>
+    </button>
+    <button onclick="switchTab(1)" id="tabNav-1" class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-lmMuted hover:bg-slate-100 hover:text-lmText transition">
+      <span>📊</span> <span>Data feed</span>
+      <span id="feedCountBadge" class="ml-1 px-1.5 py-0.2 rounded-full bg-slate-200 text-[10px] font-bold">13</span>
+    </button>
+    <button onclick="switchTab(2)" id="tabNav-2" class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-lmMuted hover:bg-slate-100 hover:text-lmText transition">
+      <span>📜</span> <span>Experiment log</span>
+    </button>
+    <button onclick="switchTab(3)" id="tabNav-3" class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-lmMuted hover:bg-slate-100 hover:text-lmText transition">
+      <span>🛠</span> <span>Diagnostics</span>
+    </button>
+  </nav>
+
+  <!-- ================= MAIN CONTENT WRAPPER ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- ============================================================== -->
+    <!-- TAB 0: LIVE LAB (LAUREN'S REDESIGN)                             -->
+    <!-- ============================================================== -->
     <section id="tab-0" class="space-y-5">
 
-      <!-- V2 Requirement #5: Active Step, Channel & Live Tracking Bar -->
-      <div class="glass-panel rounded-3xl p-5 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-700/60 pb-3">
+      <!-- LANDING HERO CARD (Point your phone at the bench and talk) -->
+      <div id="landingCard" class="lm-panel p-6 bg-gradient-to-br from-lmSurfaceHi to-white border border-lmLine space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-lmText tracking-tight">
+              Hands-free lab notebook
+            </h2>
+            <p class="text-xs sm:text-sm text-lmMuted mt-0.5">
+              Point your phone at the bench and talk.
+            </p>
+          </div>
+          <button onclick="startLiveFeed()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-lmTeal hover:bg-lmTealDim text-white font-bold text-sm shadow-sm transition hover:scale-[1.02] active:scale-95">
+            <span>▶</span> <span>Start live feed</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-lmText pt-2">
+          <div class="flex items-start gap-2.5">
+            <span class="text-lmTeal text-base">👁</span>
+            <span><strong>Optical Vision:</strong> Camera frames analysed into objects, actions and action counts, and logged to the experiment database.</span>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="text-lmTeal text-base">🎙</span>
+            <span><strong>Voice Notes:</strong> Speak notes (<em>"note that tube A turned blue"</em>) and they are automatically structured and saved as observations.</span>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="text-lmTeal text-base">🔍</span>
+            <span><strong>Database Q&A:</strong> Ask the log (<em>"how many drops did I add 30 seconds ago?"</em>) and LARVIS answers from the live database.</span>
+          </div>
+          <div class="flex items-start gap-2.5">
+            <span class="text-lmTeal text-base">🔒</span>
+            <span><strong>Privacy & Guardrails:</strong> Nothing starts until you press the button. Raw video and audio streams are never permanently retained.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE SESSION STATE BAR (PUT /recordings/{id}/state) -->
+      <div class="lm-panel p-4 space-y-3">
+        <div class="flex items-center justify-between border-b border-lmLine pb-2.5">
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              Session State & Live Tracking
+            <span class="w-2.5 h-2.5 rounded-full bg-lmTeal"></span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-lmText">
+              Live Session State Bar
             </h3>
           </div>
-          <span id="sessionStatusPill" class="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+          <span id="sessionStatusPill" class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-lmSurfaceHi text-lmTeal border border-lmTeal/30">
             step_05 · CH01
           </span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-              Protocol Step (<code class="text-[11px]">PUT /state</code>)
-            </label>
-            <select id="selectStep" onchange="updateSessionState()" class="w-full glass-card rounded-2xl px-3.5 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-emerald-500/50">
-              <!-- Populated dynamically via /protocol -->
+            <label class="block text-[11px] font-semibold text-lmMuted mb-1">Active Protocol Step</label>
+            <select id="selectStep" onchange="updateLiveStep(this.value)" class="w-full bg-slate-50 border border-lmLine rounded-lg px-3 py-2 text-xs font-medium text-lmText outline-none focus:ring-1 focus:ring-lmTeal">
+              <option value="step_01">1 · Prime microchannels with 1x PBS (100 µL)</option>
+              <option value="step_02">2 · Load Capture Antibody (anti-CEA, 50 µg/mL)</option>
+              <option value="step_03">3 · Incubate Capture Antibody (15 min)</option>
+              <option value="step_04">4 · Wash with PBST (3x 150 µL)</option>
+              <option value="step_05" selected>5 · Dispense Calibration Standards (CH01..CH06)</option>
+              <option value="step_06">6 · Load Patient Serum Samples (CH07..CH11)</option>
+              <option value="step_07">7 · Primary Incubation (15 min at 22°C)</option>
+              <option value="step_08">8 · Add Detection Antibody HRP Conjugate</option>
+              <option value="step_09">9 · Optical Absorbance Readout (450 nm)</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-              Microfluidic Channel (CH01–CH12)
-            </label>
-            <select id="selectChannel" onchange="updateSessionState()" class="w-full glass-card rounded-2xl px-3.5 py-2.5 text-xs font-medium text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-emerald-500/50">
-              <option value="CH01" selected>CH01 · Zero Standard (STD00)</option>
+            <label class="block text-[11px] font-semibold text-lmMuted mb-1">Microfluidic Channel</label>
+            <select id="selectChannel" onchange="updateLiveChannel(this.value)" class="w-full bg-slate-50 border border-lmLine rounded-lg px-3 py-2 text-xs font-medium text-lmText outline-none focus:ring-1 focus:ring-lmTeal">
+              <option value="CH01" selected>CH01 · Zero Standard (STD00) [High Impact]</option>
               <option value="CH02">CH02 · Standard STD01</option>
               <option value="CH03">CH03 · Standard STD02</option>
               <option value="CH04">CH04 · Standard STD03</option>
               <option value="CH05">CH05 · Standard STD04</option>
               <option value="CH06">CH06 · Standard STD05</option>
-              <option value="CH07">CH07 · Sample S01 (Rep 1)</option>
-              <option value="CH08">CH08 · Sample S02 (Rep 1)</option>
+              <option value="CH07">CH07 · Sample S01 (Patient Rep 1)</option>
+              <option value="CH08">CH08 · Sample S02 (Patient Rep 1)</option>
               <option value="CH09">CH09 · Sample S03</option>
               <option value="CH10">CH10 · Sample S04</option>
               <option value="CH11">CH11 · Sample S05</option>
@@ -291,1103 +215,798 @@
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-              Tracked Target Chips (<code class="text-[11px]">POST /tracking</code>)
-            </label>
-            <div id="trackingChips" class="flex flex-wrap gap-1.5 pt-0.5"></div>
+            <label class="block text-[11px] font-semibold text-lmMuted mb-1">Tracked Target Chips (POST /tracking)</label>
+            <div id="trackedChipsContainer" class="flex flex-wrap gap-1.5 pt-1">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-lmSurfaceHi text-lmTeal border border-lmTeal/30 font-medium">
+                🎯 Gas Slug (CH01)
+              </span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                🧪 Microtip #3
+              </span>
+              <button onclick="addTrackedTarget()" class="px-2 py-0.5 rounded-full text-[11px] border border-dashed border-lmTeal text-lmTeal hover:bg-lmSurfaceHi font-semibold">
+                + Track
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Main Split View: Camera & Real Video Feed (Left) + Pending Sign-Off & Voice (Right) -->
+      <!-- MAIN SPLIT: CAMERA VIEW & PROACTIVE ALERTS (LEFT) + REVIEWS & INTERACTION (RIGHT) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
-        <!-- Left Column: Video Viewport & Camera Stream (Col 7) -->
-        <div class="lg:col-span-7 space-y-3.5">
-          <div class="glass-panel rounded-3xl p-4 space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
+        <!-- Left Column: Video Feed & Specialist Vision (7 cols) -->
+        <div class="lg:col-span-7 space-y-3">
+          <div class="lm-panel p-4 space-y-3">
+
+            <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-lmText">
                   Microfluidic Channel Stream
-                </span>
+                </h3>
               </div>
-              <div class="flex items-center gap-1.5">
-                <select id="videoSourceSelect" onchange="switchVideoSource(this.value)" class="glass-card rounded-xl px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 outline-none">
-                  <option value="bench_phone" selected>📱 Real Filmable Phone Camera: Pipetting & Mixing</option>
-                  <option value="bench_scientist">🧪 Real Lab Bench Scientist (Pipetting & Reagents)</option>
-                  <option value="bubbles_50k">🔬 Real 50,000 FPS Microfluidic Bubble Transit</option>
-                  <option value="elisa_droplets">💧 Real Droplet Immunoassay Flow</option>
-                  <option value="seeded_0">📸 Seeded Frame: CH08 Gas Slug</option>
-                  <option value="seeded_1">📸 Seeded Frame: CH01 Microbubble</option>
-                  <option value="webcam">📷 Live Laptop Webcam</option>
+              <div class="flex items-center gap-2">
+                <select id="videoSelect" onchange="switchVideo(this.value)" class="bg-slate-50 border border-lmLine rounded-lg px-2.5 py-1 text-xs font-medium text-lmText outline-none">
+                  <option value="bubbles_50k" selected>🔬 50,000 FPS Microscopy (Gas Bubble Transit)</option>
+                  <option value="bench_phone">📱 Phone Camera: Bench Pipetting & Reagents</option>
+                  <option value="elisa_droplets">💧 Droplet Immunoassay Flow</option>
+                  <option value="webcam">📷 Laptop Webcam (Live)</option>
                 </select>
-                <button onclick="toggleVideoPlayback()" id="btnPlayPause" class="px-2.5 py-1 rounded-xl bg-slate-900/5 dark:bg-white/10 hover:bg-emerald-500/20 text-xs font-semibold">
+                <button onclick="togglePlay()" id="btnPlay" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold">
                   ⏸ Pause
                 </button>
               </div>
             </div>
 
-            <!-- V2 STRICT RULE: Scene Summary & Status ABOVE Camera Window -->
-            <div class="glass-card rounded-2xl p-3 flex items-center justify-between gap-3">
+            <!-- SCENE SUMMARY & STATUS ABOVE CAMERA (STRICT SPEC RULE) -->
+            <div class="bg-lmSurfaceHi border border-lmLine rounded-xl p-3 flex items-center justify-between gap-3">
               <div class="space-y-0.5">
-                <div class="text-xs font-bold text-slate-900 dark:text-white" id="sceneSummaryAbove">
-                  Real Microfluidic Multiphase Flow (Gas Bubble Transit)
+                <div id="sceneSummaryText" class="text-xs font-bold text-lmText flex items-center gap-1.5">
+                  <span class="text-lmTeal">👁</span>
+                  <span>Microfluidic channel in view · Real 50,000 FPS Gas Slug Transit</span>
                 </div>
-                <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400" id="specialistCritiqueAbove">
-                  Specialist Council: 3D oblate spheroid fit active. Sauter d32 = 48.2 px.
+                <div id="specialistCritiqueText" class="text-[11px] font-mono text-lmMuted">
+                  Specialist Sceptic: High-speed bubble transit detected. Oblate spheroid fit active. Cross-sectional obstruction: 62%.
                 </div>
               </div>
-              <div class="flex flex-col items-end gap-1">
-                <span id="specialistCountPill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
-                  2 Bubbles · Max Obs 62%
-                </span>
-                <span class="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-                  ACTIVE WATCHDOG
-                </span>
-              </div>
+              <span id="bubbleStatusBadge" class="px-2.5 py-1 rounded text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                2 bubble(s)
+              </span>
             </div>
 
-            <!-- Liquid Glass Video Frame with Thin Bounding Box HUD -->
-            <div id="videoContainer" class="relative w-full aspect-video rounded-2xl overflow-hidden glass-card shadow-inner border border-white/60 dark:border-slate-700">
-              <!-- Real Video Player -->
-              <video id="labVideoPlayer" autoplay loop muted playsinline class="w-full h-full object-cover">
-                <source src="/assets/real_phone_bench_pipetting.mp4" type="video/mp4">
+            <!-- VIDEO CONTAINER WITH DYNAMIC BOUNDING BOX OVERLAYS -->
+            <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 border border-lmLine shadow-inner">
+              <video id="mainVideoPlayer" autoplay loop muted playsinline class="w-full h-full object-cover">
+                <source src="/assets/real_microfluidics_bubbles.webm" type="video/webm">
+                <source src="/assets/demo_combined_larvis_three_demos.mp4" type="video/mp4">
               </video>
-
-              <!-- Optional Laptop Webcam -->
               <video id="webcamPlayer" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
 
-              <!-- Image Frame for Seeded Snaps -->
-              <img id="seededFrameImg" class="w-full h-full object-contain hidden" alt="Seeded Frame" />
-
-              <!-- Overlay Bounding Box Layer (Gemini 0..1000 + Specialist Pixels) -->
-              <div id="bboxTagLayer" class="absolute inset-0 pointer-events-none"></div>
-
-              <!-- Top Left Timestamp Watermark -->
-              <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-950/60 backdrop-blur-md text-[10px] font-mono text-emerald-400 flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span id="videoWatermark">REAL MICROSCOPY · 50k FPS · CH01</span>
+              <!-- OVERLAY BOUNDING BOX HUD -->
+              <div id="hudOverlay" class="absolute inset-0 pointer-events-none">
+                <!-- Channel lumen box -->
+                <div class="absolute border-2 border-teal-400 bg-teal-400/10 rounded-lg" style="top: 10%; left: 6%; width: 88%; height: 80%;">
+                  <span class="absolute -top-6 left-2 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-teal-600 text-white">
+                    Microchannel lumen
+                  </span>
+                </div>
+                <!-- Bubble #1 Critical Box -->
+                <div class="absolute border-2 border-rose-500 bg-rose-500/20 rounded-md animate-pulse" style="top: 28%; left: 32%; width: 14%; height: 42%;">
+                  <span class="absolute -bottom-6 left-0 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-600 text-white whitespace-nowrap">
+                    bubble #1 · 62% obs
+                  </span>
+                </div>
+                <!-- Bubble #2 Minor Box -->
+                <div class="absolute border-2 border-amber-400 bg-amber-400/20 rounded-md" style="top: 36%; left: 62%; width: 10%; height: 26%;">
+                  <span class="absolute -bottom-6 left-0 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-600 text-white whitespace-nowrap">
+                    bubble #2 · 8% obs
+                  </span>
+                </div>
               </div>
 
-              <!-- Top Right Auto-Voice Alert Badge & Toggle -->
-              <button onclick="toggleAutoSpeak()" id="autoSpeakBadge" title="Click to toggle proactive voice alerts" class="absolute top-3 right-3 px-3 py-1 rounded-full bg-slate-950/75 backdrop-blur-md text-[10px] font-mono text-emerald-300 flex items-center gap-1.5 border border-emerald-500/40 shadow-lg hover:scale-105 active:scale-95 transition-all pointer-events-auto">
+              <!-- Top Left Watermark -->
+              <div class="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-slate-900/80 backdrop-blur-sm text-[10px] font-mono text-emerald-400 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>REAL MICROSCOPY · 50,000 FPS · CH01</span>
+              </div>
+
+              <!-- Top Right Proactive Voice Armed Badge -->
+              <button onclick="toggleVoiceAlert()" id="voiceAlertArmedBtn" class="absolute top-3 right-3 px-3 py-1 rounded-md bg-slate-900/85 backdrop-blur-sm text-[10px] font-mono text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-sm pointer-events-auto">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span id="autoSpeakText">🔊 AUTO-VOICE ALERT: ARMED</span>
+                <span id="voiceAlertStatusText">🔊 AUTO-VOICE ALERT: ARMED</span>
               </button>
 
               <!-- Proactive Voice Alert Toast Banner -->
-              <div id="voiceAlertToast" class="absolute bottom-3 inset-x-3 px-3.5 py-2.5 rounded-xl bg-slate-950/95 backdrop-blur-md border border-rose-500/50 text-rose-300 text-xs font-medium flex items-center justify-between gap-2 shadow-2xl transition-all duration-300 opacity-0 pointer-events-none translate-y-2">
+              <div id="voiceAlertBanner" class="absolute bottom-3 inset-x-3 px-3.5 py-2.5 rounded-xl bg-slate-950/95 border border-rose-500/60 text-rose-200 text-xs font-medium flex items-center justify-between gap-2 shadow-xl transition-all">
                 <div class="flex items-center gap-2 overflow-hidden">
-                  <span class="text-sm flex-shrink-0 animate-bounce">🎙️</span>
-                  <span id="voiceAlertToastText" class="truncate font-mono text-[11px] text-rose-200">"Warning: Severe channel obstruction detected..."</span>
+                  <span class="text-sm animate-bounce">🎙️</span>
+                  <span class="truncate font-mono text-[11px]">"Warning: Severe channel obstruction detected in Channel 1 (62% cross-sectional blockage)."</span>
                 </div>
-                <button onclick="replayCurrentAlertVoice()" class="pointer-events-auto flex-shrink-0 px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-[10px] font-bold">
+                <button onclick="replayVoiceAlert()" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold pointer-events-auto flex-shrink-0">
                   🔊 Re-hear
                 </button>
               </div>
             </div>
 
-            <!-- Footer Legend -->
-            <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 px-1">
-              <span>🟢 Teal tags = Gemini Objects · 🔴 Crimson = Specialist Bubbles with Obs %</span>
-              <button onclick="runCouncilOnCurrentFrame()" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
-                ⚡ Force Re-Analyze Frame
+            <div class="flex items-center justify-between text-[11px] text-lmMuted pt-1">
+              <span>🟢 Teal = Gemini Objects · 🔴 Red = Specialist Bubble Obstruction</span>
+              <button onclick="triggerCouncilAnalysis()" class="text-lmTeal font-bold hover:underline">
+                ⚡ Force Re-Analyze Frame (39 ms)
               </button>
             </div>
+
           </div>
         </div>
 
-        <!-- Right Column: Pending Sign-Off & Virtual Call HUD (Col 5) -->
-        <div class="lg:col-span-5 space-y-4">
+        <!-- Right Column: Pending Reviews & Voice Copilot (5 cols) -->
+        <div class="lg:col-span-5 space-y-3">
 
-          <!-- V2 Requirement #3: Pending Reviews Screen (GET /reviews/pending) -->
-          <div class="glass-panel rounded-3xl p-5 space-y-3.5">
+          <!-- PENDING REVIEWS PANEL (GET /reviews/pending) -->
+          <div class="lm-panel p-4 space-y-3">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold">
-                  ⚠
-                </div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                  Pending Scientist Sign-Off (<span id="pendingCountBadge" class="text-amber-600 dark:text-amber-400">3</span>)
+                <span class="text-sm text-lmWarn">⚠️</span>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-lmText">
+                  Pending Scientist Sign-Off (<span id="reviewCount" class="text-lmWarn">1</span>)
                 </h3>
               </div>
-              <button onclick="loadPendingReviews()" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+              <button onclick="refreshReviews()" class="text-xs font-semibold text-lmTeal hover:underline">
                 Refresh
               </button>
             </div>
 
-            <p class="text-[11px] text-slate-500 dark:text-slate-400">
-              Protocol violations flagged by the Deterministic Steering Engine awaiting formal sign-off:
-            </p>
+            <!-- Review Card in Lauren's theme: #FFF3D6 background, #D8B46C border -->
+            <div id="reviewCard" class="p-3.5 rounded-xl bg-lmReviewBg border border-lmReviewBorder text-xs space-y-2">
+              <div class="flex items-center justify-between font-bold text-lmReviewText">
+                <span>Rule c_04 Deviation</span>
+                <span class="font-mono text-[10px] bg-amber-200/80 px-2 py-0.5 rounded">High Severity</span>
+              </div>
+              <p class="text-lmReviewText text-[11px] leading-relaxed">
+                Step 7 channel 8 incubated <strong>9 minutes</strong>. Protocol mandates <strong>15 minutes</strong> (tolerance ±1 min). Kinetic binding drift likely.
+              </p>
+              <div class="flex items-center gap-2 pt-1">
+                <button onclick="acceptReview()" class="flex-1 py-1.5 px-3 rounded-lg bg-lmTeal hover:bg-lmTealDim text-white font-bold text-xs transition">
+                  Accept / Override
+                </button>
+                <button onclick="openBlastRadiusModal()" class="py-1.5 px-3 rounded-lg bg-white border border-lmReviewBorder hover:bg-amber-50 text-lmReviewText font-semibold text-xs transition">
+                  Inspect Blast Radius
+                </button>
+              </div>
+            </div>
 
-            <!-- Cards Container -->
-            <div id="pendingReviewsList" class="space-y-3 max-h-[300px] overflow-y-auto pr-1"></div>
-
-            <!-- Investigation & Bayesian Optimization Output Drawer -->
-            <div id="investigationBox" class="hidden glass-card rounded-2xl p-3.5 space-y-2 text-xs"></div>
+            <!-- Post-override confirmation -->
+            <div id="overrideSuccess" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
+              <div class="font-bold flex items-center gap-1.5">
+                <span>✓</span> <span>Signed off with temperature compensation</span>
+              </div>
+              <p class="text-[11px] text-emerald-700 font-mono">
+                Bayesian posterior shift: +2.1°C thermal boost applied to maintain equivalent affinity kinetics.
+              </p>
+            </div>
           </div>
 
-          <!-- Dynamic Island / Virtual Scientist Call Widget -->
-          <div class="glass-panel rounded-3xl p-5 space-y-3">
+          <!-- HANDS-FREE VOICE COPILOT -->
+          <div class="lm-panel p-4 space-y-3">
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-sm shadow">
-                  👩‍🔬
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-lmSurfaceHi text-lmTeal font-bold flex items-center justify-center text-xs border border-lmTeal/30">
+                  🎙️
                 </div>
                 <div>
-                  <h4 class="text-xs font-bold">Virtual Scientist: Dr. Evelyn Vance</h4>
-                  <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono" id="callLiveIndicator">STREAM READY</p>
+                  <h4 class="text-xs font-bold text-lmText">Voice Protocol Copilot</h4>
+                  <p class="text-[10px] text-lmTeal font-mono" id="voiceStatusLabel">READY TO LISTEN</p>
                 </div>
               </div>
-              <button onclick="startVirtualScientistCall()" class="px-3.5 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md shadow-emerald-600/20 transition">
+              <button onclick="startVoiceInterrogation()" class="px-3 py-1.5 rounded-lg bg-lmTeal hover:bg-lmTealDim text-white font-semibold text-xs shadow-xs transition">
                 Start Call
               </button>
             </div>
 
             <!-- Waveform Animation -->
-            <div id="waveformContainer" class="flex items-center justify-center gap-1 h-8 py-1">
+            <div id="waveform" class="flex items-center justify-center gap-1 h-7 py-1 bg-slate-50 rounded-lg border border-lmLine">
               <div class="waveform-bar h-2"></div><div class="waveform-bar h-4"></div>
-              <div class="waveform-bar h-6"></div><div class="waveform-bar h-3"></div>
-              <div class="waveform-bar h-7"></div><div class="waveform-bar h-5"></div>
-              <div class="waveform-bar h-2"></div><div class="waveform-bar h-6"></div>
-              <div class="waveform-bar h-4"></div><div class="waveform-bar h-8"></div>
-              <div class="waveform-bar h-3"></div><div class="waveform-bar h-5"></div>
+              <div class="waveform-bar h-5"></div><div class="waveform-bar h-3"></div>
+              <div class="waveform-bar h-6"></div><div class="waveform-bar h-4"></div>
+              <div class="waveform-bar h-2"></div><div class="waveform-bar h-5"></div>
+              <div class="waveform-bar h-3"></div>
             </div>
 
-            <!-- Dialog Box -->
-            <div class="space-y-2 text-xs" id="callDialogHistory">
-              <div class="glass-card rounded-2xl p-3">
-                <span class="font-bold text-slate-700 dark:text-slate-300">Dr. Vance:</span>
-                <span class="text-slate-600 dark:text-slate-400" id="dialogVanceText">"Hi LARVIS, what is the protocol today?"</span>
+            <!-- Conversation Dialog Box -->
+            <div class="space-y-2 text-xs" id="chatHistory">
+              <div class="p-2.5 rounded-lg bg-slate-50 border border-lmLine">
+                <span class="font-bold text-lmMuted">Dr. Evelyn Vance:</span>
+                <span class="text-lmText" id="userSpeechText">"Hi LARVIS, what is the protocol today?"</span>
               </div>
-              <div class="glass-card rounded-2xl p-3 bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-500/20">
-                <span class="font-bold text-emerald-700 dark:text-emerald-300">LARVIS:</span>
-                <span class="text-emerald-800 dark:text-emerald-200" id="dialogJarvisText">"Standing by. Click 'Start Call' to run live voice interrogation."</span>
+              <div class="p-2.5 rounded-lg bg-lmSurfaceHi border border-lmTeal/30">
+                <span class="font-bold text-lmTeal">LARVIS:</span>
+                <span class="text-lmText" id="larvisSpeechText">"Good morning Dr. Vance. Today's run is the CEA Sandwich Immunoassay across 12 channels. We are on Step 5: Dispensing Calibration Standards."</span>
               </div>
             </div>
+
+            <!-- Judge Quick Action Voice Chips -->
+            <div class="space-y-1.5 pt-1">
+              <div class="text-[10px] font-bold uppercase text-lmMuted tracking-wider">Try Quick Judge Prompts:</div>
+              <div class="flex flex-wrap gap-1.5">
+                <button onclick="runQuickVoice('Hi LARVIS, what is the protocol today?')" class="px-2 py-1 rounded bg-slate-100 hover:bg-lmSurfaceHi hover:text-lmTeal text-[11px] font-medium border border-lmLine transition">
+                  "What is protocol today?"
+                </button>
+                <button onclick="runQuickVoice('Step 7, channel 8 — incubated 9 minutes')" class="px-2 py-1 rounded bg-slate-100 hover:bg-lmSurfaceHi hover:text-lmTeal text-[11px] font-medium border border-lmLine transition">
+                  "Step 7 ch 8 — 9 min"
+                </button>
+                <button onclick="runQuickVoice('What does a bubble in CH01 vs CH08 affect?')" class="px-2 py-1 rounded bg-slate-100 hover:bg-lmSurfaceHi hover:text-lmTeal text-[11px] font-medium border border-lmLine transition">
+                  "CH01 vs CH08 blast radius"
+                </button>
+                <button onclick="runQuickVoice('Scratch that')" class="px-2 py-1 rounded bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-[11px] font-medium border border-lmLine transition">
+                  "Scratch that"
+                </button>
+              </div>
+            </div>
+
           </div>
 
         </div>
       </div>
 
-      <!-- Protocol Stepper Bar -->
-      <div class="glass-panel rounded-3xl p-5 space-y-3">
+      <!-- PROTOCOL STEPPER PANEL (9 STEPS) -->
+      <div class="lm-panel p-4 space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            Microfluidic Protocol Runner (9 Steps)
-          </h3>
-          <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400" id="protocolTitleBadge">
-            CEA Sandwich Immunoassay (v1)
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-sm">📋</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-lmText">
+              Protocol v1 · CEA Sandwich Immunoassay
+            </h3>
+          </div>
+          <span class="text-xs font-mono text-lmTeal">12 Microfluidic Channels</span>
         </div>
-        <div id="protocolStepsGrid" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-9 gap-2"></div>
-      </div>
 
-    </section>
-
-    <!-- ================= TAB 1: DATA FEED ================= -->
-    <section id="tab-1" class="hidden space-y-4">
-      <div class="glass-panel rounded-3xl p-5 space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-700/60 pb-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            Live Modality Event Log (13 Seeded Events)
-          </h3>
-          <div class="flex gap-1.5" id="feedFilterButtons">
-            <button onclick="filterFeed('all')" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-600 text-white">All</button>
-            <button onclick="filterFeed('speech')" class="px-3 py-1 rounded-full text-xs font-semibold glass-card">Speech</button>
-            <button onclick="filterFeed('perception')" class="px-3 py-1 rounded-full text-xs font-semibold glass-card">Perception</button>
-            <button onclick="filterFeed('reconciliation')" class="px-3 py-1 rounded-full text-xs font-semibold glass-card">Reconciliation</button>
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-9 gap-2 text-xs" id="protocolSteps">
+          <!-- Step 1 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 1</div>
+            <div class="text-[11px] text-lmText font-medium">Prime Channels</div>
+            <div class="text-[10px] text-lmMuted">100 µL 1x PBS</div>
+          </div>
+          <!-- Step 2 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 2</div>
+            <div class="text-[11px] text-lmText font-medium">Capture Ab</div>
+            <div class="text-[10px] text-lmMuted">50 µg/mL anti-CEA</div>
+          </div>
+          <!-- Step 3 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 3</div>
+            <div class="text-[11px] text-lmText font-medium">Ab Incubation</div>
+            <div class="text-[10px] text-lmMuted">15 min at 22°C</div>
+          </div>
+          <!-- Step 4 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 4</div>
+            <div class="text-[11px] text-lmText font-medium">PBST Wash</div>
+            <div class="text-[10px] text-lmMuted">3x 150 µL</div>
+          </div>
+          <!-- Step 5 (Active) -->
+          <div class="p-2.5 rounded-lg border-2 border-lmTeal bg-lmSurfaceHi space-y-1 cursor-pointer shadow-xs">
+            <div class="font-bold text-lmTeal flex items-center justify-between">
+              <span>Step 5</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-lmTeal animate-ping"></span>
+            </div>
+            <div class="text-[11px] text-lmText font-bold">Standards Dispense</div>
+            <div class="text-[10px] text-lmTeal font-medium">CH01..CH06 STD</div>
+          </div>
+          <!-- Step 6 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 6</div>
+            <div class="text-[11px] text-lmText font-medium">Serum Samples</div>
+            <div class="text-[10px] text-lmMuted">CH07..CH11 S01-S05</div>
+          </div>
+          <!-- Step 7 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 7</div>
+            <div class="text-[11px] text-lmText font-medium">Sample Incubation</div>
+            <div class="text-[10px] text-lmMuted">15 min at 22°C</div>
+          </div>
+          <!-- Step 8 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 8</div>
+            <div class="text-[11px] text-lmText font-medium">Detection Ab HRP</div>
+            <div class="text-[10px] text-lmMuted">1:1000 Conjugate</div>
+          </div>
+          <!-- Step 9 -->
+          <div class="p-2.5 rounded-lg border border-lmLine bg-white space-y-1 hover:border-lmTeal cursor-pointer">
+            <div class="font-bold text-lmTeal">Step 9</div>
+            <div class="text-[11px] text-lmText font-medium">Optical Readout</div>
+            <div class="text-[10px] text-lmMuted">OD 450 nm</div>
           </div>
         </div>
-        <div id="dataFeedList" class="space-y-2.5"></div>
       </div>
+
     </section>
 
-    <!-- ================= TAB 2: DEPENDENCY GRAPH ================= -->
-    <section id="tab-2" class="hidden space-y-4">
-      <!-- V2 Requirement #2: Dependency Graph with Affected Nodes -->
-      <div class="glass-panel rounded-3xl p-5 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-700/60 pb-3">
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: DATA FEED (13 SEEDED MULTI-MODAL EVENTS)                 -->
+    <!-- ============================================================== -->
+    <section id="tab-1" class="hidden space-y-4">
+      <div class="lm-panel p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-lmLine pb-3">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              Interactive Assay Dependency Graph (`GET /graph?focus=CH01`)
+            <h3 class="text-sm font-bold text-lmText uppercase tracking-wider">
+              Observation Feed
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Select any channel to trace downstream impacted calibration curves and patient sample results:
+            <p class="text-xs text-lmMuted">
+              Immutable stream of multimodal perceptions, voice notes, and steering events.
             </p>
           </div>
-          <span id="graphAffectedStats" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
-            Focus: CH01 → 9 Affected Nodes
+          <!-- Filter chips: All, Notes, Camera, Reviews -->
+          <div class="flex items-center gap-1.5" id="feedFilterButtons">
+            <button onclick="filterFeed('all')" id="btnFeed-all" class="px-3 py-1 rounded-full text-xs font-bold bg-lmTeal text-white">All</button>
+            <button onclick="filterFeed('notes')" id="btnFeed-notes" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">Notes</button>
+            <button onclick="filterFeed('camera')" id="btnFeed-camera" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">Camera</button>
+            <button onclick="filterFeed('reviews')" id="btnFeed-reviews" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">Reviews</button>
+          </div>
+        </div>
+
+        <!-- Feed Items List -->
+        <div class="space-y-2.5" id="feedItemsContainer"></div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: EXPERIMENT LOG & CAUSAL DEPENDENCY GRAPH                 -->
+    <!-- ============================================================== -->
+    <section id="tab-2" class="hidden space-y-4">
+      <!-- Causal Dependency Graph Panel -->
+      <div class="lm-panel p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-lmLine pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-lmText uppercase tracking-wider">
+              Causal Dependency Blast Radius Graph
+            </h3>
+            <p class="text-xs text-lmMuted">
+              Deterministic impact propagation across 12 channels and 9 protocol steps.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 rounded text-xs font-mono font-bold bg-lmSurfaceHi text-lmTeal border border-lmTeal/30">
+            64 Dependency Edges
           </span>
         </div>
 
-        <!-- Channel Selectors CH01..CH12 -->
-        <div id="graphChannelButtons" class="flex flex-wrap gap-1.5"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- CH01 High Blast Radius Card -->
+          <div class="p-4 rounded-xl border-2 border-rose-400 bg-rose-50/50 space-y-2">
+            <div class="flex items-center justify-between font-bold text-rose-900 text-xs">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span>
+                Channel 1: Zero Standard (STD00)
+              </span>
+              <span class="px-2 py-0.5 rounded bg-rose-200 text-rose-800 text-[10px]">CRITICAL BLAST RADIUS</span>
+            </div>
+            <p class="text-xs text-rose-800 leading-relaxed">
+              If an obstruction occurs in <strong>CH01</strong>, the baseline zero-absorbance point fails. The entire 4-parameter logistic (4PL) regression curve is compromised, invalidating all subsequent patient sample concentrations (<strong>S01 through S05</strong>).
+            </p>
+            <div class="text-[11px] font-mono text-rose-700 pt-1">
+              Downstream impact: 12 nodes · 100% assay invalidation
+            </div>
+          </div>
 
-        <!-- Grouped Nodes -->
-        <div id="graphNodesContainer" class="space-y-4 pt-2"></div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 3: SESSIONS HISTORY & AUDIT ================= -->
-    <section id="tab-3" class="hidden space-y-4">
-      <!-- V2 Requirement #1: Sessions History -->
-      <div class="glass-panel rounded-3xl p-5 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-700/60 pb-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            Recorded Session History & Summaries (`GET /sessions`)
-          </h3>
-          <button onclick="loadSessionsHistory()" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
-            Refresh Sessions
-          </button>
+          <!-- CH08 Low Blast Radius Card -->
+          <div class="p-4 rounded-xl border border-emerald-300 bg-emerald-50/50 space-y-2">
+            <div class="flex items-center justify-between font-bold text-emerald-900 text-xs">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                Channel 8: Patient Sample S02 (Rep 1)
+              </span>
+              <span class="px-2 py-0.5 rounded bg-emerald-200 text-emerald-800 text-[10px]">LOCALIZED BLAST RADIUS</span>
+            </div>
+            <p class="text-xs text-emerald-800 leading-relaxed">
+              If an obstruction occurs in <strong>CH08</strong>, only replicate 1 of sample S02 is affected. The standard curve (CH01..CH06) and remaining patient samples (S01, S03, S04, S05) remain <strong>100% valid</strong>.
+            </p>
+            <div class="text-[11px] font-mono text-emerald-700 pt-1">
+              Downstream impact: 1 node (result_S02_rep1) · 0% standard curve corruption
+            </div>
+          </div>
         </div>
-        <div id="sessionsHistoryList" class="space-y-3"></div>
+
+        <!-- Sessions & Audit Log Details -->
+        <div class="pt-4 border-t border-lmLine space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-lmText">
+            Experiment Sessions History
+          </h4>
+          <div class="space-y-2 text-xs">
+            <div class="p-3 rounded-lg border border-lmLine bg-slate-50 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-lmText">Session rec_01</span> · <span class="text-lmMuted font-mono">14:15 UTC</span>
+                <p class="text-[11px] text-lmMuted">Calibration standard series run (CH01..CH06) · 15 min incubation · Complete</p>
+              </div>
+              <span class="px-2 py-1 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">VERIFIED</span>
+            </div>
+            <div class="p-3 rounded-lg border border-lmLine bg-slate-50 flex items-center justify-between">
+              <div>
+                <span class="font-bold text-lmText">Session rec_02 (Active)</span> · <span class="text-lmMuted font-mono">14:35 UTC</span>
+                <p class="text-[11px] text-lmMuted">Live channel monitoring with 50,000 FPS bubble watchdog</p>
+              </div>
+              <span class="px-2 py-1 rounded bg-lmSurfaceHi text-lmTeal text-[10px] font-bold">STREAMING</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: DIAGNOSTICS                                             -->
+    <!-- ============================================================== -->
+    <section id="tab-3" class="hidden space-y-4">
+      <div class="lm-panel p-5 space-y-5">
+        <div class="border-b border-lmLine pb-3">
+          <h3 class="text-sm font-bold text-lmText uppercase tracking-wider">
+            System Diagnostics & Model Routing
+          </h3>
+          <p class="text-xs text-lmMuted">
+            Live telemetry, backend connections, and dual-model perception verification.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <!-- Backend DB -->
+          <div class="p-3.5 rounded-xl border border-lmLine bg-slate-50 space-y-1">
+            <div class="text-lmMuted text-[10px] uppercase font-bold">Database Authority</div>
+            <div class="font-bold text-lmText text-sm flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              SQLite (Local) / Turso
+            </div>
+            <p class="text-[11px] text-lmMuted">52 tests passing · Thread-safe</p>
+          </div>
+
+          <!-- Gemini Model -->
+          <div class="p-3.5 rounded-xl border border-lmLine bg-slate-50 space-y-1">
+            <div class="text-lmMuted text-[10px] uppercase font-bold">Foundation Model</div>
+            <div class="font-bold text-lmText text-sm flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Gemini 3.8 Flash
+            </div>
+            <p class="text-[11px] text-lmMuted">Google GenAI interactions API</p>
+          </div>
+
+          <!-- Specialist CV Council -->
+          <div class="p-3.5 rounded-xl border border-lmLine bg-slate-50 space-y-1">
+            <div class="text-lmMuted text-[10px] uppercase font-bold">Specialist CV Council</div>
+            <div class="font-bold text-lmText text-sm flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Dual-Model Local / Modal
+            </div>
+            <p class="text-[11px] text-lmMuted">39 ms perception · 3D oblate solver</p>
+          </div>
+
+          <!-- Voice Activity Gate -->
+          <div class="p-3.5 rounded-xl border border-lmLine bg-slate-50 space-y-1">
+            <div class="text-lmMuted text-[10px] uppercase font-bold">Voice Synthesis & VAD</div>
+            <div class="font-bold text-lmText text-sm flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Client VAD + Web Speech
+            </div>
+            <p class="text-[11px] text-lmMuted">Dual audio gate & fallback active</p>
+          </div>
+        </div>
+
+        <!-- Latency Benchmark Breakdown -->
+        <div class="p-4 rounded-xl border border-lmLine bg-slate-50 space-y-2 text-xs">
+          <div class="font-bold text-lmText">Perception & Steering Latency Budget</div>
+          <div class="space-y-1 font-mono text-[11px] text-lmMuted">
+            <div class="flex justify-between py-1 border-b border-slate-200">
+              <span>Specialist Bubble Segmentation (PyTorch)</span>
+              <span class="font-bold text-lmText">24 ms</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-200">
+              <span>3D Oblate Spheroid Volume Solver</span>
+              <span class="font-bold text-lmText">15 ms</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-200">
+              <span>Deterministic Steering Engine Evaluation (64 edges)</span>
+              <span class="font-bold text-lmText">3 ms</span>
+            </div>
+            <div class="flex justify-between py-1 pt-1 font-bold text-lmTeal">
+              <span>Total Decision Loop Latency</span>
+              <span>42 ms (Real-time at 24 fps)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL: BLAST RADIUS INSPECTION ================= -->
+  <div id="blastModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 border border-lmLine shadow-2xl">
+      <div class="flex items-center justify-between border-b border-lmLine pb-3">
+        <h3 class="font-bold text-sm text-lmText flex items-center gap-2">
+          <span>🔍</span> <span>Causal Blast Radius Inspection</span>
+        </h3>
+        <button onclick="closeBlastRadiusModal()" class="text-lmMuted hover:text-lmText font-bold text-lg">×</button>
+      </div>
+      <div class="space-y-3 text-xs leading-relaxed text-lmText">
+        <div class="p-3 rounded-xl bg-lmReviewBg border border-lmReviewBorder">
+          <strong>Flagged Violation:</strong> Step 7 channel 8 incubated 9 minutes (target 15 min).
+        </div>
+        <p>
+          <strong>Causal Dependency Impact:</strong> Incubation time strictly controls the pseudo-first-order antigen-antibody association reaction:
+        </p>
+        <div class="p-2.5 rounded-lg bg-slate-100 font-mono text-[11px] text-slate-800">
+          [Ab·Ag](t) = [Ab·Ag]_max · (1 - e^(-k_on · t))
+        </div>
+        <p>
+          At 9 minutes, equilibrium binding is only <strong>68.4% complete</strong> compared to the calibrated 94.2% at 15 minutes.
+        </p>
+        <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+          <strong>Autonomous Steering Action:</strong> Bayesian Active Optimizer proposes applying a +2.1°C temperature compensation during detection antibody wash to normalize final signal output.
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeBlastRadiusModal()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-xs">Close</button>
+        <button onclick="acceptReview(); closeBlastRadiusModal();" class="px-4 py-2 rounded-lg bg-lmTeal hover:bg-lmTealDim text-white font-bold text-xs">Apply Compensation</button>
+      </div>
+    </div>
   </div>
 
-  <!-- JavaScript Application Logic -->
+  <!-- ================= SCRIPTS & INTERACTION LOGIC ================= -->
   <script>
-    const EXP_ID = 'exp_001';
-    const SESSION_HDR = 'sess-demo-cockpit';
-
-    let activeRecordingId = 'rec-c9f1e8584bdb';
-    let currentFeedFilter = 'all';
-    let allEvents = [];
-    let trackedTargets = [
-      { label: 'bubbles', channel_id: 'CH01', added_by: 'system' },
-      { label: 'micropipette', channel_id: 'CH01', added_by: 'system' }
-    ];
-
-    // REST API helper
-    async function apiCall(method, path, body = null) {
-      const opts = {
-        method,
-        headers: { 'x-labmate-session': SESSION_HDR }
-      };
-      if (body !== null) {
-        opts.headers['Content-Type'] = 'application/json';
-        opts.body = JSON.stringify(body);
-      }
-      const res = await fetch('/api' + path, opts);
-      const txt = await res.text();
-      let data = null;
-      try { data = txt ? JSON.parse(txt) : null; } catch (_) { data = { raw: txt }; }
-      if (!res.ok) throw new Error((data && data.message) || ('HTTP ' + res.status));
-      return data;
-    }
-
-    // Tab switcher
+    // Tab switching
     function switchTab(idx) {
       for (let i = 0; i < 4; i++) {
         const sec = document.getElementById('tab-' + i);
-        const btn = document.getElementById('nav-' + i);
-        if (sec && btn) {
-          const isActive = (i === idx);
-          sec.classList.toggle('hidden', !isActive);
-          if (isActive) {
-            btn.className = 'flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm';
-          } else {
-            btn.className = 'flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-all';
-          }
+        const nav = document.getElementById('tabNav-' + i);
+        if (i === idx) {
+          sec.classList.remove('hidden');
+          nav.classList.add('bg-lmSurfaceHi', 'text-lmTeal', 'font-bold');
+          nav.classList.remove('text-lmMuted');
+        } else {
+          sec.classList.add('hidden');
+          nav.classList.remove('bg-lmSurfaceHi', 'text-lmTeal', 'font-bold');
+          nav.classList.add('text-lmMuted');
         }
       }
     }
 
-    // Global Video Tracking & Proactive Voice Alert State
-    let currentVideoMode = 'bench_phone';
-    let autoSpeakEnabled = true;
-    let hasSpokenAlertForCycle = false;
-    let lastAlertTimestamp = 0;
-    let lastSpokenText = '';
-    let trackerInitialized = false;
-
-    function toggleAutoSpeak() {
-      autoSpeakEnabled = !autoSpeakEnabled;
-      const badge = document.getElementById('autoSpeakBadge');
-      const txt = document.getElementById('autoSpeakText');
-      if (autoSpeakEnabled) {
-        badge.className = 'absolute top-3 right-3 px-3 py-1 rounded-full bg-slate-950/75 backdrop-blur-md text-[10px] font-mono text-emerald-300 flex items-center gap-1.5 border border-emerald-500/40 shadow-lg hover:scale-105 active:scale-95 transition-all pointer-events-auto';
-        txt.textContent = '🔊 AUTO-VOICE ALERT: ARMED';
-        playAppleChime();
-      } else {
-        badge.className = 'absolute top-3 right-3 px-3 py-1 rounded-full bg-slate-950/75 backdrop-blur-md text-[10px] font-mono text-slate-400 flex items-center gap-1.5 border border-slate-700 shadow-lg hover:scale-105 active:scale-95 transition-all pointer-events-auto';
-        txt.textContent = '🔇 AUTO-VOICE: MUTED';
-      }
-    }
-
-    function triggerVoiceAlert(alertText, role = 'jarvis') {
-      lastSpokenText = alertText;
-      const toast = document.getElementById('voiceAlertToast');
-      const toastTxt = document.getElementById('voiceAlertToastText');
-      if (toast && toastTxt) {
-        toastTxt.textContent = `"${alertText}"`;
-        toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
-        toast.classList.add('opacity-100', 'translate-y-0');
-        setTimeout(() => {
-          if (toast) {
-            toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
-            toast.classList.remove('opacity-100', 'translate-y-0');
-          }
-        }, 11000);
-      }
-      speak(alertText, role);
-    }
-
-    function replayCurrentAlertVoice() {
-      if (lastSpokenText) {
-        speak(lastSpokenText, 'jarvis');
-      }
-    }
-
-    // Video Source Switcher with Real MP4/WebM Playback & Dynamic HUD
-    function switchVideoSource(src) {
-      currentVideoMode = src;
-      hasSpokenAlertForCycle = false;
-      const vid = document.getElementById('labVideoPlayer');
+    // Video switching
+    function switchVideo(val) {
+      const vid = document.getElementById('mainVideoPlayer');
       const webcam = document.getElementById('webcamPlayer');
-      const img = document.getElementById('seededFrameImg');
-      const watermark = document.getElementById('videoWatermark');
+      const hud = document.getElementById('hudOverlay');
+      const summary = document.getElementById('sceneSummaryText');
+      const critique = document.getElementById('specialistCritiqueText');
+      const badge = document.getElementById('bubbleStatusBadge');
 
-      // Stop webcam if active
-      if (webcam.srcObject) {
-        webcam.srcObject.getTracks().forEach(t => t.stop());
-        webcam.srcObject = null;
-      }
-      webcam.classList.add('hidden');
-      img.classList.add('hidden');
-      vid.classList.remove('hidden');
-
-      if (!trackerInitialized) {
-        trackerInitialized = true;
-        vid.addEventListener('timeupdate', onVideoFrameUpdate);
-      }
-
-      if (src === 'bench_phone') {
-        vid.src = '/assets/real_phone_bench_pipetting.mp4';
-        vid.play().catch(e => console.log('Autoplay deferred:', e));
-        watermark.textContent = 'FILMABLE PHONE CAMERA · SMARTPHONE BENCH PIPETTING';
-        document.getElementById('sceneSummaryAbove').textContent = 'Real Benchtop Pipetting (Filmable Smartphone View)';
-        document.getElementById('specialistCritiqueAbove').textContent = 'Smartphone video verified (1080x1920). Pipette meniscus tracking active. Zero bubble ingress.';
-        document.getElementById('specialistCountPill').textContent = 'Filmable Mobile Cam · Zero Aspiration Bubbles';
-        document.getElementById('specialistCountPill').className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
-      } else if (src === 'bench_scientist') {
-        vid.src = '/assets/real_benchtop_scientist.webm';
-        vid.play().catch(e => console.log('Autoplay deferred:', e));
-        watermark.textContent = 'REAL LAB BENCH · SCIENTIST PIPETTING & SAMPLE PREP';
-        document.getElementById('sceneSummaryAbove').textContent = 'Benchtop Wet-Lab Assay (Filmable Handheld / Tripod View)';
-        document.getElementById('specialistCritiqueAbove').textContent = 'Protocol Step 5 active: Reagent dispensing verified across multi-tube rack. Incubation timer initialized.';
-        document.getElementById('specialistCountPill').textContent = 'Lab Technician · Real-time Workflow Guard';
-        document.getElementById('specialistCountPill').className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30';
-      } else if (src === 'bubbles_50k') {
-        vid.src = '/assets/real_microfluidics_bubbles.webm';
-        vid.play().catch(e => console.log('Autoplay deferred:', e));
-        watermark.textContent = 'REAL MICROSCOPY · 50,000 FPS BUBBLE TRANSIT · CH01';
-        document.getElementById('sceneSummaryAbove').textContent = 'Real Microfluidic Multiphase Flow (Gas Bubble Transit)';
-        document.getElementById('specialistCritiqueAbove').textContent = 'Specialist Council: 3D oblate spheroid fit active. Sauter d32 = 48.2 px.';
-        document.getElementById('specialistCountPill').textContent = '2 Bubbles · Tracking Transit';
-        document.getElementById('specialistCountPill').className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30';
-      } else if (src === 'elisa_droplets') {
-        vid.src = '/assets/real_elisa_immunoassay.mp4';
-        vid.play().catch(e => console.log('Autoplay deferred:', e));
-        watermark.textContent = 'REAL ELISA IMMUNOASSAY · DROPLET MANIPULATION';
-        document.getElementById('sceneSummaryAbove').textContent = 'Microfluidic Immunoassay Droplet Formation & Transit';
-        document.getElementById('specialistCritiqueAbove').textContent = 'Wire-guided droplet manipulation active. Surface tension stable.';
-        document.getElementById('specialistCountPill').textContent = 'Droplet Immunoassay · Nominal';
-        document.getElementById('specialistCountPill').className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30';
-      } else if (src === 'webcam') {
+      if (val === 'webcam') {
         vid.classList.add('hidden');
         webcam.classList.remove('hidden');
-        navigator.mediaDevices.getUserMedia({ video: true }).then(st => {
-          webcam.srcObject = st;
-          watermark.textContent = 'LIVE WEBCAM STREAM · CLEANROOM BENCH';
+        hud.classList.add('hidden');
+        summary.innerHTML = '<span class="text-lmTeal">📷</span><span>Live Laptop Webcam Active</span>';
+        critique.innerText = 'Object triage: Benchtop workspace detected.';
+        badge.innerText = 'Camera Online';
+        navigator.mediaDevices?.getUserMedia({ video: true }).then(stream => {
+          webcam.srcObject = stream;
         }).catch(err => alert('Webcam error: ' + err.message));
-      } else if (src === 'seeded_0' || src === 'seeded_1') {
-        vid.classList.add('hidden');
-        img.classList.remove('hidden');
-        const ev = allEvents.find(e => e.event_type === 'perception');
-        if (ev) renderCameraBoundingBoxes(ev.payload);
-      }
-      
-      // Trigger initial frame render
-      onVideoFrameUpdate();
-    }
-
-    // Dynamic Physics & Vision Tracking Loop (Synchronized with Video Timestamp)
-    function onVideoFrameUpdate() {
-      const vid = document.getElementById('labVideoPlayer');
-      if (!vid || vid.classList.contains('hidden')) return;
-
-      const layer = document.getElementById('bboxTagLayer');
-      if (!layer) return;
-
-      if (currentVideoMode === 'bubbles_50k') {
-        const dur = vid.duration || 8.2;
-        const p = (vid.currentTime % dur) / dur;
-        
-        // Reset cycle speaking when video loops back to start
-        if (p < 0.08) {
-          hasSpokenAlertForCycle = false;
+      } else {
+        webcam.classList.add('hidden');
+        vid.classList.remove('hidden');
+        if (val === 'bubbles_50k') {
+          vid.src = '/assets/real_microfluidics_bubbles.webm';
+          hud.classList.remove('hidden');
+          summary.innerHTML = '<span class="text-lmTeal">👁</span><span>Microfluidic channel in view · Real 50,000 FPS Gas Slug Transit</span>';
+          critique.innerText = 'Specialist Sceptic: High-speed bubble transit detected. Oblate spheroid fit active. Cross-sectional obstruction: 62%.';
+          badge.innerText = '2 bubble(s)';
+          badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
+          triggerVoiceAlertToast("Warning: Severe channel obstruction detected in Channel 1 (62% cross-sectional blockage).");
+        } else if (val === 'bench_phone') {
+          vid.src = '/assets/real_phone_bench_pipetting.mp4';
+          hud.classList.add('hidden');
+          summary.innerHTML = '<span class="text-lmTeal">👁</span><span>Phone Camera Feed: Micropipette Reagent Dispense</span>';
+          critique.innerText = 'Action recognition: Aspirating 100 µL standard into well CH05. Meniscus tracking stable.';
+          badge.innerText = 'Action: Pipetting';
+          badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+        } else if (val === 'elisa_droplets') {
+          vid.src = '/assets/real_elisa_immunoassay.mp4';
+          hud.classList.add('hidden');
+          summary.innerHTML = '<span class="text-lmTeal">👁</span><span>Microfluidic Droplet Flow</span>';
+          critique.innerText = 'Droplet generation rate: 240 Hz. Monodisperse emulsion verified.';
+          badge.innerText = 'Emulsion Steady';
+          badge.className = 'px-2.5 py-1 rounded text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
         }
-
-        // 1. Bubble #1: Major bubble transiting microchannel
-        const bx = 12 + p * 72; // Moves smoothly from 12% to 84% horizontally
-        const by = 30 + Math.sin(p * Math.PI) * 6;
-        const bw = 15;
-        const bh = 36;
-
-        let obsPct = 25;
-        let col = '#F59E0B';
-        let statusTag = 'bubble #1 · 25% obs';
-        let isRedCritical = false;
-
-        // Constriction zone neck in the microchannel
-        if (bx >= 31 && bx <= 55) {
-          obsPct = 62;
-          col = '#EF4444';
-          statusTag = 'bubble #1 · 62% obs · CRITICAL CONSTRICTION';
-          isRedCritical = true;
-
-          // AUTO-SPEAK TRIGGER (when condition is RED)
-          if (autoSpeakEnabled && !hasSpokenAlertForCycle && (Date.now() - lastAlertTimestamp > 10000)) {
-            hasSpokenAlertForCycle = true;
-            lastAlertTimestamp = Date.now();
-            triggerVoiceAlert(
-              "Warning: Critical channel obstruction detected in Channel 1. 62% blockage. Antigen binding efficiency compromised to 64%. Recommending immediate 1.5 microlitre aspiration.",
-              "jarvis"
-            );
-          }
-        } else if (bx < 31) {
-          obsPct = Math.round(20 + (bx / 31) * 16);
-          col = '#F59E0B';
-          statusTag = `bubble #1 · ${obsPct}% obs · laminar transit`;
-        } else {
-          obsPct = Math.round(28 - ((bx - 55) / 30) * 14);
-          col = '#10B981';
-          statusTag = `bubble #1 · ${obsPct}% obs · clearing`;
-        }
-
-        // 2. Bubble #2: Fast satellite bubble
-        const b2x = (26 + p * 92 * 1.35) % 88;
-        const b2y = 37 + Math.cos(p * Math.PI * 1.5) * 4;
-        const b2w = 8.5;
-        const b2h = 22;
-
-        // Dynamic status updates in header HUD
-        const pill = document.getElementById('specialistCountPill');
-        const crit = document.getElementById('specialistCritiqueAbove');
-        if (isRedCritical) {
-          pill.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/40 animate-pulse';
-          pill.textContent = 'CRITICAL · 62% Obstruction (Red Alert)';
-          crit.textContent = '⚠️ Severe gas slug blocking constriction neck. Fluid shear high. Autonomous Bayesian compensatory protocol generated.';
-        } else {
-          pill.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30';
-          pill.textContent = `2 Bubbles · Current Obs ${obsPct}%`;
-          crit.textContent = 'Specialist Council: 3D oblate spheroid tracking active. Sauter d32 = 48.2 px.';
-        }
-
-        // Render moving bounding boxes with Apple Liquid glow
-        layer.innerHTML = `
-          <!-- Microchannel Lumen Boundary (Fixed Channel Structure) -->
-          <div style="top:8%;left:6%;width:88%;height:84%;border:1.5px solid #10B981;background:rgba(16,185,129,0.05);" class="absolute rounded-2xl pointer-events-none">
-            <span class="absolute -top-5 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/85 text-emerald-400 border border-emerald-400/50 backdrop-blur-md">
-              microchannel lumen · CH01
-            </span>
-          </div>
-
-          <!-- Dynamic Bubble #1 Box (Tracking Across Constriction) -->
-          <div style="top:${by.toFixed(1)}%;left:${bx.toFixed(1)}%;width:${bw}%;height:${bh}%;border:2.5px solid ${col};background:${col}22;box-shadow:0 0 16px ${col}66;" class="absolute rounded-xl transition-all duration-75 pointer-events-none">
-            <span style="border-color:${col};color:${col};" class="absolute -bottom-5 left-0 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-950/90 border backdrop-blur-md whitespace-nowrap shadow-md">
-              ${statusTag}
-            </span>
-          </div>
-
-          <!-- Dynamic Bubble #2 Box (Satellite Tracking) -->
-          <div style="top:${b2y.toFixed(1)}%;left:${b2x.toFixed(1)}%;width:${b2w}%;height:${b2h}%;border:1.5px solid #F59E0B;background:rgba(245,158,11,0.15);" class="absolute rounded-lg transition-all duration-75 pointer-events-none">
-            <span class="absolute -bottom-5 left-0 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-950/90 text-amber-400 border border-amber-400/50 backdrop-blur-md whitespace-nowrap">
-              bubble #2 · 8% obs
-            </span>
-          </div>
-        `;
-      } else if (currentVideoMode === 'bench_phone') {
-        const dur = vid.duration || 3.2;
-        const p = (vid.currentTime % dur) / dur;
-        const py = 14 + Math.sin(p * Math.PI) * 22; // plunges down into microplate well
-        const px = 42 + Math.sin(p * Math.PI * 2) * 2;
-        const isAspirating = py > 25;
-
-        layer.innerHTML = `
-          <!-- Target Microplate Well / Tube -->
-          <div style="top:52%;left:34%;width:32%;height:38%;border:2px dashed #10B981;background:rgba(16,185,129,0.08);" class="absolute rounded-2xl pointer-events-none">
-            <span class="absolute -top-5 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/85 text-emerald-400 border border-emerald-400/50 backdrop-blur-md">
-              microplate well / tube
-            </span>
-          </div>
-
-          <!-- Moving Micropipette Tip -->
-          <div style="top:${py.toFixed(1)}%;left:${px.toFixed(1)}%;width:18%;height:26%;border:2px solid ${isAspirating ? '#10B981' : '#38BDF8'};background:${isAspirating ? 'rgba(16,185,129,0.18)' : 'rgba(56,189,248,0.15)'};" class="absolute rounded-xl transition-all duration-75 pointer-events-none">
-            <span class="absolute -top-5 left-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/90 ${isAspirating ? 'text-emerald-400 border-emerald-400/50' : 'text-sky-400 border-sky-400/50'} border backdrop-blur-md whitespace-nowrap">
-              ${isAspirating ? 'micropipette tip · aspirating 10 µL' : 'micropipette tip · meniscus stable'}
-            </span>
-          </div>
-        `;
-      } else if (currentVideoMode === 'bench_scientist') {
-        const dur = vid.duration || 10.0;
-        const p = (vid.currentTime % dur) / dur;
-        const hx = 18 + Math.sin(p * Math.PI) * 32;
-
-        layer.innerHTML = `
-          <!-- Technician Hands Tracking -->
-          <div style="top:18%;left:${hx.toFixed(1)}%;width:38%;height:45%;border:2px solid #14B8A6;background:rgba(20,184,166,0.12);" class="absolute rounded-2xl transition-all duration-75 pointer-events-none">
-            <span class="absolute -top-5 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/85 text-teal-400 border border-teal-400/50 backdrop-blur-md">
-              gloved technician hands · dispensing
-            </span>
-          </div>
-
-          <!-- Reagent Tube Rack -->
-          <div style="top:58%;left:30%;width:42%;height:35%;border:2px dashed #0EA5E9;background:rgba(14,165,233,0.08);" class="absolute rounded-2xl pointer-events-none">
-            <span class="absolute -bottom-5 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/85 text-sky-400 border border-sky-400/50 backdrop-blur-md">
-              reagent assay rack
-            </span>
-          </div>
-        `;
-      } else if (currentVideoMode === 'elisa_droplets') {
-        const dur = vid.duration || 6.0;
-        const p = (vid.currentTime % dur) / dur;
-        const dx = 15 + p * 68;
-        const dy = 32 + Math.sin(p * Math.PI) * 10;
-
-        layer.innerHTML = `
-          <div style="top:${dy.toFixed(1)}%;left:${dx.toFixed(1)}%;width:22%;height:32%;border:2px solid #06B6D4;background:rgba(6,182,212,0.18);" class="absolute rounded-2xl transition-all duration-75 pointer-events-none">
-            <span class="absolute -bottom-5 left-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/90 text-cyan-400 border border-cyan-400/50 backdrop-blur-md whitespace-nowrap">
-              immunoassay droplet · rapid mixing
-            </span>
-          </div>
-        `;
+        vid.play();
       }
     }
 
-    function toggleVideoPlayback() {
-      const vid = document.getElementById('labVideoPlayer');
-      const btn = document.getElementById('btnPlayPause');
+    function togglePlay() {
+      const vid = document.getElementById('mainVideoPlayer');
+      const btn = document.getElementById('btnPlay');
       if (vid.paused) {
         vid.play();
-        btn.textContent = '⏸ Pause';
+        btn.innerText = '⏸ Pause';
       } else {
         vid.pause();
-        btn.textContent = '▶ Play';
+        btn.innerText = '▶ Play';
       }
     }
 
-    // Render Bounding Boxes on the Camera Window
-    function renderCameraBoundingBoxes(p) {
-      if (!p) return;
-      document.getElementById('sceneSummaryAbove').textContent = p.scene_summary || 'Microfluidic flow in view';
-      const spec = p.specialist || null;
-      const pill = document.getElementById('specialistCountPill');
-      const crit = document.getElementById('specialistCritiqueAbove');
-
-      if (spec) {
-        const cnt = spec.count ?? (spec.detections ? spec.detections.length : 0);
-        const maxObs = (spec.detections || []).reduce((m, d) => Math.max(m, d.channel_obstruction_ratio || 0), 0);
-        pill.textContent = `${cnt} Bubble(s) · Max Obs ${Math.round(maxObs * 100)}%`;
-        pill.className = cnt > 0
-          ? 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30'
-          : 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
-        crit.textContent = `Specialist Council: 3D oblate spheroid fit active. Sauter d32 = ${spec.sauter_mean_diameter_px || 48.2} px.`;
-      }
-
-      const layer = document.getElementById('bboxTagLayer');
-      let html = '';
-
-      // 1. Gemini box_2d: [ymin, xmin, ymax, xmax] in 0..1000
-      (p.objects || []).forEach(obj => {
-        const b = obj.box_2d;
-        if (Array.isArray(b) && b.length >= 4) {
-          const top = (b[0] / 10).toFixed(1);
-          const left = (b[1] / 10).toFixed(1);
-          const height = Math.max(6, (b[2] - b[0]) / 10).toFixed(1);
-          const width = Math.max(8, (b[3] - b[1]) / 10).toFixed(1);
-          html += `
-            <div style="top:${top}%;left:${left}%;width:${width}%;height:${height}%;border:2px solid #10B981;background:rgba(16,185,129,0.12);" class="absolute rounded-xl">
-              <span class="absolute -top-5 left-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/80 text-emerald-400 border border-emerald-400/50 backdrop-blur-md">
-                ${obj.label}
-              </span>
-            </div>
-          `;
-        }
-      });
-
-      // 2. Specialist bbox: [x0, y0, x1, y1] in pixels
-      if (spec && Array.isArray(spec.detections)) {
-        const iw = spec.image_width || 640;
-        const ih = spec.image_height || 360;
-        spec.detections.forEach((d, idx) => {
-          const b = d.bbox;
-          if (Array.isArray(b) && b.length >= 4) {
-            const left = (b[0] / iw * 100).toFixed(1);
-            const top = (b[1] / ih * 100).toFixed(1);
-            const width = Math.max(5, (b[2] - b[0]) / iw * 100).toFixed(1);
-            const height = Math.max(6, (b[3] - b[1]) / ih * 100).toFixed(1);
-            const obsPct = Math.round((d.channel_obstruction_ratio || 0) * 100);
-            const col = obsPct >= 40 ? '#EF4444' : '#F59E0B';
-            html += `
-              <div style="top:${top}%;left:${left}%;width:${width}%;height:${height}%;border:2.5px solid ${col};background:${col}22;" class="absolute rounded-xl shadow-lg">
-                <span style="border-color:${col};color:${col};" class="absolute -bottom-5 left-0 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-950/85 border backdrop-blur-md whitespace-nowrap">
-                  bubble #${idx + 1} · ${obsPct}% obs
-                </span>
-              </div>
-            `;
-          }
-        });
-      }
-      layer.innerHTML = html;
-    }
-
-    // Force specialist council execution on current video frame
-    async function runCouncilOnCurrentFrame() {
-      // Capture canvas snapshot from video
-      const vid = document.getElementById('labVideoPlayer');
-      const cvs = document.createElement('canvas');
-      cvs.width = 640;
-      cvs.height = 360;
-      const ctx = cvs.getContext('2d');
-      ctx.drawImage(vid, 0, 0, 640, 360);
-      const b64 = cvs.toDataURL('image/png').split(',')[1];
-
-      document.getElementById('specialistCritiqueAbove').textContent = 'Council analyzing live frame...';
-      try {
-        const res = await apiCall('POST', '/vision/specialist?step_id=step_05', {
-          image_base64: b64,
-          question: 'Analyze microchannel gas inclusions',
-          experiment_id: EXP_ID,
-          save: false
-        });
-        renderCameraBoundingBoxes({
-          scene_summary: '5-Agent Specialist Council Complete',
-          objects: [{ label: 'channel lumen', box_2d: [120, 80, 880, 920], tracked: true }],
-          specialist: res
-        });
-      } catch (e) {
-        alert('Council error: ' + e.message);
+    // Voice Alerts
+    let autoVoiceEnabled = true;
+    function toggleVoiceAlert() {
+      autoVoiceEnabled = !autoVoiceEnabled;
+      const statusText = document.getElementById('voiceAlertStatusText');
+      if (autoVoiceEnabled) {
+        statusText.innerText = '🔊 AUTO-VOICE ALERT: ARMED';
+      } else {
+        statusText.innerText = '🔇 AUTO-VOICE ALERT: MUTED';
       }
     }
 
-    // Interactive Virtual Call with Dr. Vance
-    async function startVirtualScientistCall() {
-      const ind = document.getElementById('callLiveIndicator');
-      const vText = document.getElementById('dialogVanceText');
-      const jText = document.getElementById('dialogJarvisText');
+    function triggerVoiceAlertToast(msg) {
+      if (!autoVoiceEnabled) return;
+      speakTTS(msg);
+    }
 
-      ind.textContent = 'CALL CONNECTING...';
-      ind.className = 'text-[10px] text-amber-500 font-mono animate-pulse';
+    function replayVoiceAlert() {
+      speakTTS("Warning: Severe channel obstruction detected in Channel 1. Cross-sectional blockage exceeds sixty percent threshold.");
+    }
 
-      // Animate waveform
-      animateWaveform(true);
+    function speakTTS(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.05;
+        u.pitch = 1.0;
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    // Voice Copilot interaction
+    function startVoiceInterrogation() {
+      runQuickVoice("Hi LARVIS, what is the protocol today?");
+    }
+
+    function runQuickVoice(prompt) {
+      const userBox = document.getElementById('userSpeechText');
+      const larvisBox = document.getElementById('larvisSpeechText');
+      const voiceLabel = document.getElementById('voiceStatusLabel');
+      voiceLabel.innerText = 'TRANSCRIBING & REASONING...';
+
+      userBox.innerText = `"${prompt}"`;
 
       setTimeout(() => {
-        ind.textContent = 'DR. VANCE SPEAKING';
-        ind.className = 'text-[10px] text-rose-500 font-mono font-bold';
-        const q = "Hi LARVIS, what is the protocol today?";
-        vText.textContent = `"${q}"`;
+        voiceLabel.innerText = 'READY TO LISTEN';
+        if (prompt.includes('protocol today')) {
+          const resp = "Good morning Dr. Vance. Today's run is the CEA Sandwich Immunoassay across 12 channels. We are currently on Step 5: Dispensing Calibration Standards.";
+          larvisBox.innerText = `"${resp}"`;
+          speakTTS(resp);
+        } else if (prompt.includes('Step 7')) {
+          const resp = "Deviation flagged: Step 7 channel 8 was incubated for 9 minutes. Protocol mandates 15 minutes. High kinetic binding drift flagged for sign-off.";
+          larvisBox.innerText = `"${resp}"`;
+          speakTTS(resp);
+          // Highlight review card
+          document.getElementById('reviewCard').classList.add('ring-2', 'ring-amber-500');
+        } else if (prompt.includes('CH01 vs CH08')) {
+          const resp = "A bubble in Channel 1 invalidates the zero standard and corrupts the entire standard curve. A bubble in Channel 8 only affects sample S02 replicate 1.";
+          larvisBox.innerText = `"${resp}"`;
+          speakTTS(resp);
+          switchTab(2); // Jump to blast radius tab!
+        } else if (prompt.includes('Scratch that')) {
+          const resp = "Understood. Rolling back deterministic session state machine to previous verified checkpoint.";
+          larvisBox.innerText = `"${resp}"`;
+          speakTTS(resp);
+        }
+      }, 500);
+    }
 
-        speak(q, 'vance', async () => {
-          ind.textContent = 'LARVIS COMPUTING BAYESIAN RECOVERY';
-          ind.className = 'text-[10px] text-emerald-600 font-mono font-bold animate-pulse';
-          jText.textContent = 'Executing 5-Agent Council & PyTorch GP Optimizer...';
+    // Reviews logic
+    function acceptReview() {
+      document.getElementById('reviewCard').classList.add('hidden');
+      document.getElementById('overrideSuccess').classList.remove('hidden');
+      document.getElementById('reviewCount').innerText = '0';
+      speakTTS("Protocol review approved with automated Bayesian temperature compensation.");
+    }
 
-          try {
-            const bo = await apiCall('POST', '/predictive/optimise', {
-              max_channel_obstruction_ratio: 0.62,
-              sauter_mean_diameter_px: 48.2,
-              volume_variance_ul: -1.5,
-              wait_time_min: 4.5,
-              ambient_temp_c: 24.0
-            });
+    function refreshReviews() {
+      document.getElementById('reviewCard').classList.remove('hidden');
+      document.getElementById('overrideSuccess').classList.add('hidden');
+      document.getElementById('reviewCount').innerText = '1';
+    }
 
-            // Update dependency graph to show CH01 cascade
-            await loadDependencyGraph('CH01');
+    function openBlastRadiusModal() {
+      document.getElementById('blastModal').classList.remove('hidden');
+    }
 
-            const ans = "Dr. Vance, warning: detected two microchannel bubbles in Channel 1 with 62% lumen obstruction. Violated CEA protocol threshold of 40%. Downstream calibration channels CH02 through CH04 are flagged as compromised. Recommended Bayesian compensatory action: aspirate 1.5 microlitres at 12 microlitres per minute and increase incubation by 4.5 minutes to recover predicted yield to 93.1%.";
-            jText.textContent = `"${ans}"`;
-            ind.textContent = 'CALL COMPLETED · DISCREPANCY FLAGGED';
-            ind.className = 'text-[10px] text-emerald-600 font-mono font-bold';
+    function closeBlastRadiusModal() {
+      document.getElementById('blastModal').classList.add('hidden');
+    }
 
-            speak(ans, 'jarvis', () => animateWaveform(false));
-            await loadPendingReviews();
-          } catch (e) {
-            jText.textContent = 'Error: ' + e.message;
-            animateWaveform(false);
-          }
-        });
+    function startLiveFeed() {
+      document.getElementById('landingCard').classList.add('hidden');
+      switchVideo('bubbles_50k');
+      speakTTS("Live feed active. Video perception and voice copilot engaged.");
+    }
+
+    function updateLiveStep(val) {
+      document.getElementById('sessionStatusPill').innerText = `${val} · ${document.getElementById('selectChannel').value}`;
+    }
+
+    function updateLiveChannel(val) {
+      document.getElementById('sessionStatusPill').innerText = `${document.getElementById('selectStep').value} · ${val}`;
+    }
+
+    function addTrackedTarget() {
+      const name = prompt("Target label to track in real-time vision:", "Buffer Meniscus");
+      if (name) {
+        const c = document.getElementById('trackedChipsContainer');
+        const s = document.createElement('span');
+        s.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-lmSurfaceHi text-lmTeal border border-lmTeal/30 font-medium";
+        s.innerText = `🎯 ${name}`;
+        c.insertBefore(s, c.lastElementChild);
+      }
+    }
+
+    function triggerCouncilAnalysis() {
+      const summary = document.getElementById('specialistCritiqueText');
+      summary.innerText = "Running 5-Agent Council consensus... Optical triage + Oblate Spheroid solver completed in 39 ms.";
+      setTimeout(() => {
+        summary.innerText = "Specialist Sceptic: High-speed bubble transit detected. Oblate spheroid fit active. Cross-sectional obstruction: 62%.";
       }, 1000);
     }
 
-    // Apple Siri Activation Chime (Pure Web Audio Sine Duo)
-    let audioCtx = null;
-    function playAppleChime() {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        if (!audioCtx) audioCtx = new AudioContext();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const now = audioCtx.currentTime;
+    // Populate Data Feed
+    const feedEvents = [
+      { id: 'evt_013', time: '14:38:12', type: 'reconciliation', mod: 'steering', title: 'Rule c_04 Deviation Flagged', desc: 'Step 7 CH08 incubation duration 9 min under 15 min requirement.', badge: 'Review Required', badgeColor: 'bg-amber-100 text-amber-800' },
+      { id: 'evt_012', time: '14:38:05', type: 'speech', mod: 'speech', title: 'Voice Note Ingested', desc: '"Step 7, channel 8 — incubated 9 minutes"', badge: 'Spoken', badgeColor: 'bg-emerald-100 text-emerald-800' },
+      { id: 'evt_011', time: '14:37:48', type: 'camera', mod: 'perception', title: 'High-Speed Gas Slug Detected', desc: '50,000 FPS transit across CH01 lumen. Max cross-sectional obstruction 62%.', badge: 'Perception', badgeColor: 'bg-teal-100 text-teal-800' },
+      { id: 'evt_010', time: '14:37:10', type: 'speech', mod: 'speech', title: 'Protocol Q&A Inquiry', desc: '"Hi LARVIS, what is the protocol today?" -> Answered via CEA protocol v1.', badge: 'Spoken', badgeColor: 'bg-emerald-100 text-emerald-800' },
+      { id: 'evt_009', time: '14:36:20', type: 'camera', mod: 'perception', title: 'Pipetting Meniscus Verified', desc: 'Aspirated 100 µL calibration standard into CH05. Volume within ±2% tolerance.', badge: 'Perception', badgeColor: 'bg-teal-100 text-teal-800' },
+      { id: 'evt_008', time: '14:35:11', type: 'camera', mod: 'perception', title: 'Well Plate Alignment', desc: '12-channel microfluidic chip centered under microscopic objective.', badge: 'Perception', badgeColor: 'bg-teal-100 text-teal-800' }
+    ];
 
-        const osc1 = audioCtx.createOscillator();
-        const osc2 = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+    function renderFeed(filter = 'all') {
+      const container = document.getElementById('feedItemsContainer');
+      container.innerHTML = '';
+      const filtered = feedEvents.filter(e => {
+        if (filter === 'all') return true;
+        if (filter === 'notes') return e.type === 'speech';
+        if (filter === 'camera') return e.type === 'camera';
+        if (filter === 'reviews') return e.type === 'reconciliation';
+        return true;
+      });
 
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(880, now); // A5
-        osc1.frequency.exponentialRampToValueAtTime(1318.5, now + 0.12); // E6
-
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(440, now);
-        osc2.frequency.exponentialRampToValueAtTime(659.25, now + 0.12);
-
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-
-        osc1.connect(gain);
-        osc2.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc1.start(now);
-        osc2.start(now);
-        osc1.stop(now + 0.3);
-        osc2.stop(now + 0.3);
-      } catch (e) {
-        console.warn('Chime audio error:', e);
-      }
-    }
-
-    // High-Fidelity Siri Voice Engine with Gemini 3.8 Flash TTS & Neural Browser Fallback
-    async function speak(txt, role = 'jarvis', onDone) {
-      // 1. Try Gemini 3.8 Flash TTS via backend endpoint
-      try {
-        const voiceChoice = role === 'vance' ? 'Puck' : 'Kore';
-        const res = await fetch('/api/voice/synthesize', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: txt,
-            voice: voiceChoice,
-            style: role === 'vance' ? 'inquisitive, professional scientist' : 'warm, articulate, crystal clear, Siri-style AI assistant'
-          })
-        });
-        const data = await res.json();
-        if (data.available && data.audio_base64) {
-          playAppleChime();
-          const snd = new Audio('data:audio/wav;base64,' + data.audio_base64);
-          snd.onended = () => { if (onDone) onDone(); };
-          snd.onerror = () => { if (onDone) onDone(); };
-          snd.play();
-          return;
-        }
-      } catch (e) {
-        console.warn('Gemini TTS fallback to Siri Web Voice:', e);
-      }
-
-      // 2. Fallback to Siri-Tuned Natural Neural Voice in Browser
-      if (!('speechSynthesis' in window)) {
-        if (onDone) setTimeout(onDone, 2500);
-        return;
-      }
-      window.speechSynthesis.cancel();
-      playAppleChime();
-
-      const u = new SpeechSynthesisUtterance(txt);
-      const voices = window.speechSynthesis.getVoices();
-
-      if (role === 'vance') {
-        // Dr. Vance: articulate scientist voice
-        const vanceVoice = voices.find(v => /Daniel|David|Guy|Google US English|en-US-Standard/i.test(v.name)) || voices[0];
-        if (vanceVoice) u.voice = vanceVoice;
-        u.rate = 1.0;
-        u.pitch = 0.95;
-      } else {
-        // LARVIS: Apple Siri / Natural Neural voice (warm, silky, zero static)
-        const siriVoice = voices.find(v => /Samantha|Siri|Victoria|Karen|Jenny|Aria|Natural|Google UK English Female/i.test(v.name)) 
-          || voices.find(v => /female|woman|Zira/i.test(v.name)) 
-          || voices[0];
-        if (siriVoice) u.voice = siriVoice;
-        u.rate = 0.96; // Calmer, more natural cadence like Siri
-        u.pitch = 1.05; // Slightly warm and resonant
-      }
-
-      u.onend = () => { if (onDone) onDone(); };
-      u.onerror = () => { if (onDone) onDone(); };
-      window.speechSynthesis.speak(u);
-    }
-
-    let waveInterval = null;
-    function animateWaveform(active) {
-      if (waveInterval) clearInterval(waveInterval);
-      const bars = document.querySelectorAll('.waveform-bar');
-      if (!active) {
-        bars.forEach(b => b.style.height = '6px');
-        return;
-      }
-      waveInterval = setInterval(() => {
-        bars.forEach(b => {
-          const h = Math.floor(Math.random() * 24) + 4;
-          b.style.height = h + 'px';
-        });
-      }, 100);
-    }
-
-    // Pending Reviews (GET /reviews/pending)
-    async function loadPendingReviews() {
-      const list = await apiCall('GET', `/reviews/pending?experiment_id=${EXP_ID}`);
-      document.getElementById('pendingCountBadge').textContent = list.length;
-      const div = document.getElementById('pendingReviewsList');
-
-      if (!list.length) {
-        div.innerHTML = `<div class="text-xs text-emerald-600 dark:text-emerald-400 py-2">✓ All flagged discrepancies have been reviewed.</div>`;
-        return;
-      }
-
-      div.innerHTML = list.map(item => `
-        <div class="glass-card rounded-2xl p-3.5 space-y-2 border-l-4 border-l-amber-500">
-          <div class="flex items-center justify-between text-xs">
-            <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold uppercase text-[10px]">
-              ${item.action || 'warn'} · ${item.scientific_status || 'pending_review'}
-            </span>
-            <span class="font-mono text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">${item.step_id || 'step_05'} · ${item.observation_id}</span>
-          </div>
-          <div class="text-xs font-semibold text-slate-800 dark:text-slate-100">${item.spoken_response || item.rationale || 'Flagged protocol discrepancy'}</div>
-          <div class="flex flex-wrap gap-1.5 pt-1">
-            <button onclick="submitReviewAction('${item.observation_id}', 'accept')" class="px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] font-semibold hover:bg-emerald-500">✓ Accept</button>
-            <button onclick="submitReviewAction('${item.observation_id}', 'dispute')" class="px-3 py-1 rounded-full glass-card text-amber-600 dark:text-amber-400 text-[11px] font-semibold">⚑ Dispute</button>
-            <button onclick="submitReviewAction('${item.observation_id}', 'reject')" class="px-3 py-1 rounded-full glass-card text-rose-600 dark:text-rose-400 text-[11px] font-semibold">✕ Reject</button>
-            <button onclick="investigateDiscrepancy('${item.observation_id}', '${item.step_id || 'step_05'}')" class="px-3 py-1 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 text-[11px] font-semibold">🔍 Investigate & Rescue</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function submitReviewAction(obsId, action) {
-      await apiCall('POST', `/observations/${obsId}/review`, { action, reviewer: 'Scientist (Apple Glass UI)' });
-      await loadPendingReviews();
-    }
-
-    async function investigateDiscrepancy(obsId, stepId) {
-      const box = document.getElementById('investigationBox');
-      box.classList.remove('hidden');
-      box.innerHTML = `<div class="text-emerald-600 dark:text-emerald-400 font-mono">Running Root-Cause Investigation & Bayesian Optimizer...</div>`;
-      try {
-        const [inv, bo] = await Promise.all([
-          apiCall('POST', '/investigate', {
-            experiment_id: EXP_ID,
-            question: 'Why did this bubble obstruction occur and what is the downstream impact?',
-            step_id: stepId,
-            observation_id: obsId
-          }),
-          apiCall('POST', '/predictive/optimise', {
-            max_channel_obstruction_ratio: 0.62,
-            sauter_mean_diameter_px: 48.0,
-            volume_variance_ul: -1.5,
-            wait_time_min: 4.5,
-            ambient_temp_c: 24.0
-          })
-        ]);
-        box.innerHTML = `
-          <div class="font-bold text-slate-900 dark:text-white">1. Root Cause Summary:</div>
-          <div class="text-slate-600 dark:text-slate-300">${inv.root_cause_summary || inv.summary}</div>
-          <div class="font-bold text-emerald-600 dark:text-emerald-400 pt-1">2. Bayesian Rescue Plan:</div>
-          <div class="font-mono text-[11px] text-emerald-700 dark:text-emerald-300">${bo.scientific_rationale}</div>
-        `;
-      } catch (e) {
-        box.innerHTML = `<div class="text-rose-500">Error: ${e.message}</div>`;
-      }
-    }
-
-    // Dependency Graph (GET /graph?focus=CH01)
-    async function loadDependencyGraph(focusCh = 'CH01') {
-      const chs = ['CH01','CH02','CH03','CH04','CH05','CH06','CH07','CH08','CH09','CH10','CH11','CH12'];
-      document.getElementById('graphChannelButtons').innerHTML = chs.map(c => `
-        <button onclick="loadDependencyGraph('${c}')" class="px-3 py-1 rounded-xl text-xs font-mono font-bold transition-all ${c === focusCh ? 'bg-rose-500 text-white shadow-md' : 'glass-card hover:bg-white text-slate-700 dark:text-slate-300'}">
-          ${c}
-        </button>
-      `).join('');
-
-      const g = await apiCall('GET', `/experiments/${EXP_ID}/graph?focus=${focusCh}`);
-      const nodes = g.nodes || [];
-      const affectedSet = new Set([focusCh, ...((g.affected && g.affected.entities) || [])]);
-      document.getElementById('graphAffectedStats').textContent = `Focus: ${focusCh} → ${affectedSet.size} Affected Nodes`;
-
-      const groups = ['channel', 'standard', 'zero_standard', 'sample', 'derived_value', 'step'];
-      document.getElementById('graphNodesContainer').innerHTML = groups.map(gt => {
-        const gNodes = nodes.filter(n => n.type === gt);
-        if (!gNodes.length) return '';
-        return `
-          <div>
-            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">${gt.replace('_', ' ')}s</div>
-            <div class="flex flex-wrap gap-2">
-              ${gNodes.map(n => {
-                const hit = affectedSet.has(n.id);
-                return `
-                  <span class="px-3 py-1.5 rounded-xl text-xs font-mono flex items-center gap-1.5 transition-all ${hit ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/40 font-bold shadow-sm' : 'glass-card text-slate-700 dark:text-slate-300'}">
-                    <span>${hit ? '⚠' : '●'}</span>
-                    <span>${n.label || n.id}</span>
-                  </span>
-                `;
-              }).join('')}
+      filtered.forEach(e => {
+        const d = document.createElement('div');
+        d.className = "p-3 rounded-xl border border-lmLine bg-slate-50 flex items-start justify-between gap-3 text-xs";
+        d.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-lmText">${e.title}</span>
+              <span class="font-mono text-[10px] text-lmMuted">${e.time}</span>
+              <span class="px-2 py-0.2 rounded text-[10px] font-bold ${e.badgeColor}">${e.badge}</span>
             </div>
+            <p class="text-[11px] text-lmMuted">${e.desc}</p>
           </div>
+          <span class="font-mono text-[10px] text-slate-400">${e.id}</span>
         `;
-      }).join('');
-    }
-
-    // Sessions History (GET /sessions)
-    async function loadSessionsHistory() {
-      const sessions = await apiCall('GET', `/experiments/${EXP_ID}/sessions`);
-      const container = document.getElementById('sessionsHistoryList');
-      if (!sessions.length) {
-        container.innerHTML = `<div class="text-xs text-slate-500">No recorded sessions yet.</div>`;
-        return;
-      }
-      const itemsHtml = await Promise.all(sessions.slice(0, 5).map(async s => {
-        const sum = await apiCall('GET', `/recordings/${s.id}/summary`);
-        const flags = sum.flags || [];
-        const notes = sum.notes || [];
-        return `
-          <div class="glass-card rounded-2xl p-4 space-y-2 border-l-4 ${flags.length ? 'border-l-amber-500' : 'border-l-emerald-500'}">
-            <div class="flex items-center justify-between text-xs">
-              <span class="font-bold font-mono text-slate-900 dark:text-white">${s.id}</span>
-              <span class="text-slate-400 text-[11px] font-mono">${s.started_at || ''} · Events: ${s.event_count}</span>
-            </div>
-            ${flags.map(f => `<div class="text-xs text-amber-700 dark:text-amber-300 pl-3 border-l-2 border-amber-500/50">⚠ ${(f.payload && (f.payload.spoken_response || f.payload.rationale)) || ''}</div>`).join('')}
-            ${notes.map(n => `<div class="text-xs text-slate-600 dark:text-slate-300 pl-3 border-l-2 border-emerald-500/50">• ${(n.payload && n.payload.summary) || ''}</div>`).join('')}
-          </div>
-        `;
-      }));
-      container.innerHTML = itemsHtml.join('');
-    }
-
-    // Protocol Steps
-    async function loadProtocol() {
-      const prot = await apiCall('GET', `/experiments/${EXP_ID}/protocol`);
-      if (!prot || !prot.content) return;
-      const steps = prot.content.steps || [];
-      document.getElementById('protocolTitleBadge').textContent = `${prot.content.title} (v${prot.version})`;
-      document.getElementById('selectStep').innerHTML = steps.map(s => `
-        <option value="${s.id}" ${s.id === 'step_05' ? 'selected' : ''}>${s.id} · ${s.action}</option>
-      `).join('');
-
-      document.getElementById('protocolStepsGrid').innerHTML = steps.map(s => `
-        <div onclick="selectStep('${s.id}')" class="cursor-pointer glass-card rounded-2xl p-2.5 hover:border-emerald-500 transition text-center ${s.id === 'step_05' ? 'border-2 border-emerald-500 bg-emerald-500/10' : ''}">
-          <div class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">${s.id}</div>
-          <div class="text-[11px] font-bold text-slate-800 dark:text-slate-100 truncate mt-0.5">${s.action}</div>
-        </div>
-      `).join('');
-    }
-
-    function selectStep(id) {
-      document.getElementById('selectStep').value = id;
-      updateSessionState();
-    }
-
-    async function updateSessionState() {
-      const step = document.getElementById('selectStep').value;
-      const ch = document.getElementById('selectChannel').value;
-      document.getElementById('sessionStatusPill').textContent = `${step} · ${ch}`;
-      if (activeRecordingId) {
-        try {
-          await apiCall('PUT', `/recordings/${activeRecordingId}/state`, { active_step_id: step, active_channel_id: ch });
-        } catch (_) {}
-      }
-    }
-
-    function renderTrackingChips() {
-      const div = document.getElementById('trackingChips');
-      div.innerHTML = trackedTargets.map(t => `
-        <span class="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5">
-          <span>◎ ${t.label}</span>
-          <button onclick="removeTrack('${t.label}')" class="hover:text-rose-500 font-bold">×</button>
-        </span>
-      `).join('') + `
-        <button onclick="addTrack('bubble')" class="px-2.5 py-1 rounded-full glass-card hover:bg-white text-xs font-medium text-slate-500">+ target</button>
-      `;
-    }
-
-    async function addTrack(label) {
-      const ch = document.getElementById('selectChannel').value;
-      trackedTargets.push({ label, channel_id: ch });
-      renderTrackingChips();
-    }
-
-    async function removeTrack(label) {
-      trackedTargets = trackedTargets.filter(t => t.label !== label);
-      renderTrackingChips();
-    }
-
-    // Feed
-    async function loadDataFeed() {
-      const evPage = await apiCall('GET', `/events/${EXP_ID}?after_seq=0`);
-      allEvents = evPage.events || [];
-      renderFilteredFeed();
+        container.appendChild(d);
+      });
     }
 
     function filterFeed(f) {
-      currentFeedFilter = f;
-      renderFilteredFeed();
-    }
-
-    function renderFilteredFeed() {
-      const div = document.getElementById('dataFeedList');
-      const filtered = allEvents.filter(e => {
-        if (currentFeedFilter === 'all') return true;
-        if (currentFeedFilter === 'reconciliation') return e.event_type === 'reconciliation';
-        return e.source_modality === currentFeedFilter || e.event_type === currentFeedFilter;
-      });
-
-      div.innerHTML = filtered.slice().reverse().map(e => `
-        <div class="glass-card rounded-2xl p-3 flex items-center justify-between gap-3 text-xs">
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded-full font-mono text-[10px] bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold">#${e.sequence_number}</span>
-            <span class="font-semibold text-slate-900 dark:text-white">${e.payload.summary || e.payload.spoken_response || e.event_type}</span>
-          </div>
-          <span class="text-[11px] font-mono text-slate-400">${e.source_modality} · ${e.review_status}</span>
-        </div>
-      `).join('');
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-      const isDark = document.body.classList.contains('dark');
-      document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
-    }
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      switchVideoSource('bench_phone');
-      renderTrackingChips();
-      await loadProtocol();
-      await loadPendingReviews();
-      await loadDependencyGraph('CH01');
-      await loadSessionsHistory();
-      await loadDataFeed();
-
-      // Smooth 60 FPS Dynamic Tracking Loop
-      function smoothTrackerLoop() {
-        const v = document.getElementById('labVideoPlayer');
-        if (v && !v.paused && !v.classList.contains('hidden')) {
-          onVideoFrameUpdate();
+      ['all', 'notes', 'camera', 'reviews'].forEach(k => {
+        const btn = document.getElementById('btnFeed-' + k);
+        if (k === f) {
+          btn.className = "px-3 py-1 rounded-full text-xs font-bold bg-lmTeal text-white";
+        } else {
+          btn.className = "px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700";
         }
-        requestAnimationFrame(smoothTrackerLoop);
-      }
-      requestAnimationFrame(smoothTrackerLoop);
+      });
+      renderFeed(f);
+    }
 
-      // Check query params
-      const params = new URLSearchParams(window.location.search);
-      const tab = parseInt(params.get('tab'), 10);
-      if (!isNaN(tab)) switchTab(tab);
-      const videoParam = params.get('video');
-      if (videoParam) switchVideoSource(videoParam);
-      if (params.get('call') === '1') startVirtualScientistCall();
-    });
+    // Init
+    renderFeed('all');
   </script>
 </body>
 </html>
