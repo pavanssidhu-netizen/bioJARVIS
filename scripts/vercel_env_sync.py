@@ -9,6 +9,8 @@ import re
 
 import httpx
 
+import sys
+TARGETS = sys.argv[1:] or ["preview"]  # e.g.: preview production
 KEYS = ["GEMINI_API_KEY", "TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN", "GEMINI_LIVE_MODEL", "GEMINI_VISION_MODEL",
         "GEMINI_PERCEPTION_MODEL", "GEMINI_QUERY_MODEL", "SPECIALIST_PROVIDER", "MODAL_ENABLED", "MODAL_TOKEN_ID",
         "MODAL_TOKEN_SECRET", "TELEMETRY_ENABLED"]
@@ -21,5 +23,5 @@ for k in KEYS:
         print("skip", k, "(empty)")
         continue
     r = httpx.post(url, headers={"Authorization": f"Bearer {tok}"},
-                   json={"key": k, "value": env[k], "type": "encrypted", "target": ["preview"]})
+                   json={"key": k, "value": env[k], "type": "encrypted", "target": TARGETS})
     print(k, "->", "ok" if r.is_success else f"{r.status_code} {r.text[:200]}")

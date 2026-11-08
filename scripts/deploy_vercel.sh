@@ -32,7 +32,17 @@ code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/api/health")
 hdr=$(curl -sI "$URL/api/health" | tr -d '\r' | grep -iE '^(location|set-cookie|www-authenticate|x-vercel)' | head -3 || true)
 if [[ "$code" == "401" || "$code" == "403" || "$code" == "302" ]] && grep -qiE 'vercel|sso|_vercel' <<<"$hdr"; then
   echo "OK: anonymous request denied by Vercel Authentication ($code)."
-  echo "Open on your phone (sign in to Vercel once): $URL"
+  # Stable URL: move the fixed alias to this (protected) preview deployment, then re-verify protection on the alias.
+  ALIAS="${LARVIS_ALIAS:-larvis-demo.vercel.app}"
+  $VERCEL alias set "$URL" "$ALIAS" >/dev/null 2>&1 || { echo "alias failed; use $URL"; exit 0; }
+  acode=$(curl -s -o /dev/null -w '%{http_code}' "https://$ALIAS/api/health")
+  if [[ "$acode" == "302" || "$acode" == "401" || "$acode" == "403" ]]; then
+    echo "Stable protected URL (sign in to Vercel once): https://$ALIAS"
+  else
+    echo "WARNING: alias https://$ALIAS returned $acode anonymously - not protected; removing alias"
+    $VERCEL alias rm "$ALIAS" --yes >/dev/null 2>&1 || true
+  fi
+  echo "This deployment: $URL"
 else
   echo "STOP: anonymous request returned $code - deployment is NOT protected."
   echo "Enable Vercel Authentication (Project > Settings > Deployment Protection) and redeploy."
