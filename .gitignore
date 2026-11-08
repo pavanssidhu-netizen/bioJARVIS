@@ -48,3 +48,5 @@ eval/clips/
 models/
 evals/vision_test/images/
 evals/vision_test/overlays/
+
+.agents/
