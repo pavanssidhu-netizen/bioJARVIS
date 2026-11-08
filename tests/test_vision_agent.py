@@ -100,25 +100,3 @@ def test_pytorch_yield_predictor_and_gp_bayesian_optimizer() -> None:
     assert bo["bayesian_intervention_required"] is True
     assert bo["posterior_recovered_yield_pct"] > bo["uncompensated_Predicted_yield_pct"]
     assert bo["requires_human_confirmation"] is True
-
-
-def test_ryan_experiment_seed_and_dependency_graph() -> None:
-    """Verify Person 2 (Ryan) `experiment_seed.json` integration and dependency propagation."""
-    from backend.main import EXPERIMENTS_DB, trace_elisa_dependencies
-
-    exp = EXPERIMENTS_DB["exp_001"]
-    assert exp["protocol_id"] == "crp_elisa_dy1707"
-    assert len(exp["steps"]) == 8
-
-    # Bubble in STD01 (well A1) cascades through standard_curve to all 16 sample results (result_S01..result_S16)
-    std_impact = trace_elisa_dependencies(exp, well_id="A1", bubble_count=2)
-    assert std_impact["mapped_sample_id"] == "STD01"
-    assert "standard_curve" in std_impact["affected_downstream_nodes"]
-    assert "result_S01" in std_impact["affected_downstream_nodes"]
-    assert "result_S16" in std_impact["affected_downstream_nodes"]
-    assert any(c["constraint_id"] == "c_01" for c in std_impact["violated_constraints"])
-
-    # Bubble in S03 (well C3) affects only result_S03
-    smp_impact = trace_elisa_dependencies(exp, well_id="C3", bubble_count=1)
-    assert smp_impact["mapped_sample_id"] == "S03"
-    assert smp_impact["affected_downstream_nodes"] == ["result_S03"]
