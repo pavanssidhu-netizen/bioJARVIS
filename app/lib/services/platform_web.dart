@@ -24,6 +24,7 @@ extension type _LM(JSObject _) implements JSObject {
   external JSString cameraTrackStates();
   external JSPromise<JSBoolean> hasMultipleCameras();
   external JSString? captureFrame(JSNumber maxWidth, JSNumber quality);
+  external JSNumber videoAspect();
   external JSPromise<JSString> permission(JSString name);
   external void pickImage(JSFunction onPicked);
   external void downloadJson(JSString filename, JSString text);
@@ -46,7 +47,7 @@ void registerCameraView() {
       ..setAttribute('playsinline', 'true') // required on iOS to avoid fullscreen takeover
       ..style.width = '100%'
       ..style.height = '100%'
-      ..style.objectFit = 'cover'
+      ..style.objectFit = 'contain'
       ..style.backgroundColor = '#000';
     _lm.attachVideo(v);
     return v;
@@ -84,6 +85,8 @@ class WebMediaBridge implements MediaBridge {
   Future<bool> hasMultipleCameras() async => (await _lm.hasMultipleCameras().toDart).toDart;
   @override
   String? captureFrame(int maxWidth, double quality) => _lm.captureFrame(maxWidth.toJS, quality.toJS)?.toDart;
+  @override
+  double videoAspect() => _lm.videoAspect().toDartDouble;
   @override
   Future<String> permission(String name) async => (await _lm.permission(name.toJS).toDart).toDart;
   @override

@@ -17,6 +17,9 @@ abstract class MediaBridge {
   Future<bool> hasMultipleCameras();
   String? captureFrame(int maxWidth, double quality);
 
+  /// Width/height of the live camera video (0 if unknown) - maps box_2d tags onto the preview.
+  double videoAspect();
+
   Future<String> permission(String name);
   void pickImage(void Function(String b64) onPicked);
   void downloadJson(String filename, String text);

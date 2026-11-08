@@ -128,6 +128,71 @@ class _StepTile extends StatelessWidget {
   }
 }
 
+/// Draws Gemini object tags (box_2d, normalised 0-1000 of the last frame) and specialist bubble boxes (pixels)
+/// over a `contain`-fitted video, mapping through the video's real aspect ratio.
+class TagPainter extends CustomPainter {
+  TagPainter(this.objects, this.specialist, this.videoAspect);
+  final List<Map> objects;
+  final Map? specialist;
+  final double videoAspect;
+
+  Rect _videoRect(Size s) {
+    final a = videoAspect > 0 ? videoAspect : 4 / 3;
+    if (s.width / s.height > a) {
+      final w = s.height * a;
+      return Rect.fromLTWH((s.width - w) / 2, 0, w, s.height);
+    }
+    final h = s.width / a;
+    return Rect.fromLTWH(0, (s.height - h) / 2, s.width, h);
+  }
+
+  void _tag(Canvas canvas, Rect r, String label, Color color, {bool dashed = false}) {
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = dashed ? 1.5 : 2.2
+      ..color = color.withValues(alpha: dashed ? 0.7 : 0.95);
+    canvas.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(4)), stroke);
+    final tp = TextPainter(
+      text: TextSpan(text: label, style: const TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w700)),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+      ellipsis: '…',
+    )..layout(maxWidth: 160);
+    final top = (r.top - tp.height - 4).clamp(0.0, double.infinity);
+    final bg = Rect.fromLTWH(r.left, top, tp.width + 8, tp.height + 4);
+    canvas.drawRRect(RRect.fromRectAndRadius(bg, const Radius.circular(3)), Paint()..color = color);
+    tp.paint(canvas, Offset(bg.left + 4, bg.top + 2));
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final v = _videoRect(size);
+    for (final o in objects) {
+      final b = o['box_2d'];
+      if (b is! List || b.length != 4) continue;
+      final r = Rect.fromLTRB(v.left + (b[1] as num) / 1000 * v.width, v.top + (b[0] as num) / 1000 * v.height,
+          v.left + (b[3] as num) / 1000 * v.width, v.top + (b[2] as num) / 1000 * v.height);
+      final tracked = o['tracked'] == true;
+      _tag(canvas, r, '${o['label']}', tracked ? LM.warn : LM.teal, dashed: o['certainty'] == 'uncertain');
+    }
+    final sp = specialist;
+    final w = (sp?['image_width'] as num?)?.toDouble(), h = (sp?['image_height'] as num?)?.toDouble();
+    if (sp != null && w != null && h != null && w > 0 && h > 0) {
+      for (final d in (sp['detections'] as List? ?? const [])) {
+        final bb = (d as Map)['bbox'];
+        if (bb is! List || bb.length != 4) continue;
+        final r = Rect.fromLTRB(v.left + (bb[0] as num) / w * v.width, v.top + (bb[1] as num) / h * v.height,
+            v.left + (bb[2] as num) / w * v.width, v.top + (bb[3] as num) / h * v.height);
+        _tag(canvas, r, 'bubble', LM.rec);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(TagPainter old) =>
+      old.objects != objects || old.specialist != specialist || old.videoAspect != videoAspect;
+}
+
 class _Landing extends StatelessWidget {
   const _Landing(this.c);
   final AppController c;
@@ -224,56 +289,55 @@ class _LiveFeedViewState extends State<_LiveFeedView> {
     final actions = (p?['actions'] as List?) ?? const [];
     final objects = (p?['objects'] as List?) ?? const [];
     return ListView(padding: const EdgeInsets.fromLTRB(12, 4, 12, 24), children: [
-      // ---- camera with perception overlay ----
+      // ---- status + what Larvis sees: ABOVE the camera (no text over the video) ----
+      Wrap(spacing: 6, runSpacing: 6, children: [
+        if (c.recordingActive) const StatusPill(label: 'REC', on: true, onColor: LM.rec, pulse: true),
+        StatusPill(label: c.geminiConnected ? 'Voice' : 'Voice off', on: c.geminiConnected && c.microphoneEnabled,
+            icon: c.microphoneEnabled ? Icons.mic : Icons.mic_off),
+        StatusPill(label: 'Perception ${c.perceptionSaved}/${c.perceptionWindows}', on: c.perceptionWindows > 0, icon: Icons.visibility),
+      ]),
+      const SizedBox(height: 8),
+      Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: LM.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: LM.line)),
+        child: p == null
+            ? Text(c.liveFeedStarting ? 'Starting camera, recording and Gemini…' : 'Waiting for the first perception window (~5 s)…',
+                style: const TextStyle(color: LM.muted, fontSize: 12.5))
+            : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  Expanded(child: Text('${p['scene_summary']}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
+                  PersistenceBadge(c.latestPerceptionSaved ? Persistence.saved : Persistence.notSaved),
+                ]),
+                if (actions.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Wrap(spacing: 6, runSpacing: 6, children: [
+                    for (final a in actions)
+                      _chip('${a['action']}${a['object'] != null ? ' · ${a['object']}' : ''}  ×${a['count']}', LM.warn, '${a['certainty']}'),
+                  ]),
+                ],
+              ]),
+      ),
+      const SizedBox(height: 8),
+      // ---- camera with object tags only ----
       ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: AspectRatio(
           aspectRatio: 3 / 4,
           child: Stack(fit: StackFit.expand, children: [
             if (c.cameraOpen) const HtmlElementView(viewType: cameraViewType) else Container(color: Colors.black),
-            if (c.liveFeedStarting)
-              const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 10),
-                Text('Starting camera, recording and Gemini…'),
-              ])),
-            Positioned(
-              left: 10,
-              top: 10,
-              child: Wrap(spacing: 6, children: [
-                if (c.recordingActive) const StatusPill(label: 'REC', on: true, onColor: LM.rec, pulse: true),
-                StatusPill(label: c.geminiConnected ? 'Voice' : 'Voice off', on: c.geminiConnected && c.microphoneEnabled,
-                    icon: c.microphoneEnabled ? Icons.mic : Icons.mic_off),
-                StatusPill(label: 'Perception ${c.perceptionSaved}/${c.perceptionWindows}', on: c.perceptionWindows > 0, icon: Icons.visibility),
-              ]),
-            ),
-            if (p != null)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 12),
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Color(0xE6000000)])),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                    Row(children: [
-                      Expanded(child: Text('${p['scene_summary']}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
-                      PersistenceBadge(c.latestPerceptionSaved ? Persistence.saved : Persistence.notSaved),
-                    ]),
-                    const SizedBox(height: 6),
-                    Wrap(spacing: 6, runSpacing: 6, children: [
-                      for (final a in actions)
-                        _chip('${a['action']}${a['object'] != null ? ' · ${a['object']}' : ''}  ×${a['count']}', LM.warn, '${a['certainty']}'),
-                      for (final o in objects.take(6))
-                        _chip('${o['label']}${o['count'] != null ? ' ×${o['count']}' : ''}', LM.teal, '${o['certainty']}'),
-                    ]),
-                  ]),
+            if (c.liveFeedStarting) const Center(child: CircularProgressIndicator()),
+            if (c.cameraOpen && p != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(painter: TagPainter(objects.cast<Map>(), (p['specialist'] as Map?), c.media.videoAspect())),
                 ),
               ),
           ]),
         ),
       ),
+      const SizedBox(height: 4),
+      const Text('Tags lag the live video by ~5 s (Gemini call time). Teal = object · amber = tracked · red = specialist bubble.',
+          style: TextStyle(color: LM.muted, fontSize: 11)),
       const SizedBox(height: 10),
       SizedBox(
         height: 52,

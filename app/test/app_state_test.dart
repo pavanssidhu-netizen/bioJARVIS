@@ -51,6 +51,8 @@ class FakeMedia implements MediaBridge {
   @override
   String? captureFrame(int maxWidth, double quality) => cam ? base64Encode([0xff, 0xd8, 0xff, 1, 2, 3]) : null;
   @override
+  double videoAspect() => 4 / 3;
+  @override
   Future<String> permission(String name) async => 'prompt';
   @override
   void pickImage(void Function(String) onPicked) {}

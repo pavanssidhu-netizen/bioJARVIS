@@ -127,6 +127,7 @@
       try { return (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "videoinput").length > 1; }
       catch (e) { return false; }
     },
+    videoAspect() { const v = this._video; return v && v.videoWidth ? v.videoWidth / v.videoHeight : 0; },
     captureFrame(maxWidth, quality) {
       const v = this._video;
       if (!this.cameraActive() || !v || !v.videoWidth) return null;

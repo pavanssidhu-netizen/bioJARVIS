@@ -74,8 +74,8 @@ class AppController extends ChangeNotifier {
     this.pollInterval = const Duration(milliseconds: 1500),
     this.heartbeatInterval = const Duration(seconds: 15),
     this.frameInterval = const Duration(seconds: 2),
-    this.perceptionFrameInterval = const Duration(seconds: 1),
-    this.perceptionWindowFrames = 5,
+    this.perceptionFrameInterval = const Duration(milliseconds: 500),
+    this.perceptionWindowFrames = 6,
   }) {
     live = LiveClient(
       socketFactory: socketFactory,
@@ -402,7 +402,7 @@ class AppController extends ChangeNotifier {
       final f = media.captureFrame(512, 0.6);
       if (f == null) return;
       _frameBuf.add((DateTime.now().toUtc(), f));
-      if (_frameBuf.length > 8) _frameBuf.removeAt(0); // bound latency if the model is slow
+      if (_frameBuf.length > 12) _frameBuf.removeAt(0); // bound latency if the model is slow
       if (_frameBuf.length >= perceptionWindowFrames && !_perceptionInFlight) _sendPerceptionWindow();
     });
   }

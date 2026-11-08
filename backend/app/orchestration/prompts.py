@@ -37,21 +37,23 @@ VISION_SNAPSHOT = Prompt("vision.snapshot", 2, (
     "{protocol_hint}"
 ))
 
-PERCEPTION_WINDOW = Prompt("perception.window", 4, (
-    "You are Larvis's perception module. Above are {n} consecutive frames from a lab bench camera spanning "
+PERCEPTION_WINDOW = Prompt("perception.window", 5, (
+    "You are Larvis's perception module. Above are {n} consecutive frames from a bench camera spanning "
     "{span:.1f} seconds, oldest first. Focus hint: {hint}.\n"
     "{protocol_hint}"
-    "1. objects: the clearly visible lab-relevant objects (microfluidic chip, channels, inlets, pipettes, tubes, "
-    "hands/gloves). Give count only when instances are clearly separable. Give box_2d for each object in the LAST "
-    "frame as [ymin, xmin, ymax, xmax] normalised to 0-1000. Always include objects named in the tracking list if "
-    "visible.\n"
-    "2. actions: physical actions performed DURING this window (e.g. 'dispense drop' from a pipette/dropper, "
-    "'pipette liquid', 'pour', 'shake/swirl', 'place', 'pick up', 'open lid'). count = number of distinct "
-    "occurrences you can actually see across the frames; if a drop is ambiguous between frames, count "
-    "conservatively and mark certainty uncertain. Return an empty list if nothing happens. If an action matches "
-    "a protocol step, put that step id in protocol_step.\n"
-    "Do not invent actions that are not visible. Frames are sampled ~1 s apart, so fast actions may be missed - "
-    "say so in limitations when relevant. These counts are exploratory, not validated measurements."
+    "1. objects: tag what the researcher is working with in the LAST frame: ALWAYS the researcher's hand(s) "
+    "(label 'hand') if visible, every object a hand is touching or about to touch (be specific, e.g. 'shift key', "
+    "'keyboard', 'pipette', 'tube', 'mug'), and the main objects on the bench (lab equipment or everyday stand-ins). "
+    "Give box_2d [ymin, xmin, ymax, xmax] normalised 0-1000 in the LAST frame for each. Count only clearly separable "
+    "instances. Always include objects named in the tracking list if visible.\n"
+    "2. actions: every hand-object interaction performed DURING this window, as 'verb object' (e.g. 'press shift "
+    "key', 'type on keyboard', 'pick up mug', 'place tube', 'dispense drop', 'pipette liquid', 'pour', 'swirl', "
+    "'open lid'). Put the object in 'object'. count = number of distinct occurrences you can actually see across "
+    "the frames (a key going down and up once = 1 press); if ambiguous between frames, count conservatively and mark "
+    "certainty uncertain. Return an empty list if the hands do nothing. If an action matches a protocol step, put "
+    "that step id in protocol_step.\n"
+    "Do not invent actions that are not visible. Frames are sampled ~2 per second, so very fast actions may be "
+    "missed - say so in limitations when relevant. These counts are exploratory, not validated measurements."
 ))
 
 QUERY_LOG = Prompt("query.log", 3, """You are Larvis's lab-log analyst. Answer the researcher's question using ONLY the event log and protocol below.
