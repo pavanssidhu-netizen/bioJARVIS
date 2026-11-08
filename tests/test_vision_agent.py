@@ -77,3 +77,26 @@ def test_autonomous_agent_contract_and_sceptic(tmp_path: Path) -> None:
     res_17 = analyse_image(case_17["image_path"], experiment_id="exp_001", use_gemini_orchestrator=False)
     assert res_17["status"] == "abstained_low_quality"
     assert "abstained_unusable_frame" in res_17["measurement"]["qc_flags"]
+
+
+def test_pytorch_yield_predictor_and_gp_bayesian_optimizer() -> None:
+    """Verify Model 2 (PyTorch BiochemicalYieldMLP) & Model 3 (GP Bayesian Expected Improvement)."""
+    from backend.vision.predictive_models import GaussianProcessBayesianOptimizer, get_yield_model
+
+    _, metrics = get_yield_model()
+    assert metrics["held_out_r2"] >= 0.85
+
+    optimizer = GaussianProcessBayesianOptimizer()
+    # Test severe bubble obstruction + pipetting slip (-2.0 uL, 12 min wait, Phi_obs=0.62)
+    bo = optimizer.optimize_compensatory_action(
+        volume_variance_ul=-2.0,
+        concentration_ratio=1.0,
+        wait_time_min=12.0,
+        ambient_temp_c=23.5,
+        max_channel_obstruction_ratio=0.62,
+        sauter_mean_diameter_px=54.0,
+        gas_holdup_volume_ul=0.14,
+    )
+    assert bo["bayesian_intervention_required"] is True
+    assert bo["posterior_recovered_yield_pct"] > bo["uncompensated_Predicted_yield_pct"]
+    assert bo["requires_human_confirmation"] is True

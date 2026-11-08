@@ -57,6 +57,7 @@ from backend.vision.inference import (
     segment_bubbles_watershed_cv,
 )
 from backend.vision.patch_classifier import score_bubble_patch_pytorch
+from backend.vision.predictive_models import GaussianProcessBayesianOptimizer
 
 
 class PerceptionInvestigationSession:
@@ -409,6 +410,52 @@ class PerceptionInvestigationSession:
             "sceptic_critique": critique_text,
         }
 
+    # ------------------------------------------------------------------
+    # Tool 6: PyTorch Yield Predictor + GP Bayesian Protocol Optimizer
+    # ------------------------------------------------------------------
+    def run_bayesian_yield_and_protocol_optimizer(
+        self,
+        volume_variance_ul: float = 0.0,
+        wait_time_min: float = 3.0,
+        ambient_temp_c: float = 21.5,
+    ) -> Dict[str, Any]:
+        """Run the trained PyTorch BiochemicalYieldMLP and Gaussian Process Expected Improvement
+        active correction loop using the verified 3D bubble telemetry.
+        """
+        t0 = time.perf_counter()
+        ens = self.ensemble_metrics or {}
+        max_obs = float(ens.get("max_channel_obstruction_ratio", 0.0))
+        d32 = float(ens.get("sauter_mean_diameter_px", 0.0))
+        v_int = ens.get("total_gas_volume_px3_interval", [0.0, 0.0])
+        # Convert px^3 to approximate uL (calibration: 1 px = 5 um -> 1.25e-7 uL/px^3)
+        holdup_ul = float(0.5 * (v_int[0] + v_int[1]) * 1.25e-7)
+
+        optimizer = GaussianProcessBayesianOptimizer()
+        bo_result = optimizer.optimize_compensatory_action(
+            volume_variance_ul=volume_variance_ul,
+            concentration_ratio=1.0,
+            wait_time_min=wait_time_min,
+            ambient_temp_c=ambient_temp_c,
+            max_channel_obstruction_ratio=max_obs,
+            sauter_mean_diameter_px=d32,
+            gas_holdup_volume_ul=holdup_ul,
+        )
+        dt = (time.perf_counter() - t0) * 1000.0
+        self.log_step(
+            agent_role="predictive_bayesian_agent",
+            action_or_tool="run_bayesian_yield_and_protocol_optimizer",
+            input_summary=f"Phi_obs={max_obs:.2f}, d32={d32:.1f}px, holdup={holdup_ul:.3f}uL",
+            finding_summary=(
+                f"Uncompensated yield={bo_result['uncompensated_Predicted_yield_pct']}% "
+                f"(P(error)={bo_result['uncompensated_failure_probability']*100:.1f}%) -> "
+                f"Posterior recovered yield={bo_result['posterior_recovered_yield_pct']}% "
+                f"(EI={bo_result['expected_improvement_score']})"
+            ),
+            decision_rationale=bo_result["scientific_rationale"],
+            duration_ms=dt,
+        )
+        return bo_result
+
 
 def run_autonomous_perception_agent(
     image_path: str,
@@ -515,7 +562,10 @@ def run_autonomous_perception_agent(
     # Step 3: Sceptic Physics Audit (Border-clipping & meniscus glare rejection + 3D Prolate/Oblate Volume integration)
     audit = session.run_sceptic_physics_audit()
 
-    # Step 4: Render Annotated Scientific Overlay
+    # Step 4: PyTorch Biochemical Yield Forecast + Gaussian Process Bayesian Active Correction
+    bayesian_assessment = session.run_bayesian_yield_and_protocol_optimizer()
+
+    # Step 5: Render Annotated Scientific Overlay
     overlay_out = str(Path(session.overlay_dir) / f"{session.media_id}_annotated.png")
     render_annotated_overlay(
         session.original_bgr,
@@ -621,6 +671,7 @@ def run_autonomous_perception_agent(
         filtered_artifacts_count=session.filtered_artifacts_count,
         sceptic_critique=audit["sceptic_critique"],
         scientific_interpretation=interpretation,
+        bayesian_predictive_assessment=bayesian_assessment,
         human_review_prompt=human_prompt,
         annotated_overlay_path=overlay_out,
         agent_trace=session.agent_trace,

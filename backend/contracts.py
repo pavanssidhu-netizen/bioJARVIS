@@ -109,7 +109,12 @@ class ObservationMethod(pydantic.BaseModel):
 class AgentStepTrace(pydantic.BaseModel):
     """Traceable step in the multi-step perception & sceptic agent loop."""
     step_index: int
-    agent_role: Literal["perception_orchestrator", "specialist_tool", "perception_sceptic"]
+    agent_role: Literal[
+        "perception_orchestrator",
+        "specialist_tool",
+        "perception_sceptic",
+        "predictive_bayesian_agent",
+    ]
     action_or_tool: str
     input_summary: str
     finding_summary: str
@@ -134,6 +139,7 @@ class VisionAnalyseResponse(pydantic.BaseModel):
     filtered_artifacts_count: int = 0
     sceptic_critique: str = ""
     scientific_interpretation: str = ""
+    bayesian_predictive_assessment: Optional[Dict[str, Any]] = None
     human_review_prompt: str = ""
     annotated_overlay_path: Optional[str] = None
     agent_trace: List[AgentStepTrace] = pydantic.Field(default_factory=list)

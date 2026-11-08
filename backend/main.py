@@ -255,6 +255,36 @@ def get_benchmark_results() -> Dict[str, Any]:
     return json.loads(res_file.read_text(encoding="utf-8"))
 
 
+class BayesianOptimiseRequest(BaseModel):
+    volume_variance_ul: float = 0.0
+    concentration_ratio: float = 1.0
+    wait_time_min: float = 3.0
+    ambient_temp_c: float = 21.5
+    max_channel_obstruction_ratio: float = 0.0
+    sauter_mean_diameter_px: float = 0.0
+    gas_holdup_volume_ul: float = 0.0
+
+
+@app.post("/predictive/optimise")
+def post_predictive_optimise(req: BayesianOptimiseRequest) -> Dict[str, Any]:
+    """
+    Runs Model 2 (PyTorch BiochemicalYieldMLP) + Model 3 (Gaussian Process Bayesian Optimization
+    with Expected Improvement) to forecast assay yield loss and recommend compensatory protocol actions.
+    """
+    from backend.vision.predictive_models import GaussianProcessBayesianOptimizer
+
+    optimizer = GaussianProcessBayesianOptimizer()
+    return optimizer.optimize_compensatory_action(
+        volume_variance_ul=req.volume_variance_ul,
+        concentration_ratio=req.concentration_ratio,
+        wait_time_min=req.wait_time_min,
+        ambient_temp_c=req.ambient_temp_c,
+        max_channel_obstruction_ratio=req.max_channel_obstruction_ratio,
+        sauter_mean_diameter_px=req.sauter_mean_diameter_px,
+        gas_holdup_volume_ul=req.gas_holdup_volume_ul,
+    )
+
+
 @app.get("/", response_class=HTMLResponse)
 def get_live_cockpit() -> str:
     """Interactive Judge Test & Scientific Perception Agent Cockpit."""
@@ -360,6 +390,8 @@ def get_live_cockpit() -> str:
             <p id="scepticText" class="text-xs text-slate-300 font-mono">—</p>
             <div class="text-xs font-semibold text-cyan-300 pt-1">Scientific Investigator Interpretation:</div>
             <p id="interpText" class="text-xs text-slate-200">—</p>
+            <div class="text-xs font-semibold text-emerald-300 pt-1">PyTorch Yield Predictor + GP Bayesian Active Correction:</div>
+            <p id="bayesianText" class="text-xs text-emerald-200 font-mono">—</p>
           </div>
 
           <!-- Human-in-the-Loop Sign-off Gate -->
@@ -447,6 +479,8 @@ def get_live_cockpit() -> str:
 
       document.getElementById('scepticText').textContent = data.sceptic_critique || '';
       document.getElementById('interpText').textContent = data.scientific_interpretation || '';
+      const bo = data.bayesian_predictive_assessment || {};
+      document.getElementById('bayesianText').textContent = bo.scientific_rationale || '—';
       document.getElementById('reviewPrompt').textContent = data.human_review_prompt || '';
 
       const traceDiv = document.getElementById('agentTraceList');

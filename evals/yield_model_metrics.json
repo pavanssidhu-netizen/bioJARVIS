@@ -1,0 +1,42 @@
+{
+  "model_name": "BiochemicalYieldMLP (PyTorch Multi-Head Assay Yield & Failure Predictor)",
+  "architecture": "Linear(7->64->64->32) + LayerNorm + SiLU + Dual Heads (Yield % & Failure Logit)",
+  "train_rows": 840,
+  "held_out_test_rows": 360,
+  "disjoint_seed_policy": "Train seed 7001 strictly disjoint from held-out evaluation seed 8001",
+  "held_out_r2": 0.9792,
+  "held_out_yield_mae_pct": 1.804,
+  "held_out_failure_accuracy": 0.9444,
+  "training_curve": [
+    {
+      "epoch": 1,
+      "held_out_r2": 0.4806,
+      "held_out_yield_mae_pct": 9.825,
+      "held_out_failure_accuracy": 0.7083
+    },
+    {
+      "epoch": 10,
+      "held_out_r2": 0.9616,
+      "held_out_yield_mae_pct": 2.314,
+      "held_out_failure_accuracy": 0.9194
+    },
+    {
+      "epoch": 20,
+      "held_out_r2": 0.9753,
+      "held_out_yield_mae_pct": 1.962,
+      "held_out_failure_accuracy": 0.9417
+    },
+    {
+      "epoch": 30,
+      "held_out_r2": 0.9835,
+      "held_out_yield_mae_pct": 1.566,
+      "held_out_failure_accuracy": 0.9722
+    },
+    {
+      "epoch": 45,
+      "held_out_r2": 0.9792,
+      "held_out_yield_mae_pct": 1.804,
+      "held_out_failure_accuracy": 0.9444
+    }
+  ]
+}
