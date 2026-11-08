@@ -13,8 +13,9 @@ class FakeMedia implements MediaBridge {
   void Function(String)? onChunk;
   @override
   void unlockAudio() => unlocked = true;
+  int played = 0;
   @override
-  void playPcm(String b64, int rate) {}
+  void playPcm(String b64, int rate) => played++;
   @override
   void stopPlayback() {}
   @override
@@ -107,6 +108,16 @@ class FakeApi extends LabmateApi {
       };
   @override
   Future<Json> telemetrySummary(int minutes) async => {'spans': 0, 'by_name': []};
+  final List<Map<String, dynamic>> routed = [];
+  @override
+  Future<Json> route(String e, String? s, String text, String source, String id) async {
+    routed.add({'text': text, 'source': source, 'session': s});
+    if (text.toLowerCase().contains('shift key')) {
+      return {'category': 'non_scientific', 'tool': 'none', 'stored': false, 'spoken': null};
+    }
+    return {'category': 'observation', 'tool': 'propose_observation', 'args': {'channel_id': 'CH01'},
+            'ambiguous': false, 'stored': s != null, 'spoken': 'Logged: one bubble in CH01.', 'result': {'ok': true}};
+  }
   @override
   Future<Json> propose(Json event) async {
     if (serverRecording?['status'] != 'active') throw ApiException(409, 'recording_inactive', 'no');
@@ -374,6 +385,36 @@ void main() {
     expect(text, contains('Possible bubble in CH01'));
     expect(c.latestFlag?['action'], 'warn');
     await c.stopLiveFeed();
+  });
+
+  test('utterances are routed (voice + typed), results voiced via [Larvis]; noise is ignored', () async {
+    await c.init();
+    await c.connectGemini();
+    await Future<void>.delayed(Duration.zero);
+    await c.startRecording();
+    // typed -> router (not a chat message to Gemini)
+    c.sendTypedMessage('one bubble in channel one');
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    expect(api.routed.last, {'text': 'one bubble in channel one', 'source': 'typed', 'session': 'rec-1'});
+    expect(sock!.sent.any((m) => m['realtimeInput']?['text'] != null), isFalse);
+    final ann = sock!.sent.where((m) => m['clientContent']?['turnComplete'] == true).toList();
+    expect(ann.last['clientContent']['turns'][0]['parts'][0]['text'], '[Larvis] Logged: one bubble in CH01.');
+    // voice: a pause ends the utterance even though Live stays silent (no turnComplete)
+    c.utterancePause = const Duration(milliseconds: 20);
+    sock!.server({'serverContent': {'inputTranscription': {'text': 'I pressed the shift key'}}});
+    await Future<void>.delayed(const Duration(milliseconds: 60));
+    expect(api.routed.last['source'], 'voice');
+    expect(sock!.sent.where((m) => m['clientContent']?['turnComplete'] == true).length, ann.length); // noise: no voice
+    expect(c.feed.first.eventType, 'ignored (non-scientific)');
+    // voice gate: unsolicited model audio is muted; audio answering a [Larvis] announcement plays
+    sock!.server({'serverContent': {'turnComplete': true}});
+    final before = media.played;
+    sock!.server({'serverContent': {'modelTurn': {'parts': [{'inlineData': {'mimeType': 'audio/pcm;rate=24000', 'data': 'AAAA'}}]}}});
+    expect(media.played, before);
+    c.sendTypedMessage('one bubble in channel one');
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    sock!.server({'serverContent': {'modelTurn': {'parts': [{'inlineData': {'mimeType': 'audio/pcm;rate=24000', 'data': 'AAAA'}}]}}});
+    expect(media.played, before + 1);
   });
 
   test('api client sends a stable session header', () {

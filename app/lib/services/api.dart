@@ -79,6 +79,10 @@ class LabmateApi {
   Future<Json> liveToken(String experimentId) async =>
       (await _send('POST', '/live/token', query: {'experiment_id': experimentId})) as Json;
   Future<Json> toolCall(Json body) async => (await _send('POST', '/tools/call', body: body)) as Json;
+  Future<Json> route(String experimentId, String? sessionId, String text, String source, String utteranceId) async =>
+      (await _send('POST', '/route', body: {
+        'experiment_id': experimentId, 'session_id': sessionId, 'text': text, 'source': source, 'utterance_id': utteranceId,
+      })) as Json;
   Future<Json?> protocol(String experimentId) async => (await _send('GET', '/experiments/$experimentId/protocol')) as Json?;
   Future<void> uiActions(String experimentId, String? recordingId, List<Json> actions) async => _send('POST', '/ui/actions',
       body: {'experiment_id': experimentId, 'recording_session_id': recordingId, 'actions': actions});

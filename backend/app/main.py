@@ -542,6 +542,25 @@ async def tools_call(body: ToolCallIn, st: Store = Depends(store)) -> dict:
     return await execute_tool(st, body)
 
 
+@api.post("/route")
+async def route(body: dict, st: Store = Depends(store)) -> dict:
+    """Route ONE researcher utterance (voice transcript or typed) to an action - no conversation.
+    Body: {experiment_id, session_id?, text, source: voice|typed, utterance_id?}.
+    Returns {category, tool, args, ambiguous, stored, result, spoken}."""
+    from .orchestration.router import route_utterance
+    if not get_settings().gemini_api_key:
+        raise ApiError(503, "gemini_not_configured", "GEMINI_API_KEY is not set on the server")
+    exp = body.get("experiment_id") or science.DEFAULT_EXPERIMENT
+    st.get_experiment(exp)
+    try:
+        return await route_utterance(st, exp, body.get("session_id"), str(body.get("text", ""))[:1000],
+                                     str(body.get("source", "voice"))[:10], body.get("utterance_id"))
+    except ApiError:
+        raise
+    except Exception as e:  # noqa: BLE001
+        raise ApiError(502, "router_error", f"{type(e).__name__}: {str(e)[:200]}") from e
+
+
 app.include_router(api)
 
 

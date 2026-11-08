@@ -110,7 +110,16 @@ def test_session_header_groups_spans(client, db_path):
     assert "sess-abc123" in vals and "bad header with spaces" not in vals
 
 
-def test_steering_and_live_config_composition(client):
+def test_router_mode_live_is_voice_only(client, monkeypatch):
+    monkeypatch.setenv("LARVIS_LIVE_MODE", "router")
+    from backend.app.live.token import live_config
+    cfg, ref = live_config(None, None)
+    assert "tools" not in cfg and ref.startswith("live.voice@v")
+    assert "stay silent" in cfg["system_instruction"] and "[Larvis]" in cfg["system_instruction"]
+
+
+def test_steering_and_live_config_composition(client, monkeypatch):
+    monkeypatch.setenv("LARVIS_LIVE_MODE", "tools")
     from backend.app.db import get_db
     from backend.app.live.token import live_config
     from backend.app.services.store import Store

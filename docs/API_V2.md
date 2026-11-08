@@ -98,3 +98,11 @@ Optional "Investigate" button → `POST /investigate {experiment_id, question, s
 `GET /capabilities` (models, routing, specialist status, steering docs), `GET /skills`, `GET /telemetry/summary`,
 `POST /vision/analyse` (snapshot: Gemini + specialist), `POST /vision/specialist` (specialist only, returns
 `overlay_base64`), `POST /predictive/optimise` (Person 3 GP optimiser), `POST /query` (log agent).
+
+## Voice / typed input = router (no chat)
+Every finished utterance (Live transcript after a ~1.4 s pause, or the text box) goes to
+`POST /route {experiment_id, session_id, text, source: voice|typed}` →
+`{category: observation|protocol_step|command|question|non_scientific, tool, args, ambiguous, stored, spoken}`.
+Show `spoken` as the confirmation; `ambiguous:true` → show an "ambiguous" tag (re-classify later via review/correct);
+`tool:"none"` → noise, nothing stored. Gemini Live only *speaks* `[Larvis]` messages; its other audio is muted.
+Accuracy: `docs/BENCHMARK_ROUTER.md` (22/22 incl. noise).

@@ -90,4 +90,23 @@ Event log ({n} events, oldest first, lookback {lookback}s):
 {events}
 """)
 
-ALL = {p.id: p for p in (LIVE_CORE, VISION_SNAPSHOT, PERCEPTION_WINDOW, QUERY_LOG)}
+ROUTER = Prompt("router.utterance", 1, """{steering}
+
+Experiment protocol steps: {steps}
+Session: recording={recording}, active_step={active_step}, active_channel={active_channel}
+
+Available tools (name: description | args):
+{tools}
+
+Utterance ({source}): "{text}"
+Return JSON only.""")
+
+LIVE_VOICE = Prompt("live.voice", 1, (
+    "You are the voice of Larvis, a hands-free lab notebook. You are NOT a conversational assistant and you do not "
+    "decide actions: a separate router logs and executes everything the researcher says. Rules:\n"
+    "- When the researcher speaks, stay silent. Do not answer, acknowledge, or ask clarifying questions.\n"
+    "- When you receive a message starting with [Larvis], say its content to the researcher briefly and naturally, "
+    "in at most two short sentences, without adding facts, numbers or advice that are not in the message.\n"
+    "- Never claim something was saved or measured unless the [Larvis] message says so."))
+
+ALL = {p.id: p for p in (LIVE_CORE, VISION_SNAPSHOT, PERCEPTION_WINDOW, QUERY_LOG, ROUTER, LIVE_VOICE)}

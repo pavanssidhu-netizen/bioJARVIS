@@ -195,7 +195,8 @@ def _propose(ctx: SkillContext, args: dict) -> dict:
     if not summary or len(summary) > 2000:
         return fail("invalid_summary", "summary is required (max 2000 chars)")
     payload = {k: args[k] for k in ("observation_type", "summary", "subject", "value", "protocol_step", "is_inference",
-                                    "channel_id", "measurement_type", "measurement_value", "measurement_unit")
+                                    "channel_id", "measurement_type", "measurement_value", "measurement_unit",
+                                    "classification")
                if k in args}
     payload["proposed_by"] = ctx.caller
     src = args.get("source_event_id") or None

@@ -17,7 +17,7 @@ from typing import Literal
 
 from ..config import get_settings
 
-Role = Literal["live", "vision", "perception", "query", "specialist"]
+Role = Literal["live", "vision", "perception", "query", "specialist", "router"]
 
 
 def model_for(role: Role) -> str:
@@ -28,6 +28,7 @@ def model_for(role: Role) -> str:
         "perception": os.getenv("GEMINI_PERCEPTION_MODEL") or s.vision_model,
         "query": os.getenv("GEMINI_QUERY_MODEL") or s.vision_model,
         "specialist": os.getenv("SPECIALIST_MODEL_NAME", "specialist-vision-v1"),
+        "router": os.getenv("GEMINI_ROUTER_MODEL") or "gemini-3.5-flash-lite",
     }[role]
 
 
@@ -38,5 +39,5 @@ def specialist_provider() -> str:
 
 
 def routing_table() -> dict[str, str]:
-    return {r: model_for(r) for r in ("live", "vision", "perception", "query", "specialist")} | {
+    return {r: model_for(r) for r in ("live", "vision", "perception", "query", "specialist", "router")} | {
         "specialist_provider": specialist_provider()}

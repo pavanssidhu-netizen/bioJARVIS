@@ -38,6 +38,17 @@ def system_instruction(store: Optional[Store] = None, experiment_id: Optional[st
 
 
 def live_config(store: Optional[Store] = None, experiment_id: Optional[str] = None) -> tuple[dict, str]:
+    import os
+    if os.getenv("LARVIS_LIVE_MODE", "router") == "router":
+        # Router mode: Live is speech in / voice out only. Every utterance is routed by /api/route.
+        from ..orchestration.prompts import LIVE_VOICE
+        return {
+            "response_modalities": ["AUDIO"],
+            "system_instruction": LIVE_VOICE.text,
+            "input_audio_transcription": {},
+            "output_audio_transcription": {},
+            "session_resumption": {},
+        }, LIVE_VOICE.ref
     text, ref = system_instruction(store, experiment_id)
     return {
         "response_modalities": ["AUDIO"],
@@ -54,7 +65,7 @@ def mint_live_token(store: Optional[Store] = None, experiment_id: Optional[str] 
     model = model_for("live")
     cfg, ref = live_config(store, experiment_id)
     with telemetry.span("live.token.mint", "span", db=store.db if store else None, model=model, prompt=ref,
-                        tools=len(cfg["tools"][0]["function_declarations"])):
+                        tools=len(cfg.get("tools", [{}])[0].get("function_declarations", [])) if cfg.get("tools") else 0):
         client = genai.Client(api_key=s.gemini_api_key, http_options={"api_version": "v1beta"})
         now = datetime.now(timezone.utc)
         expire, new_session = now + timedelta(minutes=30), now + timedelta(minutes=1)

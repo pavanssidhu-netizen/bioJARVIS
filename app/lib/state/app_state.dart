@@ -80,7 +80,9 @@ class AppController extends ChangeNotifier {
     live = LiveClient(
       socketFactory: socketFactory,
       onSetupComplete: _onSetupComplete,
-      onAudio: (b64, rate) => media.playPcm(b64, rate),
+      onAudio: (b64, rate) {
+        if (!voiceGate || _speaking) media.playPcm(b64, rate); // router mode: only voice [Larvis] messages
+      },
       onInputTranscript: _onInputTranscript,
       onOutputTranscript: _onOutputTranscript,
       onTurnComplete: _onTurnComplete,
@@ -441,6 +443,53 @@ class AppController extends ChangeNotifier {
     _notify();
   }
 
+  // ================= voice output gate =================
+  /// Router mode: Gemini Live is only a voice. Its audio plays solely while answering a [Larvis] message.
+  bool voiceGate = true;
+  bool _speaking = false;
+
+  void _say(String text) {
+    if (!live.ready) return;
+    _speaking = true;
+    live.announce('[Larvis] $text');
+  }
+
+  // ================= utterance routing (no conversation) =================
+  Timer? _utteranceTimer;
+  Duration utterancePause = const Duration(milliseconds: 1400);
+  Map<String, dynamic>? lastRoute;
+
+  /// Every finished utterance (voice transcript or typed) -> /api/route -> one action; result spoken via Live.
+  Future<void> _route(String text, String source) async {
+    final key = newKey('route');
+    try {
+      final r = await api.route(experimentId, recordingId, text, source, key);
+      lastRoute = r;
+      if (r['tool'] == 'none') {
+        _upsert(FeedItem(key: key, time: DateTime.now(), eventType: 'ignored (non-scientific)', modality: 'speech',
+            sourceText: text, persistence: Persistence.ephemeral, raw: r));
+      } else {
+        _upsert(FeedItem(
+            key: key,
+            time: DateTime.now(),
+            eventType: 'route:${r['tool']}${r['ambiguous'] == true ? ' (ambiguous)' : ''}',
+            modality: source == 'typed' ? 'text' : 'speech',
+            sourceText: '$text\n→ ${r['spoken'] ?? ''}',
+            structured: (r['args'] as Map?)?.cast<String, dynamic>(),
+            model: r['router_model'] as String?,
+            persistence: r['stored'] == true ? Persistence.saved : Persistence.ephemeral,
+            raw: r,
+            isError: (r['result'] as Map?)?['ok'] == false));
+        final spoken = r['spoken'];
+        if (spoken is String && spoken.isNotEmpty) _say(spoken);
+        if (r['stored'] == true) unawaited(_pollOnce());
+      }
+    } catch (e) {
+      _error('Routing failed: $e');
+    }
+    _notify();
+  }
+
   // ================= spoken camera flags =================
   Map<String, dynamic>? latestFlag;
   String? _lastAnnounced;
@@ -460,10 +509,7 @@ class AppController extends ChangeNotifier {
     final note = cross != null && cross['agree'] == false
         ? ' (Note: Gemini counted ${cross['gemini_count']} and the specialist counted ${cross['specialist_count']}; ask the researcher to confirm.)'
         : '';
-    if (live.ready) {
-      live.announce('[Larvis camera flag from the protocol engine - tell the researcher briefly, in your own words, '
-          'without adding numbers]: $msg$note');
-    }
+    _say('Camera flag: $msg$note');
   }
 
   /// Typed equivalent of the voice query path (same backend agent as the query_lab_log tool).
@@ -558,12 +604,11 @@ class AppController extends ChangeNotifier {
   }
 
   void sendTypedMessage(String text) {
-    if (!live.ready || text.trim().isEmpty) return;
+    if (text.trim().isEmpty) return;
     _finaliseTurn();
     _userLine = TranscriptLine('researcher', text.trim());
     transcript.add(_userLine!);
-    _finaliseUser();
-    live.sendText(text.trim());
+    _finaliseUser(source: 'typed'); // routed like speech; never a chat with the model
     _notify();
   }
 
@@ -700,10 +745,16 @@ class AppController extends ChangeNotifier {
       transcript.add(_userLine!);
     }
     _userLine!.text += t;
+    _utteranceTimer?.cancel();
+    _utteranceTimer = Timer(utterancePause, () {
+      _finaliseUser();
+      _notify();
+    });
     _notify();
   }
 
   void _onOutputTranscript(String t) {
+    if (voiceGate && !_speaking) return; // unsolicited model chatter is muted and not shown
     if (_userLine != null) _finaliseUser();
     if (_modelLine == null) {
       _modelLine = TranscriptLine('labmate', '');
@@ -713,7 +764,10 @@ class AppController extends ChangeNotifier {
     _notify();
   }
 
-  void _onTurnComplete() => _finaliseTurn();
+  void _onTurnComplete() {
+    _speaking = false;
+    _finaliseTurn();
+  }
 
   void _onInterrupted() {
     media.stopPlayback(); // barge-in: stop speaking immediately
@@ -732,13 +786,15 @@ class AppController extends ChangeNotifier {
   }
 
   /// A finalised researcher utterance is persisted ONLY if the backend says recording is active.
-  void _finaliseUser() {
+  void _finaliseUser({String source = 'voice'}) {
+    _utteranceTimer?.cancel();
     final line = _userLine;
     _userLine = null;
     if (line == null) return;
     line.final_ = true;
     line.text = line.text.trim();
     if (line.text.isEmpty) return;
+    unawaited(_route(line.text, source));
     final key = newKey('seg');
     final id = recordingId;
     final item = FeedItem(
@@ -948,6 +1004,7 @@ class AppController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _poll?.cancel();
+    _utteranceTimer?.cancel();
     _heartbeat?.cancel();
     _frames?.cancel();
     _healthTimer?.cancel();
