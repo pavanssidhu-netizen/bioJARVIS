@@ -6,7 +6,7 @@
   "outputDirectory": "public",
   "regions": ["dub1"],
   "functions": {
-    "api/index.py": { "maxDuration": 60, "includeFiles": "{backend,modal_app}/**" }
+    "api/index.py": { "maxDuration": 60, "includeFiles": "{backend,modal_app,science}/**" }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" }

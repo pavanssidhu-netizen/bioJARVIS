@@ -130,12 +130,24 @@ async def process_window(store: Store, body: PerceptionWindowIn) -> PerceptionRe
         gp.set(outcome="saved")
 
     recon = None
+    cross = None
+    if measured:
+        # Cross-model verification: Gemini's open-vocabulary bubble count vs the specialist's measured count.
+        # Benchmark (docs/BENCHMARK_V2.md): agreement had 0 silent errors; every disagreement was a real error.
+        g_bubbles = [o for o in payload.objects if "bubble" in o.label.lower()]
+        # Gemini may list one object per bubble (each repeating the total in `count`) or one object with a count.
+        g_count = len(g_bubbles) if len(g_bubbles) > 1 else ((g_bubbles[0].count or 1) if g_bubbles else 0)
+        cross = {"gemini_count": g_count, "specialist_count": specialist["count"],
+                 "agree": g_count == specialist["count"]}
     if measured:  # only specialist measurements drive protocol decisions
         from ..science.service import reconcile_and_record
         recon = reconcile_and_record(store, event, {
             "source_type": "camera", "content": specialist.get("description", ""),
             "channel_id": sess["active_channel_id"], "measurement_type": "bubble_count",
             "measurement_value": specialist["count"], "measurement_unit": "count",
-            "confidence": 0.3 if specialist.get("abstained") else 0.9, "media_ref": frame_ids[-1] if frame_ids else None,
+            # disagreement between models -> low confidence -> engine asks for confirmation/recapture
+            "confidence": 0.3 if specialist.get("abstained") else (0.9 if cross["agree"] else 0.5),
+            "media_ref": frame_ids[-1] if frame_ids else None,
         }, sess["active_step_id"])
+        recon["cross_check"] = cross
     return PerceptionResult(perception=payload, saved=True, event=event, reconciliation=recon)

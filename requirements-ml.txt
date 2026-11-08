@@ -1,0 +1,10 @@
+# Person 3 vision council + predictive models (local dev / tests; the Modal image pins its own copy).
+# Install torch CPU-only: uv pip install --index-url https://download.pytorch.org/whl/cpu torch==2.15.0
+-r requirements.txt
+numpy==2.5.4
+scipy==1.18.1
+opencv-python-headless==5.0.0.93
+pillow
+matplotlib>=3.7.0
+python-multipart>=0.0.6
+# optional: ultralytics (YOLO-seg); without it the council uses its OpenCV watershed path (what was benchmarked)

@@ -14,6 +14,8 @@ def db_path(tmp_path, monkeypatch):
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{p}")
     monkeypatch.setenv("TURSO_DATABASE_URL", "")
     monkeypatch.setenv("VERCEL_ENV", "")
+    monkeypatch.setenv("SPECIALIST_PROVIDER", "none")  # tests never call Modal unless they opt in
+    monkeypatch.setenv("MODAL_ENABLED", "false")
     from backend.app.db import get_db
     get_db.cache_clear()
     yield p

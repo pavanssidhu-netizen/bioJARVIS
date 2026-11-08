@@ -1,12 +1,9 @@
-numpy>=1.24.0
-scipy>=1.10.0
-opencv-python-headless>=4.8.0
-matplotlib>=3.7.0
-pydantic>=2.0.0
-fastapi>=0.100.0
-uvicorn>=0.23.0
-python-multipart>=0.0.6
-pillow>=10.0.0
-ultralytics>=8.0.0
-google-genai>=1.0.0
-pytest>=7.4.0
+# Runtime deps for the Vercel Python function (API gateway). Keep this SMALL (Vercel limit 500 MB):
+# the ML stack (torch/opencv/scipy) runs on Modal - see requirements-ml.txt and modal_app/specialist_app.py.
+fastapi==0.162.2
+pydantic==2.14.3
+httpx==0.28.1
+google-genai==3.0.0
+python-dotenv==1.2.4
+# Imported lazily only when SPECIALIST_PROVIDER=modal / MODAL_ENABLED=true
+modal==1.6.3

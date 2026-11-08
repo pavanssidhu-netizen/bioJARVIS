@@ -1,15 +1,19 @@
-"""ONE authenticated call to the deployed Modal specialist function (cost: a fraction of a cent on CPU).
+"""ONE authenticated call to the deployed Modal specialist (CPU; fraction of a cent) using a Person 3 test image.
 
-    .venv/bin/python scripts/modal_check.py
-Prints the round-trip latency and the (honest) result - "not_configured" until the teammate model lands.
+    .venv/bin/python scripts/modal_check.py [image]
 """
 import os
+import sys
 import time
+from pathlib import Path
 
 import modal
 
-app_name = os.getenv("MODAL_VISION_APP", "labmate-vision")
-fn = modal.Function.from_name(app_name, os.getenv("MODAL_VISION_FUNCTION", "detect"))
+ROOT = Path(__file__).resolve().parents[1]
+img = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "evals/vision_test/images/case_05_two_microbubbles.png"
+fn = modal.Function.from_name(os.getenv("MODAL_VISION_APP", "labmate-vision"), "detect")
 t0 = time.perf_counter()
-res = fn.remote(b"\xff\xd8\xff\xe0" + b"\0" * 32, "modal_check")
-print(f"{app_name}.detect -> {res}  ({(time.perf_counter() - t0) * 1000:.0f} ms incl. cold start)")
+res = fn.remote(img.read_bytes(), "modal_check", experiment_id="exp_001", step_id="step_05", include_overlay=False)
+ms = (time.perf_counter() - t0) * 1000
+print(f"{img.name}: count={res.get('count')} abstained={res.get('abstained')} model={res.get('model')} "
+      f"backend={res.get('detector_backend')} ({ms:.0f} ms incl. cold start)")

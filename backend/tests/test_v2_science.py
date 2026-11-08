@@ -132,6 +132,7 @@ def test_perception_real_specialist_counts_reconciled_frames_retained_and_purged
     assert p["objects"][1]["box_2d"] is None  # out-of-range model coordinates rejected
     assert len(p["frame_ids"]) == 2 and p["active_channel_id"] == "CH08"
     rc = r["reconciliation"]
+    assert rc["cross_check"] == {"gemini_count": 1, "specialist_count": 2, "agree": False}  # disagreement surfaced
     assert rc["action"] in ("warn", "request_confirmation") and rc["requires_human_approval"]
     assert rc["affected_structured"]["derived_values"] == ["result_S02"]
     # Frames retrievable during the session...

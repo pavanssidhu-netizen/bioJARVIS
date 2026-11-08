@@ -10,3 +10,13 @@
 **/__pycache__
 *.db
 *.db-*
+/evals
+/team
+/models
+/tests
+/eval
+/backend/vision
+/backend/main.py
+/LABMATE_Claude_Master_Build_Brief.md
+/references.md.docx
+/.agents

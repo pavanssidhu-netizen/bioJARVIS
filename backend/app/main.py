@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import logging
 import re
 import statistics
@@ -391,12 +392,19 @@ def investigate(body: dict, st: Store = Depends(store)) -> dict:
 
 
 @api.post("/predictive/optimise")
-def predictive_optimise(body: dict) -> dict:
+async def predictive_optimise(body: dict) -> dict:
     """Person 3 GP Bayesian optimiser (compensatory action under bubble obstruction). Needs torch (local/Modal)."""
     try:
         from backend.vision.predictive_models import GaussianProcessBayesianOptimizer
     except ImportError as e:
-        raise ApiError(503, "predictive_not_available", f"predictive models need torch: {e}") from e
+        if get_settings().modal_enabled:  # Vercel: no torch -> run Person 3's optimiser on Modal
+            import modal
+            for k in ("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET"):
+                if os.environ.get(k) == "":
+                    os.environ.pop(k)
+            with telemetry.span("model.predictive.optimise", "generation", model="gp-bayes-opt@modal"):
+                return await modal.Function.from_name(get_settings().modal_app, "optimise").remote.aio(body)
+        raise ApiError(503, "predictive_not_available", f"predictive models need torch or MODAL_ENABLED: {e}") from e
     import inspect
     opt = GaussianProcessBayesianOptimizer()
     fn = opt.optimize_compensatory_action

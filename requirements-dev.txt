@@ -1,4 +1,4 @@
--r requirements.txt
+-r requirements-ml.txt
 uvicorn==0.54.0
 websockets==17.4
 pytest==9.2.0
