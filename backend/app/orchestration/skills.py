@@ -256,7 +256,7 @@ async def _visual(ctx: SkillContext, args: dict) -> dict:
     if not ctx.image_base64:
         return fail("no_image", "No snapshot is available. Use request_ui_action capture_snapshot first, or ask the "
                                 "researcher to press Capture Snapshot.")
-    r = await analyse_snapshot(ctx.store, ctx.image_base64, str(args.get("question", "")))
+    r = await analyse_snapshot(ctx.store, ctx.image_base64, str(args.get("question", "")), ctx.experiment_id)
     return {"ok": True, "provider": r.provider, "model": r.model, "description": r.description,
             "structured": r.structured, "persisted": False,
             "note": "Not saved. The researcher can save it from the app while recording."}

@@ -31,7 +31,20 @@ def _seed_demo_protocol(db: Database) -> None:
         (json.dumps(json.loads(path.read_text())),))
 
 
+import threading
+
+_INIT_LOCK = threading.Lock()
+
+
 @lru_cache(maxsize=1)
-def get_db() -> Database:
-    """Process-wide DB handle; schema is initialised on first use (also on serverless cold start)."""
+def _get_db_cached() -> Database:
     return make_database()
+
+
+def get_db() -> Database:
+    """Process-wide DB handle; schema is initialised once even under concurrent first requests (cold start)."""
+    with _INIT_LOCK:
+        return _get_db_cached()
+
+
+get_db.cache_clear = _get_db_cached.cache_clear  # type: ignore[attr-defined]  (tests reset the handle)

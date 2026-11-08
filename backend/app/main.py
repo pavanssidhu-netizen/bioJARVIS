@@ -298,7 +298,16 @@ async def vision_analyse(body: VisionRequest, st: Store = Depends(store)):
         if st.get_recording(body.session_id).status != "active":
             raise ApiError(409, "recording_inactive", "Recording is not active; nothing was saved")
     try:
-        result = await analyse_snapshot(st, body.image_base64, body.question, body.experiment_id)
+        step_id, channel_id = body.step_id, body.channel_id
+        if body.session_id and not (step_id and channel_id):
+            try:
+                ss = st.session_state(body.session_id)
+                step_id, channel_id = step_id or ss["active_step_id"], channel_id or ss["active_channel_id"]
+            except ApiError:
+                pass
+        result = await analyse_snapshot(st, body.image_base64, body.question,
+                                        body.experiment_id or science.DEFAULT_EXPERIMENT,
+                                        step_id=step_id, channel_id=channel_id.upper() if channel_id else None)
     except VisionNotConfigured as e:
         raise ApiError(503, "vision_not_configured", str(e)) from e
     except Exception as e:  # noqa: BLE001

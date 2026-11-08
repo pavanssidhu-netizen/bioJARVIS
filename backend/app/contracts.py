@@ -123,6 +123,8 @@ class VisionRequest(BaseModel):
     save: bool = False
     session_id: Optional[str] = None
     idempotency_key: Optional[str] = None
+    step_id: Optional[str] = Field(default=None, description="protocol step (default: live session state)")
+    channel_id: Optional[str] = Field(default=None, description="channel, e.g. CH01 (default: live session state)")
 
 
 class VisionResult(BaseModel):

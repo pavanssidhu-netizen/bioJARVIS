@@ -74,10 +74,46 @@ async def run_specialist(store: Store, kind: str, *, image: ImageInput | None = 
 
 
 async def analyse_snapshot(store: Store, image_base64: str, question: str,
-                           experiment_id: Optional[str] = None) -> VisionAnalysis:
+                           experiment_id: Optional[str] = None, *, step_id: Optional[str] = None,
+                           channel_id: Optional[str] = None) -> VisionAnalysis:
     img = decode_image(image_base64, get_settings().max_image_bytes)
     r = await _primary_image(store, img, VisionTask(question=question, protocol_hint=protocol_hint(store, experiment_id)))
-    spec = await run_specialist(store, "image", image=img, question=question, experiment_id=experiment_id)
+    spec = await run_specialist(store, "image", image=img, question=question, experiment_id=experiment_id,
+                                step_id=step_id)
     if spec is not None:
         r.structured = {**r.structured, "specialist": spec}
+        r.structured["larvis"] = larvis_verdict(store, r.structured, spec, experiment_id, step_id, channel_id)
     return r
+
+
+def gemini_bubble_count(objects: list) -> int:
+    """Gemini may list one object per bubble (repeating the total in count) or one object with a count."""
+    b = [o for o in objects or [] if "bubble" in str((o or {}).get("label", "")).lower()]
+    return len(b) if len(b) > 1 else (((b[0].get("count") or 1) if b else 0))
+
+
+def larvis_verdict(store: Store, gemini_structured: dict, spec: dict, experiment_id: Optional[str],
+                   step_id: Optional[str], channel_id: Optional[str]) -> dict[str, Any]:
+    """What Larvis concludes vs what stock Gemini concluded, for the same image (dry-run, nothing persisted)."""
+    g = gemini_bubble_count(gemini_structured.get("objects", []))
+    s = spec.get("count")
+    out: dict[str, Any] = {"stock_gemini_bubble_count": g, "specialist_bubble_count": s,
+                           "specialist_abstained": bool(spec.get("abstained")),
+                           "cross_check": {"agree": s is not None and g == s,
+                                           "action": ("abstain_recapture" if spec.get("abstained") else
+                                                      "accept_specialist" if g == s else "human_review")}}
+    if "error" in spec or s is None or not experiment_id:
+        return out
+    from ..science.service import dependency_graph, get_context, reconcile
+    if not get_context(store, experiment_id).get("steps"):
+        return out
+    d = reconcile(store, experiment_id, {
+        "source_type": "camera", "content": spec.get("description", ""), "channel_id": channel_id,
+        "measurement_type": "bubble_count", "measurement_value": s, "measurement_unit": "count",
+        "confidence": 0.9 if out["cross_check"]["agree"] else 0.5}, step_id)
+    out["reconciliation"] = {k: d[k] for k in ("action", "scientific_status", "requires_human_approval",
+                                               "violated_constraints", "affected_structured", "spoken_response",
+                                               "citations", "step_id")}
+    if channel_id:
+        out["impact"] = dependency_graph(store, experiment_id, channel_id, None)["affected"]
+    return out
