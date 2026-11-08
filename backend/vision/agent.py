@@ -638,6 +638,7 @@ class PerceptionInvestigationSession:
         holdup_ul = float(0.5 * (v_int[0] + v_int[1]) * 1.25e-7)
 
         optimizer = GaussianProcessBayesianOptimizer()
+        prof = self.experiment_profile or {}
         bo_result = optimizer.optimize_compensatory_action(
             volume_variance_ul=volume_variance_ul,
             concentration_ratio=1.0,
@@ -646,6 +647,9 @@ class PerceptionInvestigationSession:
             max_channel_obstruction_ratio=max_obs,
             sauter_mean_diameter_px=d32,
             gas_holdup_volume_ul=holdup_ul,
+            protocol_name=str(prof.get("protocol_name", "Wet-Lab Assay")),
+            assay_domain=str(prof.get("assay_domain", "general_wetlab_and_microfluidics")),
+            optimal_temp_c=float(prof.get("default_temp_c", 21.5)),
         )
         dt = (time.perf_counter() - t0) * 1000.0
         self.log_step(

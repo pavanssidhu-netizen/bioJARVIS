@@ -281,11 +281,19 @@ class GaussianProcessBayesianOptimizer:
         sauter_mean_diameter_px: float = 0.0,
         gas_holdup_volume_ul: float = 0.0,
         prior_assay_history: Optional[List[Dict[str, float]]] = None,
+        protocol_name: str = "Wet-Lab Assay",
+        assay_domain: str = "general_wetlab_and_microfluidics",
+        optimal_temp_c: float = 21.5,
     ) -> Dict[str, Any]:
-        """Predict uncompensated yield via `BiochemicalYieldMLP` and run GP Expected Improvement
-        to find the optimal compensatory protocol adjustment before irreversible steps occur.
+        """Predict uncompensated yield via `BiochemicalYieldMLP` in universal dimensionless transport space
+        (Volumetric error, Stoichiometry, Kinetic hold drift, Arrhenius thermal shift, Lumen obstruction Phi_obs,
+        and 3D Sauter mean diameter d32) and run GP Expected Improvement to find the optimal compensatory
+        protocol adjustment for ANY wet-lab or microfluidic experiment.
         """
         model, metrics = get_yield_model()
+        # Map assay-specific optimal temperature (e.g. 37C for Organ-on-Chip, 4C for FPLC, 21.5C for benchtop)
+        # into universal Arrhenius thermal deviation relative to nominal 21.5C calibration frame
+        effective_temp_c = 21.5 + (ambient_temp_c - optimal_temp_c)
 
         # 1. Evaluate current uncompensated trajectory
         x_curr = np.array(
@@ -293,7 +301,7 @@ class GaussianProcessBayesianOptimizer:
                 volume_variance_ul,
                 concentration_ratio,
                 wait_time_min,
-                ambient_temp_c,
+                effective_temp_c,
                 max_channel_obstruction_ratio,
                 sauter_mean_diameter_px,
                 gas_holdup_volume_ul,
@@ -439,9 +447,10 @@ class GaussianProcessBayesianOptimizer:
 
         if not needs_intervention:
             recommendation_text = (
-                f"PyTorch Yield Model (R²={metrics['held_out_r2']:.2f}) forecasts {uncomp_yield:.1f}% assay yield "
-                f"(P(error)={uncomp_fail_prob * 100:.1f}%). Execution is within nominal Bayesian tolerance; "
-                f"no compensatory volume or flow change required."
+                f"[{protocol_name}] PyTorch Dimensionless Transport Yield MLP (R²={metrics['held_out_r2']:.2f}) "
+                f"forecasts {uncomp_yield:.1f}% assay yield (P(error)={uncomp_fail_prob * 100:.1f}%). "
+                f"Execution is within nominal Bayesian tolerance for {assay_domain}; "
+                f"no compensatory volume, flow, or thermal-time adjustment required."
             )
             rec_vol_ul = 0.0
             rec_ext_sec = 0.0
@@ -450,20 +459,21 @@ class GaussianProcessBayesianOptimizer:
             actions = []
             if abs(rec_vol_ul) >= 0.15:
                 sign = "+" if rec_vol_ul > 0 else ""
-                actions.append(f"compensatory reagent volume {sign}{rec_vol_ul:.2f} µL")
+                actions.append(f"compensatory reagent/buffer volume {sign}{rec_vol_ul:.2f} µL")
             if rec_flow_red_pct >= 10.0:
                 actions.append(
-                    f"reduce microfluidic perfusion flow rate by {rec_flow_red_pct:.0f}% "
-                    f"( + inline degasser pulse ) to clear bubble obstruction (Phi_obs={max_channel_obstruction_ratio:.2f})"
+                    f"reduce fluidic/dispense velocity by {rec_flow_red_pct:.0f}% "
+                    f"(+ degasser/centrifuge pulse) to clear gas obstruction (Phi_obs={max_channel_obstruction_ratio:.2f})"
                 )
             if rec_ext_sec >= 10.0:
-                actions.append(f"increase extension/incubation time by +{rec_ext_sec:.0f}s")
+                actions.append(f"extend incubation/cycling step by +{rec_ext_sec:.0f}s")
             if abs(rec_primer_nm - 300.0) >= 20.0:
-                actions.append(f"adjust target reagent/primer concentration to {rec_primer_nm:.0f} nM")
+                actions.append(f"adjust active reagent concentration to {rec_primer_nm:.0f} nM equiv")
             action_str = ", ".join(actions) if actions else "maintain current protocol parameters"
 
             recommendation_text = (
-                f"PyTorch Yield Predictor (R²={metrics['held_out_r2']:.2f}) forecasts a {yield_loss_pct:.1f}% yield drop "
+                f"[{protocol_name}] PyTorch Dimensionless Transport Yield MLP (R²={metrics['held_out_r2']:.2f}) "
+                f"forecasts a {yield_loss_pct:.1f}% yield drop "
                 f"(uncompensated yield {uncomp_yield:.1f}%, P(error)={uncomp_fail_prob * 100:.1f}%). "
                 f"Gaussian Process Bayesian Optimization (EI={rec_ei:.2f}) recommends: {action_str} "
                 f"to recover predicted yield to {rec_mean_yield:.1f}% ± {1.96 * rec_std_yield:.1f}% "
@@ -471,6 +481,14 @@ class GaussianProcessBayesianOptimizer:
             )
 
         return {
+            "protocol_name": protocol_name,
+            "assay_domain": assay_domain,
+            "universal_dimensionless_invariants": {
+                "lumen_obstruction_phi": round(float(max_channel_obstruction_ratio), 4),
+                "sauter_mean_diameter_d32_px": round(float(sauter_mean_diameter_px), 2),
+                "arrhenius_thermal_shift_c": round(float(ambient_temp_c - optimal_temp_c), 2),
+                "volumetric_metering_delta_ul": round(float(volume_variance_ul), 3),
+            },
             "model_r2_held_out": metrics["held_out_r2"],
             "model_mae_pct_held_out": metrics["held_out_yield_mae_pct"],
             "nominal_baseline_yield_pct": round(nominal_yield, 2),
