@@ -18,13 +18,15 @@ Exposes:
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import re
+import tempfile
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 import cv2
 
 from backend.contracts import VisionAnalyseResponse
@@ -35,7 +37,7 @@ from backend.vision.inference import run_hybrid_segmentation
 def analyse_image(
     image_path: str,
     experiment_id: str = "exp_001",
-    protocol_step_id: str = "step_003",
+    protocol_step_id: str = "step_08",
     use_gemini_orchestrator: bool = True,
     overlay_dir: Optional[str] = None,
 ) -> Dict[str, Any]:
@@ -53,6 +55,45 @@ def analyse_image(
         overlay_dir=overlay_dir,
     )
     return resp.model_dump()
+
+
+def analyse_live_camera_frame(
+    frame_data: Union[bytes, str],
+    experiment_id: str = "exp_001",
+    protocol_step_id: str = "step_08",
+    use_gemini_orchestrator: bool = True,
+) -> Dict[str, Any]:
+    """
+    Direct helper for Pavan's Live Camera Stream (`<video>` / `<canvas>` / WebRTC / Gemini Live).
+    Accepts either:
+      - raw image `bytes` (JPEG/PNG), OR
+      - a Base64 string / Data URL (`"data:image/jpeg;base64,..."`)
+    Runs the 6-step Agent Brain and returns the full observation dict PLUS `overlay_base64`
+    so Pavan's live camera UI can render the annotated bounding boxes immediately without file I/O.
+    """
+    if isinstance(frame_data, str):
+        b64_str = frame_data.split(",", 1)[1] if "," in frame_data else frame_data
+        raw_bytes = base64.b64decode(b64_str)
+    else:
+        raw_bytes = frame_data
+
+    tmp_dir = Path(tempfile.gettempdir()) / "labmate_live_frames"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    frame_path = tmp_dir / f"frame_{uuid.uuid4().hex[:8]}.png"
+    frame_path.write_bytes(raw_bytes)
+
+    result = analyse_image(
+        image_path=str(frame_path),
+        experiment_id=experiment_id,
+        protocol_step_id=protocol_step_id,
+        use_gemini_orchestrator=use_gemini_orchestrator,
+        overlay_dir=str(tmp_dir),
+    )
+    ov_path = result.get("annotated_overlay_path")
+    if ov_path and Path(ov_path).exists():
+        ov_b64 = base64.b64encode(Path(ov_path).read_bytes()).decode("ascii")
+        result["overlay_base64"] = f"data:image/png;base64,{ov_b64}"
+    return result
 
 
 def analyse_image_single_pass_baseline(
