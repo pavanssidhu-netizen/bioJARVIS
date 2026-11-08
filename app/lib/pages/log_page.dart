@@ -24,27 +24,32 @@ class _LogPageState extends State<LogPage> {
   Widget build(BuildContext context) {
     final c = widget.c;
     final rows = c.log.where((e) => !hideTranscript || e['event_type'] != 'transcript_segment').toList();
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
-        child: Row(children: [
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+      children: [
+        PendingReviewsPanel(c),
+        const SizedBox(height: 12),
+        DependencyGraphPanel(c),
+        const SizedBox(height: 12),
+        SessionsHistoryPanel(c),
+        const SizedBox(height: 12),
+        Row(children: [
           FilterChip(
               label: const Text('Hide transcript'), selected: hideTranscript, onSelected: (v) => setState(() => hideTranscript = v)),
           const Spacer(),
           IconButton(tooltip: 'Refresh', onPressed: c.loadLog, icon: const Icon(Icons.refresh, color: LM.teal)),
           TextButton.icon(onPressed: c.log.isEmpty ? null : c.exportLog, icon: const Icon(Icons.download), label: const Text('Export JSON')),
         ]),
-      ),
-      Expanded(
-        child: rows.isEmpty
-            ? const Center(child: Text('No stored observations for this experiment.', style: TextStyle(color: LM.muted)))
-            : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
-                itemCount: rows.length,
-                itemBuilder: (_, i) => _LogTile(c, rows[i], key: ValueKey(rows[i]['id'])),
-              ),
-      ),
-    ]);
+        const SizedBox(height: 4),
+        if (rows.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: Text('No stored observations for this experiment.', style: TextStyle(color: LM.muted))),
+          )
+        else
+          for (final row in rows) _LogTile(c, row, key: ValueKey(row['id'])),
+      ],
+    );
   }
 }
 
